@@ -18,7 +18,7 @@
     "start": "npm run dev",
     "lint": "eslint \"packages/**/*.{js,jsx}\"",
     "lint:fix": "eslint \"packages/**/*.{js,jsx}\" --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm test --prefix packages/express-backend && npm test --prefix packages/react-frontend"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
