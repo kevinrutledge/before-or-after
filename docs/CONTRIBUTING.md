@@ -10,7 +10,15 @@ We use Prettier for automatic code formatting. Our configuration is in the
 `.prettierrc` file at the root:
 
 ```yaml
-{ "singleQuote": true, "trailingComma": "es5", "printWidth": 120 }
+{
+  "trailingComma": "none",
+  "semi": true,
+  "singleQuote": false,
+  "bracketSameLine": true,
+  "htmlWhitespaceSensitivity": "ignore",
+  "proseWrap": "always",
+  "printWidth": 80
+}
 ```
 
 To manually format all files, run:
