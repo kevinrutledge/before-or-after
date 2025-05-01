@@ -1,0 +1,26 @@
+{
+  "name": "lower-or-higher",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A daily, addictively engaging casual game where players guess the release year of albums, artworks, images, movies, and more in short, self-paced rounds.",
+  "directories": {
+    "doc": "docs"
+  },
+  "workspaces": [
+    "packages/express-backend",
+    "packages/react-frontend"
+  ],
+  "scripts": {
+    "dev:backend": "npm --prefix packages/express-backend run dev",
+    "dev:frontend": "npm --prefix packages/react-frontend run dev",
+    "dev": "npm-run-all --parallel dev:*",
+    "start": "npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
