@@ -12,6 +12,7 @@
     "packages/react-frontend"
   ],
   "scripts": {
+    "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc",
     "dev:backend": "npm --prefix packages/express-backend run dev",
     "dev:frontend": "npm --prefix packages/react-frontend run dev",
     "dev": "npm-run-all --parallel dev:*",

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from "react";
 
 function App() {
   const [gameState, setGameState] = useState({
     isPlaying: false,
     currentRound: 0,
-    score: 0,
+    score: 0
   });
 
   return (
@@ -19,9 +19,10 @@ function App() {
             <h2>Ready to play?</h2>
             <p>Guess if the release year is lower or higher!</p>
             <button
-              onClick={() => setGameState({ ...gameState, isPlaying: true, currentRound: 1 })}
-              className="start-button"
-            >
+              onClick={() =>
+                setGameState({ ...gameState, isPlaying: true, currentRound: 1 })
+              }
+              className="start-button">
               Start Game
             </button>
           </div>
