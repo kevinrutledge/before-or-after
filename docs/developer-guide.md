@@ -1,6 +1,9 @@
 # Lower or Higher — Developer Documentation
 
-**Lower or Higher** is a casual, web‑based game where players guess whether a second cultural item (album, movie, artwork, etc.) was released before or after a first. It combines quick decision‑making with light trivia, making it ideal for short breaks.
+**Lower or Higher** is a casual, web‑based game where players guess whether a
+second cultural item (album, movie, artwork, etc.) was released before or after
+a first. It combines quick decision‑making with light trivia, making it ideal
+for short breaks.
 
 ## Table of Contents
 
@@ -19,9 +22,13 @@
 
 ## Project Overview
 
-- **Purpose:** Provide an addictive, quick‑play game for guessing release years of cultural items.
-- **Audience:** Anyone with a few spare moments—students, commuters, trivia fans.
-- **Gameplay:** Show two items, guess if the second was released **Higher** (later year) or **Lower** (earlier year). Correct guesses chain, forming a streak.
+- **Purpose:** Provide an addictive, quick‑play game for guessing release years
+  of cultural items.
+- **Audience:** Anyone with a few spare moments—students, commuters, trivia
+  fans.
+- **Gameplay:** Show two items, guess if the second was released **Higher**
+  (later year) or **Lower** (earlier year). Correct guesses chain, forming a
+  streak.
 
 ---
 
@@ -57,15 +64,18 @@ Centralized environment-driven setup for the API server:
 - **config/db.js**  
   Connects to MongoDB using `mongoose.connect(process.env.MONGO_URI)`.
 - **config/s3.js**  
-  Exports an AWS S3 client (`@aws-sdk/client-s3`) configured via `process.env.AWS_S3_REGION`, `AWS_ACCESS_KEY_ID`, and `AWS_SECRET_ACCESS_KEY`.
+  Exports an AWS S3 client (`@aws-sdk/client-s3`) configured via
+  `process.env.AWS_S3_REGION`, `AWS_ACCESS_KEY_ID`, and `AWS_SECRET_ACCESS_KEY`.
 
-These modules allow controllers and services to import a single source of truth for database, S3, and logging.
+These modules allow controllers and services to import a single source of truth
+for database, S3, and logging.
 
 ---
 
 ## Getting Started
 
-Refer to [Getting Started](getting-started.md) for installation, environment setup, and dev commands.
+Refer to [Getting Started](getting-started.md) for installation, environment
+setup, and dev commands.
 
 ---
 
@@ -106,7 +116,8 @@ These compose the overall page structure and adapt to screen size:
 - **CardEditorForm.jsx**
   - Form for editing card metadata and uploading new image.
 - **UploadButton.jsx**
-  - Wraps file input and handles S3 presigned URL logic via `services/s3Service.js`.
+  - Wraps file input and handles S3 presigned URL logic via
+    `services/s3Service.js`.
 
 ### UI Primitive Components
 
@@ -133,7 +144,8 @@ Under `src/components/ui/` create reusable primitives:
 
 - **POST /admin/cards**
 
-  - Create card: multipart/form-data with `title`, `year`, `sourceText`, `image`.
+  - Create card: multipart/form-data with `title`, `year`, `sourceText`,
+    `image`.
   - Saves to S3 and Mongo.
 
 - **GET /admin/cards**
@@ -169,7 +181,8 @@ Under `src/components/ui/` create reusable primitives:
    - BEM-like naming for clarity.
 
 3. **Responsive**:
-   - Mobile-first, use media queries in modules for tablet and desktop overrides.
+   - Mobile-first, use media queries in modules for tablet and desktop
+     overrides.
 
 ---
 
@@ -206,4 +219,5 @@ Under `src/components/ui/` create reusable primitives:
 
 ---
 
-_This document is a living guide for developers working on Lower or Higher. Please update it as new features are added or modifications are made._
+_This document is a living guide for developers working on Lower or Higher.
+Please update it as new features are added or modifications are made._

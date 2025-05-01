@@ -1,6 +1,8 @@
 # Getting Started
 
-Welcome to **Lower or Higher**! This guide helps you set up your local development environment, configure your IDE for consistent styling, and run the application and its tests.
+Welcome to **Lower or Higher**! This guide helps you set up your local
+development environment, configure your IDE for consistent styling, and run the
+application and its tests.
 
 ## Table of Contents
 
@@ -147,4 +149,5 @@ npm test --prefix packages/react-frontend
 
 ## Developer Guide
 
-For more details on the project’s scope, architecture, and component specifications, please refer to the [Developer Guide](developer-guide.md).
+For more details on the project’s scope, architecture, and component
+specifications, please refer to the [Developer Guide](developer-guide.md).

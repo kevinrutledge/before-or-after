@@ -5,14 +5,6 @@ import { dirname } from 'path';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import prettierPlugin from 'eslint-plugin-prettier';
-import importPlugin from 'eslint-plugin-import';
-import js from "@eslint/js";
-import globals from "globals";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-import reactPlugin from "eslint-plugin-react";
-import reactHooksPlugin from "eslint-plugin-react-hooks";
-import prettierPlugin from "eslint-plugin-prettier";
 
 // Compute __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);

@@ -6,14 +6,11 @@ Here are all of the steps you should follow whenever contributing to this repo!
 
 ### Prettier
 
-We use Prettier for automatic code formatting. Our configuration is in the `.prettierrc` file at the root:
+We use Prettier for automatic code formatting. Our configuration is in the
+`.prettierrc` file at the root:
 
 ```yaml
-{
-  "singleQuote": true,
-  "trailingComma": "es5",
-  "printWidth": 120
-}
+{ "singleQuote": true, "trailingComma": "es5", "printWidth": 120 }
 ```
 
 To manually format all files, run:
@@ -58,21 +55,28 @@ Each team member should set up their editor to work with our code style tools:
 
 ## Making Changes
 
-1. Before you start making changes, always make sure you're on the main branch, then `git pull` and `npm i` to make sure your code is up to date
+1. Before you start making changes, always make sure you're on the main branch,
+   then `git pull` and `npm i` to make sure your code is up to date
 2. Create a branch `git checkout -b <name-of-branch>`
 3. Make changes to the code
-4. `npm run lint` to ensure code standards. (running `npm run lint:fix` will fix most of the styling errors)
+4. `npm run lint` to ensure code standards. (running `npm run lint:fix` will fix
+   most of the styling errors)
 5. Run `npm run format` to apply code styling
 
 ## Committing Changes
 
-When interacting with Git/GitHub, feel free to use the command line, VSCode extension, or Github desktop. These steps assume you have already made a branch using `git checkout -b <branch-name>` and you have made all neccessary code changes for the provided task.
+When interacting with Git/GitHub, feel free to use the command line, VSCode
+extension, or Github desktop. These steps assume you have already made a branch
+using `git checkout -b <branch-name>` and you have made all neccessary code
+changes for the provided task.
 
-1. View diffs of each file you changed using the VSCode Github extension (3rd icon on far left bar of VSCode) or GitHub Desktop
-2. `git add .` (to stage all files) or `git add <file-name>` (to stage specific file)
+1. View diffs of each file you changed using the VSCode Github extension (3rd
+   icon on far left bar of VSCode) or GitHub Desktop
+2. `git add .` (to stage all files) or `git add <file-name>` (to stage specific
+   file)
 3. `git commit -m "<type>[optional scope]: <description>"` or
-   `git commit -m "<type>[optional scope]: <description>" -m "[optional body]"` or
-   `git commit` to get a message prompt
+   `git commit -m "<type>[optional scope]: <description>" -m "[optional body]"`
+   or `git commit` to get a message prompt
 4. `git push -u origin <name-of-branch>`
 
 ## Making Pull Requests
