@@ -2,8 +2,6 @@
 
 **Lower or Higher** is a casual, web‑based game where players guess whether a second cultural item (album, movie, artwork, etc.) was released before or after a first. It combines quick decision‑making with light trivia, making it ideal for short breaks.
 
----
-
 ## Table of Contents
 
 - [Project Overview](#project-overview)
@@ -205,5 +203,7 @@ Under `src/components/ui/` create reusable primitives:
 4. **Wire up** Game components to API.
 5. **Develop** Admin components and protect routes.
 6. **Add** basic CI (GitHub Actions) to run `npm test` on PRs.
+
+---
 
 _This document is a living guide for developers working on Lower or Higher. Please update it as new features are added or modifications are made._
