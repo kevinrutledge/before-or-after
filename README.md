@@ -43,4 +43,4 @@ weeks, we worked as a team to deploy this web application.
 ## Getting Started and Contributing
 
 - Visit [getting-started.md](docs/getting-started.md) for setup instructions.
-- Visit [CONTRIBUTING.md](docs/contributing.md) for contribution guidelines.
+- Visit [CONTRIBUTING.md](docs/CONTRIBUTING.md) for contribution guidelines.
