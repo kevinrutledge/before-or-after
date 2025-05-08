@@ -1,12 +1,13 @@
 import dotenv from "dotenv";
 import { getCardsCollection } from "../models/Card.js";
+const { seedDatabase: runSeed } = require("./seed");
 
 dotenv.config();
 
 /**
  * Seed database with sample cards for gameplay testing.
  */
-async function seedDatabase() {
+export async function seedDatabase() {
   let client;
 
   try {
@@ -127,14 +128,24 @@ async function seedDatabase() {
     console.log(
       `Successfully inserted ${insertResult.insertedCount} sample cards`
     );
+
+    return { deleteResult, insertResult };
   } catch (error) {
     console.error("Error seeding database:", error);
-    process.exit(1);
+    throw error;
   } finally {
     // Close the database connection
     if (client) await client.close();
   }
 }
 
-// Execute seeding function
-seedDatabase();
+// Run when called directly
+if (require.main === module) {
+  seedDatabase().catch((err) => {
+    console.error("Seed script failed:", err);
+    process.exit(1);
+  });
+}
+
+// Export for tests
+module.exports = { seedDatabase };
