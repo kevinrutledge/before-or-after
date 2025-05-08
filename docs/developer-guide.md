@@ -1,6 +1,6 @@
-# Lower or Higher — Developer Documentation
+# Before or After — Developer Documentation
 
-**Lower or Higher** is a casual, web‑based game where players guess whether a
+**Before or After** is a casual, web‑based game where players guess whether a
 second cultural item (album, movie, artwork, etc.) was released before or after
 a first. It combines quick decision‑making with light trivia, making it ideal
 for short breaks.
@@ -26,8 +26,8 @@ for short breaks.
   of cultural items.
 - **Audience:** Anyone with a few spare moments—students, commuters, trivia
   fans.
-- **Gameplay:** Show two items, guess if the second was released **Higher**
-  (later year) or **Lower** (earlier year). Correct guesses chain, forming a
+- **Gameplay:** Show two items, guess if the second was released **After**
+  (later year) or **Before** (earlier year). Correct guesses chain, forming a
   streak.
 
 ---
@@ -102,7 +102,7 @@ These compose the overall page structure and adapt to screen size:
   - Renders two cards: previous and current.
   - Uses CSS Modules for slide animations on guess.
 - **GuessButtons.jsx**
-  - Two buttons (“Higher”, “Lower”) that call `POST /cards/guess`.
+  - Two buttons (“After”, “Before”) that call `POST /cards/guess`.
 - **StreakDisplay.jsx**
   - Shows current streak from `localStorage`.
 
@@ -216,5 +216,5 @@ Under `src/components/ui/` create reusable primitives:
 
 ---
 
-_This document is a living guide for developers working on Lower or Higher.
+_This document is a living guide for developers working on Before or After.
 Please update it as new features are added or modifications are made._
