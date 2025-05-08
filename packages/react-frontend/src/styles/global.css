@@ -1,0 +1,84 @@
+/* Reset elements to predictable defaults. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Set base typography styles. */
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* Create full-height flexible container. */
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Expand main content to fill available space. */
+.main-content {
+  flex: 1;
+  padding: 1rem 0 5rem; /* Mobile padding by default */
+}
+
+/* Center content with consistent width constraints. */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 0.75rem; /* Mobile padding by default */
+}
+
+/* Position navigation elements horizontally. */
+.header-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}
+
+/* Fix navigation to bottom of viewport. */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+  padding: 0.75rem 0;
+  z-index: 10;
+}
+
+/* Distribute navigation items across container. */
+.nav-items {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Create circular user avatar placeholder. */
+.circle-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #ccc;
+}
+
+/* Apply desktop-specific adjustments above 768px. */
+@media (min-width: 768px) {
+  /* Increase container padding for desktop. */
+  .container {
+    padding: 0 1rem;
+  }
+
+  /* Remove extra bottom padding on desktop. */
+  .main-content {
+    padding-bottom: 1rem;
+  }
+}
