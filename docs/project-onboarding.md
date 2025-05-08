@@ -4,6 +4,17 @@ This document guides new contributors through setting up issue management and
 project workflows. Follow each section to configure templates, boards, and
 labels. Use this guide when filing issues or updating the board.
 
+## How to Write Issues and Tasks
+
+Be clear and use full paths for file references. For front-end pages, place
+your components under `packages/react-frontend/src/pages/`. For back-end code,
+use `packages/express-backend/controllers` or `models` as needed. When drafting
+an issue:
+
+- Reference exact file or directory paths in the Steps section.
+- Quote code snippets or commands using fenced blocks.
+- Always include Milestone, Labels, and Assignees in metadata.
+
 ## Issue Templates
 
 Issue templates ensure consistent reports and prompt for all necessary details.
