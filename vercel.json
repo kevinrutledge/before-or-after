@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npm --workspace react-frontend run build",
+  "outputDirectory": "packages/react-frontend/dist",
+  "framework": "vite"
+}
