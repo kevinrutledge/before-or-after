@@ -64,10 +64,10 @@ jobs:
           S3_REGION: ${{ secrets.S3_REGION }}
 
       - name: Backend tests with coverage
-        run: npm test -- --coverage --prefix packages/express-backend
+        run: npm --prefix packages/express-backend test -- --coverage
 
       - name: Frontend tests with coverage
-        run: npm test -- --coverage --prefix packages/react-frontend
+        run: npm --prefix packages/react-frontend test -- --coverage
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
