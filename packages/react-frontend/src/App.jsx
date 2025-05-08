@@ -1,61 +1,38 @@
-import { useState } from "react";
+import React from "react";
+import Layout from "./components/Layout";
+import PageContainer from "./components/PageContainer";
+import BottomNav from "./components/BottomNav";
+import useIsMobile from "./hooks/useIsMobile";
 
+// Minimal App component using shared layout components
 function App() {
-  const [gameState, setGameState] = useState({
-    isPlaying: false,
-    currentRound: 0,
-    score: 0
-  });
+  // Example state: simple counter to demonstrate React functionality
+  const [count, setCount] = React.useState(0);
+  const isMobile = useIsMobile();
 
   return (
-    <div className="app-container">
-      <header>
-        <h1>Before or After</h1>
-      </header>
+    <Layout>
+      <PageContainer>
+        <section>
+          <h2>Welcome</h2>
+          <p>
+            This is the starting point for your app. Replace this with your
+            components.
+          </p>
+        </section>
 
-      <main>
-        {!gameState.isPlaying ? (
-          <div className="start-screen">
-            <h2>Ready to play?</h2>
-            <p>Guess if the release year is before or after!</p>
-            <button
-              onClick={() =>
-                setGameState({ ...gameState, isPlaying: true, currentRound: 1 })
-              }
-              className="start-button">
-              Start Game
-            </button>
-          </div>
-        ) : (
-          <div className="game-board">
-            <div className="game-info">
-              <div>Round: {gameState.currentRound}</div>
-              <div>Score: {gameState.score}</div>
-            </div>
+        <section>
+          <h2>Counter Example</h2>
+          <p>Current count: {count}</p>
+          <button onClick={() => setCount((c) => c + 1)}>Increment</button>
+        </section>
 
-            {/* Game content will go here */}
-            <div className="game-content">
-              <div className="card">
-                <h3>Item Name</h3>
-                <div className="item-image">
-                  {/* Item image will go here */}
-                  <div className="placeholder-image">Image Placeholder</div>
-                </div>
-                <p>Is the release year before or after than XXXX?</p>
-                <div className="guess-buttons">
-                  <button className="lower-button">Lower</button>
-                  <button className="higher-button">Higher</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
+        {/* TODO: Insert <Home />, <Game />, and <Loss /> components here */}
+      </PageContainer>
 
-      <footer>
-        <p>Before or After &copy; {new Date().getFullYear()}</p>
-      </footer>
-    </div>
+      {/* Example conditional rendering of BottomNav for mobile devices */}
+      {isMobile && <BottomNav />}
+    </Layout>
   );
 }
 
