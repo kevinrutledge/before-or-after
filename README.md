@@ -17,7 +17,7 @@ of albums, artworks, images, movies, and more in short, self-paced rounds.
 Before or After is a casual web-based game designed for anyone with a few spare
 moments seeking quick, self-paced entertainment. Each day, players challenge
 themselves to guess the release year of various cultural artifacts—albums,
-artworks, images, movies, and more—using a simple higher-or-lower mechanic. This
+artworks, images, movies, and more—using a simple before-or-after mechanic. This
 trivia format keeps the experience fresh and educational, blending addictive
 gameplay with knowledge gain.
 
