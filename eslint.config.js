@@ -46,6 +46,10 @@ const reactConfig = {
 
 // JavaScript rules
 export default [
+  {
+    ignores: ["**/node_modules/**", "packages/react-frontend/dist/**"]
+  },
+
   js.configs.recommended,
   {
     // All file rules
