@@ -4,7 +4,7 @@ import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 import prettierPlugin from "eslint-plugin-prettier";
 
-// Create Prettier configuration
+// Prettier rules
 const prettierConfig = {
   plugins: {
     prettier: prettierPlugin
@@ -25,7 +25,7 @@ const prettierConfig = {
   }
 };
 
-// React plugin configuration
+// React plugin rules
 const reactConfig = {
   plugins: {
     react: reactPlugin,
@@ -44,11 +44,11 @@ const reactConfig = {
   }
 };
 
-// Configuration for JavaScript files
+// JavaScript rules
 export default [
   js.configs.recommended,
   {
-    // Base config for all files
+    // All file rules
     files: ["**/*.{js,jsx}"],
     languageOptions: {
       ecmaVersion: 2022,
@@ -75,7 +75,7 @@ export default [
       globals: {
         ...globals.browser
       },
-      // Add JSX parsing capability
+      // Use the same parser options as the base config
       parserOptions: {
         jsx: true,
         ecmaFeatures: {
