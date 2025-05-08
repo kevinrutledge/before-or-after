@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+import { MongoMemoryServer } from "mongodb-memory-server";
 
 dotenv.config();
 
@@ -20,7 +21,17 @@ export const cardSchema = {
  * Get database connection and cards collection.
  */
 export async function getCardsCollection() {
-  const client = new MongoClient(process.env.MONGO_URI);
+  let uri = process.env.MONGO_URI;
+  let memoryServer;
+
+  // If MONGO_URI is not set, create an in-memory MongoDB server
+  if (!uri) {
+    memoryServer = await MongoMemoryServer.create();
+    uri = memoryServer.getUri();
+    console.log("Using MongoDB Memory Server:", uri);
+  }
+
+  const client = new MongoClient(uri);
   await client.connect();
 
   const db = client.db();
@@ -29,7 +40,8 @@ export async function getCardsCollection() {
   // Create indexes for query performance
   await ensureIndexes(collection);
 
-  return { client, collection };
+  // Return the memory server so it can be closed later
+  return { client, collection, memoryServer };
 }
 
 /**

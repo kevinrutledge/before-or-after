@@ -8,11 +8,17 @@ dotenv.config();
  */
 export async function seedDatabase() {
   let client;
+  let memoryServer;
 
   try {
     // Get database connection and collection
-    const { client: dbClient, collection } = await getCardsCollection();
+    const {
+      client: dbClient,
+      collection,
+      memoryServer: dbMemoryServer
+    } = await getCardsCollection();
     client = dbClient;
+    memoryServer = dbMemoryServer;
 
     // Clear existing cards
     const deleteResult = await collection.deleteMany({});
@@ -133,8 +139,8 @@ export async function seedDatabase() {
     console.error("Error seeding database:", error);
     throw error;
   } finally {
-    // Close the database connection
     if (client) await client.close();
+    if (memoryServer) await memoryServer.stop();
   }
 }
 
