@@ -22,16 +22,19 @@ game.
 
 ## 3. Project Overview
 
-Provide a quick summary of the game and admin interface:
+Summarize game mechanics and admin interface:
 
 - **Name:** Before or After
-- **Gameplay:** Guess whether a second item released before or after the first
-- **Game Flow:** Load random unseen cards, auto-advance on correct guess, show
-  loss GIF on incorrect guess
-- **Roles:** Public users (Home, Game, Loss, Login, Signup), Admin users
-  (Dashboard, Card Viewer — initial setup by Kevin)
-- **Goals:** Deliver a responsive, guest-friendly MVP with core features in four
-  weeks
+- **Gameplay:** Compare release years between cultural items. Show card with
+  year, then prompt for before/after comparison with new card.
+- **Game Flow:** Start with reference card. Show second card without year.
+  Advance on correct guesses using current card as new reference. Show loss
+  screen on incorrect guesses.
+- **Card Model:** Store items with title, year, imageUrl, sourceUrl, and
+  category fields.
+- **Roles:** Allow public gameplay (Home, Game, Loss screens) and admin
+  functionality (Dashboard, Card management).
+- **Goals:** Deliver responsive MVP with core features in four-week timeframe.
 
 ## 4. Page Map & UI Flows
 
@@ -133,9 +136,11 @@ Break down UI and logic into reusable components.
 
 ### Game Components
 
-- **CardPair.jsx**: render two cards; animate slide on correct guess
-- **GuessButtons.jsx**: “After”/“Before” controls; call `POST /api/cards/guess`
-- **StreakDisplay.jsx**: track and display current streak from localStorage
+- **CardPair.jsx**: Display previous and current cards with years and images.
+  Animate card transition on correct guesses.
+- **GuessButtons.jsx**: Provide Before/After buttons to compare years directly.
+  Send guesses to API endpoint.
+- **StreakDisplay.jsx**: Track and show current streak from local storage.
 
 ### Authentication Components
 
@@ -156,39 +161,39 @@ Define REST routes for public gameplay and admin viewing.
 
 - **GET `/api/cards/next`**
 
-  - Returns a random unseen card for the session.
-  - Response: `{ id, question, imageUrl, options }`
+  - Retrieve random card for gameplay session.
+  - Response: `{ id, title, year, imageUrl, sourceUrl, category }`
 
 - **POST `/api/cards/guess`**
 
-  - Body: `{ previousId, currentId, guess }`
+  - Body: `{ previousYear, currentYear, guess }`
   - Returns: `{ correct: boolean, nextCard: Card }`
-  - On incorrect guess, client should transition to Loss page.
+  - Direct player to Loss page on incorrect guesses.
 
 ### Authentication (session-based)
 
 - **POST `/api/auth/login`**
 
   - Body: `{ username, password }`
-  - On success: sets `req.session.userId` and merges any `req.session.score`
-    into the user’s high score
+  - Set `req.session.userId` and merge guest score on success.
 
 - **POST `/api/auth/signup`**
 
   - Body: `{ email, password }`
-  - On success: sets `req.session.userId`
+  - Set `req.session.userId` on success.
 
 ### Admin
 
 - **GET `/api/admin/cards`**
 
-  - List all cards with pagination cursor: `?cursor=&limit=`
+  - List cards with pagination support via `?cursor=&limit=`.
+  - Include year, imageUrl, and other card fields in response.
 
 - **GET `/api/admin/cards/:id`**
 
-  - Fetch details for a single card.
+  - Fetch single card with complete field set.
 
-> NOTE: Admin endpoints require `x-admin-key` header or valid JWT cookie.
+> NOTE: Secure admin endpoints with `x-admin-key` header or JWT cookie.
 
 ## 10. Style & Theming
 
