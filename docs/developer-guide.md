@@ -199,8 +199,7 @@ Define REST routes for public gameplay and admin viewing.
 
 Standardize UI look and responsive behavior.
 
-- **CSS Framework**: use Tailwind CSS with custom config in
-  `tailwind.config.js`.
+- **CSS Framework**: use CSS with custom config in `tailwind.config.js`.
 - **Variables**: define colors and spacing in `theme.extend`.
 - **Mobile-first**: build components for narrow screens first.
 - **BottomNav**: use fixed positioning at bottom on mobile only.
@@ -210,23 +209,96 @@ Standardize UI look and responsive behavior.
 
 ## 11. Testing
 
-Ensure core flows are reliable:
+Validate application behavior through comprehensive test coverage:
+
+### MongoDB Testing
+
+- **Core Approach**: Verify database interactions at three distinct levels.
+
+  ```javascript
+  // Create index on year field for optimized queries.
+  await collection.createIndex({ year: 1 });
+  ```
+
+- **Index Tests**: Confirm query performance optimization through index
+  utilization.
+
+  ```javascript
+  // Verify index usage in year-based queries.
+  test("year-based queries use index", async () => {
+    const explanation = await collection
+      .find({ year: { $gt: 1995 } })
+      .explain("executionStats");
+    expect(explanation.executionStats.executionStages.inputStage.stage).toBe(
+      "IXSCAN"
+    );
+  });
+  ```
+
+- **Schema Validation**: Ensure data integrity through model constraints.
+
+- **Aggregation Tests**: Validate complex data operations return expected
+  results.
 
 ### Backend Tests
 
 - Location: `packages/express-backend/tests/`
-- Use Jest and Supertest.
-- Test `/api/cards/next` returns unique cards for a session.
-- Test `/api/cards/guess` logic for correct and incorrect.
-- Test auth endpoints for error and success cases.
+- Use Jest and Supertest for HTTP endpoint validation.
+
+```javascript
+// Test random card retrieval endpoint.
+test("GET /api/cards/next returns valid card", async () => {
+  const response = await request(app).get("/api/cards/next");
+  expect(response.status).toBe(200);
+  expect(response.body).toHaveProperty("title");
+  expect(response.body).toHaveProperty("year");
+});
+```
+
+- Test endpoint error handling returns appropriate status codes.
+- Validate guess processing logic correctly determines win/loss conditions.
+- Assert authentication endpoints manage session state correctly.
 
 ### Frontend Tests
 
 - Location: `packages/react-frontend/tests/`
-- Use Jest and React Testing Library.
-- Render `CardPair` and simulate correct/incorrect guess flows.
-- Test `LoginForm` and `SignupForm` validation and submission.
-- Test `CardViewer` infinite scroll triggers fetch on scroll end.
+- Implement Jest and React Testing Library for component validation.
+
+```javascript
+// Test card pair component renders both cards correctly.
+test("CardPair displays reference and current cards", () => {
+  render(<CardPair referenceCard={mockCard1} currentCard={mockCard2} />);
+  expect(screen.getByText(mockCard1.title)).toBeInTheDocument();
+  expect(screen.getByText(mockCard2.title)).toBeInTheDocument();
+});
+```
+
+- Simulate user interactions with guess buttons to verify behavior.
+- Validate form submissions handle both valid and invalid input.
+- Test responsive behavior adapts correctly to viewport changes.
+
+### Test Scripts
+
+Execute test suites through npm scripts:
+
+```bash
+# Run all tests
+npm test
+
+# Run only database tests
+npm run test:db
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Continuous Integration
+
+Automate test execution in GitHub Actions pipeline:
+
+- Run tests on pull requests to prevent regressions.
+- Enforce minimum coverage thresholds before merging.
+- Generate test reports for performance analysis.
 
 ## 12. Sprint Planning & Onboarding
 
