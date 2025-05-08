@@ -91,8 +91,6 @@ These compose the overall page structure and adapt to screen size:
 - **BottomNav.jsx**
   - Mobile-only navigation (Game, Stats, Admin).
   - Uses CSS media query `max-width: var(--bp-tablet)`.
-- **Hero.jsx**
-  - Banner under header on tablet+/desktop with instructions or daily prompt.
 - **Layout.jsx**
   - Orchestrates which nav to render based on CSS, wraps page content.
 
