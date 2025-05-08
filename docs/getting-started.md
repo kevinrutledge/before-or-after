@@ -1,153 +1,115 @@
 # Getting Started
 
-Welcome to **Before of After**. This guide helps you set up your local
-development environment, configure your IDE for consistent styling, and run the
-application and its tests.
-
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Clone & Install](#clone--install)
-- [Environment Variables](#environment-variables)
-- [Running the App](#running-the-app)
-- [Linting & Formatting](#linting--formatting)
-- [Testing](#testing)
-- [Project Structure](#project-structure)
-
----
+Welcome to **Before or After**. This guide shows you how to set up your local
+environment and run the app. For architecture and component details, see the
+[Developer Guide](developer-guide.md).
 
 ## Prerequisites
 
-- **Node.js** v18+ and **npm**
+- **Node.js** v18 or higher and **npm**
 - **MongoDB** Atlas or local instance
-- **AWS S3** bucket (for image storage)
+- **AWS S3** credentials (_preconfigured by Kevin Rutledge_)
 
----
+> NOTE: The S3 bucket is already set up. You don’t need to provision or
+> configure AWS resources.
 
 ## Clone & Install
 
-1. **Clone the repo**
-   ```bash
-   git clone https://github.com/kevinrutledge/before-or-after.git
-   cd before-or-after
-   ```
-2. **Install dependencies** (root workspace)
-   ```bash
-   npm install
-   ```
-   This installs both backend and frontend packages via npm workspaces.
+1. Clone the repository and install dependencies:
 
----
+   ```bash
+   git clone https://github.com/your-org/before-or-after.git \
+     && cd before-or-after \
+     && npm ci
+   ```
+
+> TIP: Using `npm ci` ensures a reproducible build via the lockfile.
 
 ## Environment Variables
 
-Copy the example env file for the backend and fill in your secrets:
+1. Copy the example file to the root directory:
 
-```bash
-cp packages/express-backend/.env.example packages/express-backend/.env
-```
+   ```bash
+   cp .env.example .env
+   ```
 
-Open `packages/express-backend/.env` and set:
+2. Open `.env` and set required variables:
 
-```
-MONGO_URI=<your-mongo-connection-string>
-PORT=8000
-AWS_ACCESS_KEY_ID=<your-aws-key>
-AWS_SECRET_ACCESS_KEY=<your-aws-secret>
-AWS_S3_BUCKET=<your-bucket-name>
-AWS_S3_REGION=<your-bucket-region>
-```
+   ```bash
+   MONGO_URI=<your-mongo-connection-string>
+   PORT=8000
+   SESSION_SECRET=<your_session_secret_here>
+   S3_REGION=<provided-by-admin>
+   S3_BUCKET_NAME=<provided-by-admin>
+   AWS_ACCESS_KEY_ID=<provided-by-admin>
+   AWS_SECRET_ACCESS_KEY=<provided-by-admin>
+   ```
 
-No `.env` needed in the frontend.
-
----
+> NOTE: Kevin Rutledge manages AWS bucket and credentials. Use the values he
+> provides.
 
 ## Running the App
 
-Start both servers in parallel:
+Start both backend and frontend with one command:
 
 ```bash
-npm run dev    # starts backend on http://localhost:8000 and frontend on http://localhost:5173
+npm run dev
 ```
 
-- **Backend**: `npm run dev:backend`
-- **Frontend**: `npm run dev:frontend`
+- **Backend** runs at `http://localhost:8000`
+- **Frontend** runs at `http://localhost:5173`
 
-To run in production mode (build+serve):
-
-```bash
-# Build frontend
-npm run build --prefix packages/react-frontend
-# Serve static build and backend
-npm start
-```
-
----
+> TIP: To run services separately:
+>
+> - `npm run dev:backend`
+> - `npm run dev:frontend`
 
 ## Linting & Formatting
 
-We use ESLint and Prettier for code quality.
+Ensure consistent code style:
 
-- **Check**:
+- Check for issues:
+
   ```bash
   npm run lint
   ```
-- **Auto-fix**:
+
+- Auto-fix problems:
+
   ```bash
   npm run lint:fix
   ```
 
----
-
 ## Testing
 
-### Backend Tests
+Run all tests with:
 
 ```bash
-npm test --prefix packages/express-backend
+npm test
 ```
 
-### Frontend Tests
-
-```bash
-npm test --prefix packages/react-frontend
-```
-
----
+- **Backend tests:** `packages/express-backend/tests/`
+- **Frontend tests:** `packages/react-frontend/tests/`
 
 ## Project Structure
 
-```
+A minimal layout for MVP, expanding subfolders only when needed:
+
+```text
 / (repo root)
-├── .github/                 # CI workflows & templates
-├── docs/                    # Documentation files
+├── .github/               # CI workflows & issue/PR templates
+├── docs/                  # Markdown guides (onboarding, dev guide)
 ├── packages/
-│   ├── express-backend/     # API server
-│   │   ├── config/          # DB, S3, logger setup
-│   │   ├── controllers/     # Route handlers
-│   │   ├── middleware/      # Auth & error handling
-│   │   ├── models/          # Mongoose schemas
-│   │   ├── routes/          # Express routers
-│   │   ├── services/        # Business & S3 logic
-│   │   ├── tests/           # Jest + Supertest tests
-│   │   └── src/index.js     # Server entrypoint
-│   └── react-frontend/      # SPA client
-│       ├── public/          # Static files + index.html
-│       ├── src/
-│       │   ├── api/         # Fetch wrappers
-│       │   ├── components/  # UI & layout
-│       │   ├── hooks/       # Custom React hooks
-│       │   ├── pages/       # Route components
-│       │   └── styles/      # Global CSS & resets
-│       ├── tests/           # RTL + Jest tests
-│       └── src/main.jsx     # Client entrypoint
-├── package.json             # Root workspace config & scripts
-└── package-lock.json
+│   ├── express-backend/   # API server
+│   │   ├── controllers/   # HTTP handlers (create when >2 files)
+│   │   ├── models/        # Mongoose schemas (create when >2 files)
+│   │   └── index.js       # Entry point (imports config)
+│   └── react-frontend/    # SPA client
+│       ├── components/    # Shared React components (start with 1–2 files)
+│       ├── pages/         # Route views (Home, Game, Loss, Login, Signup, Admin)
+│       └── main.jsx       # Entry point (router & Layout)
+└──package.json           # Workspace config & root scripts
 ```
 
----
-
-## Developer Guide
-
-For more details on the project’s scope, architecture, and component
-specifications, please refer to the [Developer Guide](developer-guide.md).
+> NOTE: Only introduce `services`, `middleware`, or `hooks` folders once you
+> have at least three related files.

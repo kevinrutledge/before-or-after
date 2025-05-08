@@ -1,218 +1,249 @@
-# Before or After — Developer Documentation
+## 1. Introduction
 
-**Before or After** is a casual, web‑based game where players guess whether a
-second cultural item (album, movie, artwork, etc.) was released before or after
-a first. It combines quick decision‑making with light trivia, making it ideal
-for short breaks.
+Welcome to the **Before or After** developer guide. This document outlines
+project goals, UI flows, and technical details needed to build and maintain the
+game.
 
-## Table of Contents
+## 2. Table of Contents
 
-- [Project Overview](#project-overview)
-- [Features](#features)
-- [Architecture & Stack](#architecture--stack)
-- [Directory Structure](#directory-structure)
-- [Getting Started](#getting-started)
-- [Core Components](#core-components)
-- [API Endpoints](#api-endpoints)
-- [Style & Theming](#style--theming)
-- [Testing](#testing)
-- [Contributing](#contributing)
+1. [Introduction](#1-introduction)
+2. [Table of Contents](#2-table-of-contents)
+3. [Project Overview](#3-project-overview)
+4. [Page Map & UI Flows](#4-page-map--ui-flows)
+5. [Architecture & Tech Stack](#5-architecture--tech-stack)
+6. [Directory Structure](#6-directory-structure)
+7. [Getting Started](#7-getting-started)
+8. [Core Components](#8-core-components)
+9. [API Endpoints](#9-api-endpoints)
+10. [Style & Theming](#10-style--theming)
+11. [Testing](#11-testing)
+12. [Sprint Planning & Onboarding](#12-sprint-planning--onboarding)
+13. [Additional Notes](#13-additional-notes)
 
----
+## 3. Project Overview
 
-## Project Overview
+Provide a quick summary of the game and admin interface:
 
-- **Purpose:** Provide an addictive, quick‑play game for guessing release years
-  of cultural items.
-- **Audience:** Anyone with a few spare moments—students, commuters, trivia
-  fans.
-- **Gameplay:** Show two items, guess if the second was released **After**
-  (later year) or **Before** (earlier year). Correct guesses chain, forming a
-  streak.
+- **Name:** Before or After
+- **Gameplay:** Guess whether a second item released before or after the first
+- **Game Flow:** Load random unseen cards, auto-advance on correct guess, show
+  loss GIF on incorrect guess
+- **Roles:** Public users (Home, Game, Loss, Login, Signup), Admin users
+  (Dashboard, Card Viewer — initial setup by Kevin)
+- **Goals:** Deliver a responsive, guest-friendly MVP with core features in four
+  weeks
 
----
+## 4. Page Map & UI Flows
 
-## Features
+Outline the primary pages and navigation patterns.
 
-- **Randomized card comparisons** drawn from a MongoDB collection.
-- **Guess logic** with immediate correct/incorrect feedback.
-- **Streak tracking** (client‑side) to motivate replay.
-- **Admin CRUD** for managing cards (via S3 uploads and Mongo).
-- **Responsive UI** for mobile and desktop layouts.
+### Public Pages
 
----
+- **Home Page**: display logo, tagline, and start buttons
+- **Game Page**: show two stacked or side-by-side cards; render Higher/Lower
+  controls; auto-scroll on success
+- **Loss Page**: overlay final score; display corresponding loss GIF; provide
+  Back and Play Again buttons
+- **Login Page**: center form card with username, password, Forgot Password, and
+  Sign Up link
+- **Signup Page**: center form card with email, password, confirm password, and
+  Log In link
 
-## Architecture & Stack
+### Admin Pages
 
-| Layer        | Technology                 |
-| ------------ | -------------------------- |
-| **Backend**  | Node.js, Express, Mongoose |
-| **Storage**  | MongoDB Atlas, AWS S3      |
-| **Frontend** | React, Vite                |
-| **Styling**  | Global CSS + CSS Modules   |
-| **Testing**  | Jest, Supertest, RTL       |
-| **CI/CD**    | GitHub Actions             |
+- **Dashboard**: show metrics at top; list Loss GIF categories with headers
+- **Card Viewer**: display infinite-scroll grid of cards; use fixed-width cards
+  that adapt to viewport
 
----
+### Navigation
 
-## Config Module (express-backend/config)
+- **Desktop Nav**: top bar with brand title center, score and user icon right
+- **Mobile Nav**: bottom tab bar with Home, Game, Dashboard, and Card Viewer
+  icons
 
-Centralized environment-driven setup for the API server:
+Use React Router (or equivalent) to manage routes and protect admin pages behind
+authentication.
 
-- **config/index.js**  
-  Re-exports all config pieces: `connectDB`, `s3`, and `logger`.
-- **config/db.js**  
-  Connects to MongoDB using `mongoose.connect(process.env.MONGO_URI)`.
-- **config/s3.js**  
-  Exports an AWS S3 client (`@aws-sdk/client-s3`) configured via
-  `process.env.AWS_S3_REGION`, `AWS_ACCESS_KEY_ID`, and `AWS_SECRET_ACCESS_KEY`.
+## 5. Architecture & Tech Stack
 
-These modules allow controllers and services to import a single source of truth
-for database, S3, and logging.
+Define each layer and its technology to establish standards and dependencies.
 
----
+- **Backend:** Node.js, Express, Mongoose
+- **Database:** MongoDB Atlas
+- **Storage:** AWS S3 for images
+- **Frontend:** React with Vite
+- **Styling:** Tailwind CSS with custom variables
+- **Authentication:** server-side sessions via `express-session` (stores guest
+  score in `req.session.score`, merges on login)
+- **Testing:** Jest, React Testing Library, Supertest
+- **CI/CD:** GitHub Actions for build, test, and deploy
 
-## Getting Started
+## 6. Directory Structure
 
-Refer to [Getting Started](getting-started.md) for installation, environment
-setup, and dev commands.
+Organize code and resources as follows:
 
----
+```text
+/ (repo root)
+├── .github/               # CI workflows & issue/PR templates
+├── docs/                  # Markdown guides (onboarding, dev guide)
+├── packages/
+│   ├── express-backend/   # API server
+│   │   ├── controllers/   # HTTP handlers (create when >2 files)
+│   │   ├── models/        # Mongoose schemas (create when >2 files)
+│   │   └── index.js       # Entry point (imports config, sets up sessions with SESSION_SECRET)
+│   └── react-frontend/    # SPA client
+│       ├── components/    # Shared React components (start with 1–2 files)
+│       ├── pages/         # Route views (Home, Game, Loss, Login, Signup, Admin)
+│       └── main.jsx       # Entry point (router & Layout)
+```
 
-## Core Components
+## 7. Getting Started
 
-### Layout Components
+Set up development environment:
 
-These compose the overall page structure and adapt to screen size:
+1. **Clone repository**
 
-- **Header.jsx**
-  - Displays app logo/title and current streak.
-  - Always visible.
-- **BottomNav.jsx**
-  - Mobile-only navigation (Game, Stats, Admin).
-  - Uses CSS media query `max-width: var(--bp-tablet)`.
-- **Layout.jsx**
-  - Orchestrates which nav to render based on CSS, wraps page content.
+   ```bash
+   git clone git@github.com:your-org/before-or-after.git
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   cd before-or-after
+   npm ci
+   ```
+
+3. **Start applications**
+
+   - Backend: `npm start --workspace=packages/express-backend`
+   - Frontend: `npm start --workspace=packages/react-frontend`
+
+> NOTE: Copy `.env.example` to `.env.local` and set required variables.
+
+## 8. Core Components
+
+Break down UI and logic into reusable components.
+
+### Layout & Navigation
+
+- **Header.jsx**: display brand center, show scores on desktop
+- **BottomNav.jsx**: mobile-only tabs for Home, Game, Dashboard, Card Viewer
+- **Layout.jsx**: render Header or BottomNav based on viewport size
 
 ### Game Components
 
-- **CardPair.jsx**
-  - Renders two cards: previous and current.
-  - Uses CSS Modules for slide animations on guess.
-- **GuessButtons.jsx**
-  - Two buttons (“After”, “Before”) that call `POST /cards/guess`.
-- **StreakDisplay.jsx**
-  - Shows current streak from `localStorage`.
+- **CardPair.jsx**: render two cards; animate slide on correct guess
+- **GuessButtons.jsx**: “After”/“Before” controls; call `POST /api/cards/guess`
+- **StreakDisplay.jsx**: track and display current streak from localStorage
 
-### Admin Components
+### Authentication Components
 
-- **CardList.jsx**
-  - Table or grid listing all cards with Edit/Delete actions.
-- **CardEditorForm.jsx**
-  - Form for editing card metadata and uploading new image.
-- **UploadButton.jsx**
-  - Wraps file input and handles S3 presigned URL logic via
-    `services/s3Service.js`.
+- **LoginForm.jsx**: username/password form; include Forgot Password
+- **SignupForm.jsx**: email/password/confirm form; link to Login
 
-### UI Primitive Components
+### Admin Viewer Components
 
-Under `src/components/ui/` create reusable primitives:
+- **DashboardView\.jsx**: show metrics and Loss GIF categories
+- **CardViewer.jsx**: infinite-scroll grid of cards; fixed-width, responsive
+  layout
 
-- **Button**: styled clickable element with `variant` prop.
-- **Card**: container for image and text.
-- **Dialog**: modal built with headless primitives.
-- **Input**: text input with label support.
+## 9. API Endpoints
 
----
-
-## API Endpoints
+Define REST routes for public gameplay and admin viewing.
 
 ### Public
 
-- **GET /cards/random**
-  - Returns two random cards from Mongo.
-- **POST /cards/guess**
+- **GET `/api/cards/next`**
+
+  - Returns a random unseen card for the session.
+  - Response: `{ id, question, imageUrl, options }`
+
+- **POST `/api/cards/guess`**
+
   - Body: `{ previousId, currentId, guess }`
-  - Returns: `{ correct, nextCard }`.
+  - Returns: `{ correct: boolean, nextCard: Card }`
+  - On incorrect guess, client should transition to Loss page.
 
-### Admin (API key via `x-admin-key` header)
+### Authentication (session-based)
 
-- **POST /admin/cards**
+- **POST `/api/auth/login`**
 
-  - Create card: multipart/form-data with `title`, `year`, `sourceText`,
-    `image`.
-  - Saves to S3 and Mongo.
+  - Body: `{ username, password }`
+  - On success: sets `req.session.userId` and merges any `req.session.score`
+    into the user’s high score
 
-- **GET /admin/cards**
+- **POST `/api/auth/signup`**
 
-  - List all cards.
+  - Body: `{ email, password }`
+  - On success: sets `req.session.userId`
 
-- **GET /admin/cards/:id**
+### Admin
 
-  - Fetch single card details.
+- **GET `/api/admin/cards`**
 
-- **PUT /admin/cards/:id**
+  - List all cards with pagination cursor: `?cursor=&limit=`
 
-  - Update metadata, if `image` present, re-upload to S3.
+- **GET `/api/admin/cards/:id`**
 
-- **DELETE /admin/cards/:id**
-  - Remove card and delete S3 object.
+  - Fetch details for a single card.
 
----
+> NOTE: Admin endpoints require `x-admin-key` header or valid JWT cookie.
 
-## Style & Theming
+## 10. Style & Theming
 
-1. **Global CSS** (`global.css`):
+Standardize UI look and responsive behavior.
 
-   - Variables for:
-     - Colors: `--color-primary`, `--color-secondary`.
-     - Spacing: `--space-sm`, `--space-md`, `--space-lg`.
-     - Breakpoints: `--bp-tablet: 641px; --bp-desktop: 1024px;`.
-   - Resets and `box-sizing`.
+- **CSS Framework**: use Tailwind CSS with custom config in
+  `tailwind.config.js`.
+- **Variables**: define colors and spacing in `theme.extend`.
+- **Mobile-first**: build components for narrow screens first.
+- **BottomNav**: use fixed positioning at bottom on mobile only.
+- **Card Grid**: use CSS Grid with
+  `grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))` for
+  `CardViewer`.
 
-2. **CSS Modules**:
+## 11. Testing
 
-   - Scoped `.module.css` files next to components.
-   - BEM-like naming for clarity.
+Ensure core flows are reliable:
 
-3. **Responsive**:
-   - Mobile-first, use media queries in modules for tablet and desktop
-     overrides.
+### Backend Tests
 
----
+- Location: `packages/express-backend/tests/`
+- Use Jest and Supertest.
+- Test `/api/cards/next` returns unique cards for a session.
+- Test `/api/cards/guess` logic for correct and incorrect.
+- Test auth endpoints for error and success cases.
 
-## Testing
+### Frontend Tests
 
-### Backend
+- Location: `packages/react-frontend/tests/`
+- Use Jest and React Testing Library.
+- Render `CardPair` and simulate correct/incorrect guess flows.
+- Test `LoginForm` and `SignupForm` validation and submission.
+- Test `CardViewer` infinite scroll triggers fetch on scroll end.
 
-- **Location**: `packages/express-backend/tests/`
-- **Tools**: Jest, Supertest.
-- **Tests**:
-  - `/cards/random` returns 2 distinct cards.
-  - `/cards/guess` logic.
-  - Admin CRUD with auth header.
+## 12. Sprint Planning & Onboarding
 
-### Frontend
+Guide for sprint cadence and task assignments:
 
-- **Location**: `packages/react-frontend/tests/`
-- **Tools**: Jest, React Testing Library, user-event.
-- **Tests**:
-  - Render `CardPair` and simulate guess flow.
-  - Verify streak increments/resets.
-  - Admin form input and submit mocks.
+- **Sprint length**: 1 week, each due Friday.
+- **Sprint 1**: clickable UI shell for Home, Game, and Loss.
+- **Sprint 2**: login and signup pages; initial Admin Dashboard stub (Kevin).
+- **Sprint 3**: finish Admin Dashboard; enhance Home, Game, Loss, Login, and
+  Signup.
+- **Sprint 4**: polish, tests, CI/CD, and deploy by Week 4.
+- **Task sizing**: Small (\~1 h), Medium (\~2 h), Large (>4 h).
+- **Definition of Done**: list acceptance criteria in each issue.
+- **WIP limit**: max 2 tasks per person in **In Progress**.
+- **Stand-ups**: daily 15 min check-ins.
+- **Retros**: end-of-sprint record of wins and improvements.
 
----
+## 13. Additional Notes
 
-## Additional Developer Notes
-
-1. **Implement CSS & UI skeleton** using global styles and CSS Modules.
-2. **Seed Mongo** with initial cards via a script.
-3. **Build API** endpoints and test them.
-4. **Wire up** Game components to API.
-5. **Develop** Admin components and protect routes.
-6. **Add** basic CI (GitHub Actions) to run `npm test` on PRs.
-
----
-
-_This document is a living guide for developers working on Before or After.
-Please update it as new features are added or modifications are made._
+- Refer to `docs/project-onboarding.md` for contributor workflows and issue
+  guidelines.
+- Track guest scores in `req.session.score` and merge into user records on
+  login.
+- Ensure `SESSION_SECRET` is set to keep sessions secure.
+- Update this guide with new features or architectural changes.
