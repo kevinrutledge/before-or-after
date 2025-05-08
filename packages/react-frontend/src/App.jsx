@@ -1,14 +1,11 @@
 import React from "react";
 import Layout from "./components/Layout";
 import PageContainer from "./components/PageContainer";
-import BottomNav from "./components/BottomNav";
-import useIsMobile from "./hooks/useIsMobile";
 
 // Minimal App component using shared layout components
 function App() {
   // Example state: simple counter to demonstrate React functionality
   const [count, setCount] = React.useState(0);
-  const isMobile = useIsMobile();
 
   return (
     <Layout>
@@ -29,9 +26,6 @@ function App() {
 
         {/* TODO: Insert <Home />, <Game />, and <Loss /> components here */}
       </PageContainer>
-
-      {/* Example conditional rendering of BottomNav for mobile devices */}
-      {isMobile && <BottomNav />}
     </Layout>
   );
 }
