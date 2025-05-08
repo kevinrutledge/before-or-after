@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --passWithNoTests",
-    "dev": "node --experimental-modules src/index.js"
+    "dev": "node --experimental-modules src/index.js",
+    "test-db": "node scripts/test-connection.js",
+    "seed": "node scripts/seed.js"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +18,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
-    "mongodb": "^6.16.0"
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.14.1"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.8",
