@@ -70,7 +70,7 @@ jobs:
         run: npm test -- --coverage --prefix packages/react-frontend
 
       - name: Upload coverage reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-reports-${{ matrix.node-version }}
           path: |
