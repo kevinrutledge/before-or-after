@@ -1,4 +1,4 @@
-# Lower or Higher
+# Before or After
 
 A daily, addictively engaging casual game where players guess the release year
 of albums, artworks, images, movies, and more in short, self-paced rounds.
@@ -14,7 +14,7 @@ of albums, artworks, images, movies, and more in short, self-paced rounds.
 
 ### Purpose
 
-Lower or Higher is a casual web-based game designed for anyone with a few spare
+Before or After is a casual web-based game designed for anyone with a few spare
 moments seeking quick, self-paced entertainment. Each day, players challenge
 themselves to guess the release year of various cultural artifacts—albums,
 artworks, images, movies, and more—using a simple higher-or-lower mechanic. This
