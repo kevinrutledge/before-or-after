@@ -9,21 +9,6 @@ const request = require("supertest");
 const express = require("express");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const { MongoClient } = require("mongodb");
-const path = require("path");
-
-// Mock the required modules instead of importing them
-const apiRoutes = {
-  // Simple mock of API routes
-};
-
-// Mock seedDatabase function
-const seedDatabase = async () => {
-  // Simple implementation for tests
-  return {
-    deleteResult: { deletedCount: 0 },
-    insertResult: { insertedCount: 10 }
-  };
-};
 
 describe("API Routes", () => {
   let app;

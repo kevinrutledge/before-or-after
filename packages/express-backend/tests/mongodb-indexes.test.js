@@ -1,4 +1,3 @@
-import { MongoClient } from "mongodb";
 import { getCardsCollection } from "../models/Card.js";
 
 describe("MongoDB Indexes", () => {

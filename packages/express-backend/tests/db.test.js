@@ -39,24 +39,19 @@ describe("Database Connection", () => {
       throw new Error("Missing MONGO_URI environment variable");
     }
 
-    try {
-      // Simulate successful connection
-      await mockMongoose.connect(process.env.MONGO_URI);
-      return mockMongoose.connection;
-    } catch (error) {
-      throw error;
-    }
+    // Simulate successful connection
+    await mockMongoose.connect(process.env.MONGO_URI);
+    return mockMongoose.connection;
   };
 
   // Create mock implementation of testConnection
   const testConnection = async () => {
     try {
       await connectToDatabase();
-
       // Simulate ping test
-      const result = await mockMongoose.connection.db.admin().ping();
+      await mockMongoose.connection.db.admin().ping();
       return true;
-    } catch (error) {
+    } catch {
       return false;
     } finally {
       // Simulate disconnect

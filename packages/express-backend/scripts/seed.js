@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import { getCardsCollection } from "../models/Card.js";
-const { seedDatabase: runSeed } = require("./seed");
 
 dotenv.config();
 
