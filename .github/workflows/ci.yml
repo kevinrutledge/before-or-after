@@ -33,3 +33,24 @@ jobs:
 
       - name: Frontend tests
         run: npm test --prefix packages/react-frontend
+
+  codeql-init:
+    name: Initialize CodeQL
+    runs-on: ubuntu-latest
+    outputs:
+      languages: ${{ steps.init.outputs.languages }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: init
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+  codeql-analyze:
+    name:
+      CodeQL / Analyze (${{ needs.codeql-init.outputs.languages }}) (dynamic)
+    needs: codeql-init
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
