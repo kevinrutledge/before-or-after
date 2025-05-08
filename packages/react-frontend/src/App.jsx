@@ -10,14 +10,14 @@ function App() {
   return (
     <div className="app-container">
       <header>
-        <h1>Lower or Higher</h1>
+        <h1>Before or After</h1>
       </header>
 
       <main>
         {!gameState.isPlaying ? (
           <div className="start-screen">
             <h2>Ready to play?</h2>
-            <p>Guess if the release year is lower or higher!</p>
+            <p>Guess if the release year is before or after!</p>
             <button
               onClick={() =>
                 setGameState({ ...gameState, isPlaying: true, currentRound: 1 })
@@ -41,7 +41,7 @@ function App() {
                   {/* Item image will go here */}
                   <div className="placeholder-image">Image Placeholder</div>
                 </div>
-                <p>Is the release year lower or higher than XXXX?</p>
+                <p>Is the release year before or after than XXXX?</p>
                 <div className="guess-buttons">
                   <button className="lower-button">Lower</button>
                   <button className="higher-button">Higher</button>
@@ -53,7 +53,7 @@ function App() {
       </main>
 
       <footer>
-        <p>Lower or Higher &copy; {new Date().getFullYear()}</p>
+        <p>Before or After &copy; {new Date().getFullYear()}</p>
       </footer>
     </div>
   );

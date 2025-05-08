@@ -8,10 +8,10 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Hello, Lower or Higher!");
+  res.send("Hello, Before or After!");
 });
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log();
   console.log(`🚀 Server listening at http://localhost:${PORT}/`);
