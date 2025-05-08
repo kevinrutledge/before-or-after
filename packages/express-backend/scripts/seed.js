@@ -6,13 +6,19 @@ dotenv.config();
 /**
  * Seed database with sample cards for gameplay testing.
  */
-async function seedDatabase() {
+export async function seedDatabase() {
   let client;
+  let memoryServer;
 
   try {
     // Get database connection and collection
-    const { client: dbClient, collection } = await getCardsCollection();
+    const {
+      client: dbClient,
+      collection,
+      memoryServer: dbMemoryServer
+    } = await getCardsCollection();
     client = dbClient;
+    memoryServer = dbMemoryServer;
 
     // Clear existing cards
     const deleteResult = await collection.deleteMany({});
@@ -127,14 +133,24 @@ async function seedDatabase() {
     console.log(
       `Successfully inserted ${insertResult.insertedCount} sample cards`
     );
+
+    return { deleteResult, insertResult };
   } catch (error) {
     console.error("Error seeding database:", error);
-    process.exit(1);
+    throw error;
   } finally {
-    // Close the database connection
     if (client) await client.close();
+    if (memoryServer) await memoryServer.stop();
   }
 }
 
-// Execute seeding function
-seedDatabase();
+// Run when called directly
+if (require.main === module) {
+  seedDatabase().catch((err) => {
+    console.error("Seed script failed:", err);
+    process.exit(1);
+  });
+}
+
+// Export for tests
+module.exports = { seedDatabase };

@@ -102,5 +102,19 @@ export default [
         ...globals.node
       }
     }
+  },
+  {
+    // Add Jest environment for test files
+    files: ["**/*.test.js", "**/tests/**/*.js", "**/tests/**/*.jsx"],
+    languageOptions: {
+      globals: {
+        ...globals.jest
+      }
+    },
+    rules: {
+      // Relax certain rules for test files
+      "no-unused-vars": "warn",
+      "no-undef": "warn"
+    }
   }
 ];

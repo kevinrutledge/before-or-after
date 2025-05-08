@@ -4,9 +4,12 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "jest --passWithNoTests",
-    "dev": "node --experimental-modules src/index.js",
-    "test-db": "node scripts/test-connection.js",
+    "test": "jest --config=jest.config.cjs",
+    "test:watch": "jest --watch --config=jest.config.cjs",
+    "test:coverage": "jest --coverage --config=jest.config.cjs",
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "test-db": "jest --config=jest.config.cjs tests/mongodb-*.test.js",
     "seed": "node scripts/seed.js"
   },
   "keywords": [],
@@ -19,7 +22,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongodb": "^6.16.0",
-    "mongoose": "^8.14.1"
+    "mongoose": "^8.14.2"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.8",
@@ -27,6 +30,9 @@
     "@eslint/js": "^9.25.1",
     "eslint": "^9.25.1",
     "globals": "^16.0.0",
-    "nodemon": "^3.1.10"
+    "jest": "^29.7.0",
+    "mongodb-memory-server": "^10.1.4",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.0"
   }
 }
