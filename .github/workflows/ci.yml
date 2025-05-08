@@ -30,11 +30,38 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+
       - name: Install dependencies
         run: npm ci
 
+      - name: Ensure Rollup dependencies for Linux
+        run: |
+          npm install --no-save @rollup/rollup-linux-x64-gnu
+        if: runner.os == 'Linux'
+
       - name: Lint
         run: npm run lint
+
+      - name: Verify Vite build
+        run: |
+          cd packages/react-frontend
+          npm run build
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+          S3_REGION: ${{ secrets.S3_REGION }}
 
       - name: Backend tests
         run: npm test --prefix packages/express-backend
@@ -43,9 +70,7 @@ jobs:
         run: npm test --prefix packages/react-frontend
 
   codeql-analysis:
-    name:
-      CodeQL / Analyze (${{ needs.codeql-analysis.outputs.languages }})
-      (dynamic)
+    name: CodeQL Analysis
     needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
@@ -59,11 +84,12 @@ jobs:
         name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: actions,javascript
+          languages: javascript
 
       - name: Install & build for CodeQL
         run: |
           npm ci
+          npm install --no-save @rollup/rollup-linux-x64-gnu
           npm run build --workspace react-frontend
 
       - name: Perform CodeQL Analysis
