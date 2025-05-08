@@ -5,11 +5,14 @@ import { useState, useEffect } from "react";
  * @returns {boolean} True if width < 768px.
  */
 export default function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
   useEffect(() => {
     function handleResize() {
-      setIsMobile(window.innerWidth < 768);
+      if (typeof window !== "undefined") {
+        setIsMobile(window.innerWidth < 768);
+      }
     }
 
     window.addEventListener("resize", handleResize);
