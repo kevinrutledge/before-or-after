@@ -43,6 +43,10 @@
     "@aws-sdk/client-s3": "^3.800.0",
     "react-router-dom": "^7.5.3"
   },
+  "overrides": {
+    "glob": "^9.3.0",
+    "inflight": "npm:lru-cache@^7.0.0"
+  },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
   }
