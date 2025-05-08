@@ -1,6 +1,6 @@
 # Getting Started
 
-Welcome to **Lower or Higher**! This guide helps you set up your local
+Welcome to **Before of After**. This guide helps you set up your local
 development environment, configure your IDE for consistent styling, and run the
 application and its tests.
 
@@ -28,8 +28,8 @@ application and its tests.
 
 1. **Clone the repo**
    ```bash
-   git clone https://github.com/kevinrutledge/lower-or-higher.git
-   cd lower-or-higher
+   git clone https://github.com/kevinrutledge/before-or-after.git
+   cd before-or-after
    ```
 2. **Install dependencies** (root workspace)
    ```bash
