@@ -63,11 +63,19 @@ jobs:
           S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
           S3_REGION: ${{ secrets.S3_REGION }}
 
-      - name: Backend tests
-        run: npm test --prefix packages/express-backend
+      - name: Backend tests with coverage
+        run: npm test -- --coverage --prefix packages/express-backend
 
-      - name: Frontend tests
-        run: npm test --prefix packages/react-frontend
+      - name: Frontend tests with coverage
+        run: npm test -- --coverage --prefix packages/react-frontend
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-reports-${{ matrix.node-version }}
+          path: |
+            packages/express-backend/coverage
+            packages/react-frontend/coverage
 
   codeql-analysis:
     name: CodeQL Analysis
