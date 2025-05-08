@@ -1,13 +1,21 @@
 name: CI
 
+permissions:
+  contents: read
+  security-events: write
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+  merge_group:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
+    name: Build & Test
     runs-on: ubuntu-latest
 
     strategy:
@@ -15,10 +23,10 @@ jobs:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
@@ -34,23 +42,29 @@ jobs:
       - name: Frontend tests
         run: npm test --prefix packages/react-frontend
 
-  codeql-init:
-    name: Initialize CodeQL
+  codeql-analysis:
+    name:
+      CodeQL / Analyze (${{ needs.codeql-analysis.outputs.languages }})
+      (dynamic)
+    needs: build-and-test
     runs-on: ubuntu-latest
-    outputs:
-      languages: ${{ steps.init.outputs.languages }}
+    permissions:
+      contents: read
+      security-events: write
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - id: init
+        name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
-          languages: javascript
+          languages: actions,javascript
 
-  codeql-analyze:
-    name:
-      CodeQL / Analyze (${{ needs.codeql-init.outputs.languages }}) (dynamic)
-    needs: codeql-init
-    runs-on: ubuntu-latest
-    steps:
+      - name: Install & build for CodeQL
+        run: |
+          npm ci
+          npm run build --workspace react-frontend
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
