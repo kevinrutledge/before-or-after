@@ -34,8 +34,8 @@ weeks, we worked as a team to deploy this web application.
 
 - [Yenny Ma](https://www.linkedin.com/in/your-url-here/) - Software Developer
 
-- [Venkata Ande](https://www.linkedin.com/in/your-url-here/) - Software
-  Developer
+- [Venkata Ande](https://www.linkedin.com/in/venkata-g-ande-1b2057334/) -
+  Software Developer
 
 - [Thomas Hagos](https://www.linkedin.com/in/your-url-here/) - Software
   Developer
