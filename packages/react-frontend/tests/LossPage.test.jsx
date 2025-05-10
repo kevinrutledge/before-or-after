@@ -3,6 +3,8 @@ import { jest } from "@jest/globals";
 import { describe, test, expect } from "@jest/globals";
 import LossPage from "../src/pages/LossPage";
 import useIsMobile from "../src/hooks/useIsMobile";
+import { MemoryRouter } from "react-router-dom";
+import { GameProvider } from "../src/context/GameContext";
 
 // Mock the `useIsMobile` hook
 jest.mock("../src/hooks/useIsMobile");
@@ -12,13 +14,19 @@ describe("LossPage Component", () => {
     // Mock `useIsMobile` to return false (desktop view)
     useIsMobile.mockReturnValue(false);
 
-    render(<LossPage />);
+    render(
+      <MemoryRouter>
+        <GameProvider>
+          <LossPage />
+        </GameProvider>
+      </MemoryRouter>
+    );
 
     // Check for the title
     expect(screen.getByText("Game Over")).toBeInTheDocument();
 
     // Check for the final score
-    expect(screen.getByText("Your score: 7")).toBeInTheDocument();
+    expect(screen.getByText("Your score: 0")).toBeInTheDocument();
 
     // Check for the GIF placeholder (on desktop btw)
     expect(screen.getByText("GIF Placeholder (Desktop)")).toBeInTheDocument();
@@ -32,7 +40,13 @@ describe("LossPage Component", () => {
     // Mock `useIsMobile` to return true (mobile view)
     useIsMobile.mockReturnValue(true);
 
-    render(<LossPage />);
+    render(
+      <MemoryRouter>
+        <GameProvider>
+          <LossPage />
+        </GameProvider>
+      </MemoryRouter>
+    );
 
     // Check for the mobile-specific GIF placeholder
     expect(screen.getByText("GIF Placeholder (Mobile)")).toBeInTheDocument();
