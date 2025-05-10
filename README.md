@@ -37,7 +37,7 @@ weeks, we worked as a team to deploy this web application.
 - [Venkata Ande](https://www.linkedin.com/in/venkata-g-ande-1b2057334/) -
   Software Developer
 
-- [Thomas Hagos](https://www.linkedin.com/in/your-url-here/) - Software
+- [Thomas Hagos](https://www.linkedin.com/in/thomashagos/) - Software
   Developer
 
 ## Getting Started and Contributing

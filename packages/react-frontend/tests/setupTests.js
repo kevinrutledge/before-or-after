@@ -1,5 +1,13 @@
 import "@testing-library/jest-dom";
 import { jest } from "@jest/globals";
+import { TextEncoder, TextDecoder } from "util";
+
+if (typeof global.TextEncoder === "undefined") {
+  global.TextEncoder = TextEncoder;
+}
+if (typeof global.TextDecoder === "undefined") {
+  global.TextDecoder = TextDecoder;
+}
 
 // Mock window.matchMedia for responsive tests
 window.matchMedia = (query) => ({
