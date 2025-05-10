@@ -1,10 +1,10 @@
 /**
  * Display fixed navigation bar at bottom of mobile screens.
  */
-import { useGame } from "../context/GameContext"
+import { useGame } from "../context/GameContext";
 
 function BottomNav() {
-  const {score, highscore} = useGame()
+  const { score, highscore } = useGame();
   return (
     <nav className="mobile-only bottom-nav">
       <div className="container">

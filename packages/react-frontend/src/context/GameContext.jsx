@@ -9,7 +9,15 @@ export function GameProvider({ children }) {
   const [gameStatus, setGameStatus] = useState("not-started"); // or "playing", "lost", etc.
 
   return (
-    <GameContext.Provider value={{ score, setScore, highscore, setHighscore, gameStatus, setGameStatus }}>
+    <GameContext.Provider
+      value={{
+        score,
+        setScore,
+        highscore,
+        setHighscore,
+        gameStatus,
+        setGameStatus
+      }}>
       {children}
     </GameContext.Provider>
   );

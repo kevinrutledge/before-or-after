@@ -2,11 +2,10 @@
  * Render desktop navigation header with scores and user icon.
  */
 
-import { useGame } from "../context/GameContext"
-
+import { useGame } from "../context/GameContext";
 
 function Header() {
-  const {score, highscore} = useGame()
+  const { score, highscore } = useGame();
   return (
     <header className="desktop-only">
       <div className="container">

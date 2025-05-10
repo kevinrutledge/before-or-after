@@ -7,8 +7,8 @@ import { useGame } from "../context/GameContext";
 function LossPage() {
   const isMobile = useIsMobile();
 
-  const navigate = useNavigate()
-  const { score, highscore } = useGame()
+  const navigate = useNavigate();
+  const { score } = useGame();
 
   return (
     <Layout>
@@ -22,8 +22,14 @@ function LossPage() {
               : "GIF Placeholder (Desktop)"}
           </div>
           <div className="loss-buttons">
-            <button className="play-again-button" onClick = {() => navigate("/game")}>Play Again</button>
-            <button className="back-home-button" onClick ={() => navigate("/")} >Back to Home</button>
+            <button
+              className="play-again-button"
+              onClick={() => navigate("/game")}>
+              Play Again
+            </button>
+            <button className="back-home-button" onClick={() => navigate("/")}>
+              Back to Home
+            </button>
           </div>
         </div>
       </PageContainer>
