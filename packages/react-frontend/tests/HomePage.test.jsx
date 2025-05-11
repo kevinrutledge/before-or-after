@@ -3,6 +3,8 @@ import { jest } from "@jest/globals";
 import { describe, test, expect } from "@jest/globals";
 import HomePage from "../src/pages/HomePage";
 import useIsMobile from "../src/hooks/useIsMobile";
+import { MemoryRouter } from "react-router-dom";
+import { GameProvider } from "../src/context/GameContext";
 
 // Mock the useIsMobile hook
 jest.mock("../src/hooks/useIsMobile");
@@ -12,7 +14,13 @@ describe("HomePage Component", () => {
     // Simulate desktop
     useIsMobile.mockReturnValue(false);
 
-    render(<HomePage />);
+    render(
+      <MemoryRouter>
+        <GameProvider>
+          <HomePage />
+        </GameProvider>
+      </MemoryRouter>
+    );
 
     // Title
     expect(screen.getByText("Welcome to Before or After!")).toBeInTheDocument();
@@ -39,7 +47,13 @@ describe("HomePage Component", () => {
   test("renders image in mobile view", () => {
     useIsMobile.mockReturnValue(true);
 
-    render(<HomePage />);
+    render(
+      <MemoryRouter>
+        <GameProvider>
+          <HomePage />
+        </GameProvider>
+      </MemoryRouter>
+    );
 
     const logo = screen.getByRole("img");
     expect(logo).toBeInTheDocument();

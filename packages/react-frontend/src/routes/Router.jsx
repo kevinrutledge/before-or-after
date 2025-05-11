@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomePage from "../App";
+import HomePage from "../pages/HomePage";
 //import Game from "../pages/GamePage";
 import Loss from "../pages/LossPage";
 import { GameProvider } from "../context/GameContext";
