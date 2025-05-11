@@ -24,7 +24,9 @@ function HomePage() {
             A daily game where players guess the release year of various
             cultural artifacts
           </h2>
-          <button className="play-button" onClick = {() => navigate("/game")}>Play</button>
+          <button className="play-button" onClick={() => navigate("/game")}>
+            Play
+          </button>
         </div>
       </PageContainer>
     </Layout>
