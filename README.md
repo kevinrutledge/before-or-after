@@ -32,7 +32,7 @@ weeks, we worked as a team to deploy this web application.
 - [Sean Griffin](https://www.linkedin.com/in/your-url-here/) - Software
   Developer
 
-- [Yenny Ma](https://www.linkedin.com/in/your-url-here/) - Software Developer
+- [Yenny Ma](https://www.linkedin.com/in/yenny-ma/) - Software Developer
 
 - [Venkata Ande](https://www.linkedin.com/in/venkata-g-ande-1b2057334/) -
   Software Developer
