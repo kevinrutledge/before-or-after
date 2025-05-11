@@ -223,3 +223,58 @@ footer {
 .back-home-button:hover {
   background-color: #d97706;
 }
+
+/* HOME PAGE STYLES */
+
+.home-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.home-logo {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  background-color: var(--gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+}
+
+.home-title {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.home-tagline {
+  font-size: 1.2rem;
+  color: var(--secondary-color);
+  margin-bottom: 2rem;
+}
+
+.play-button {
+  background-color: var(--primary-color);
+  color: white;
+  border: 2px solid black;
+  padding: 0.75rem 2rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.play-button:hover {
+  background-color: darkblue;
+}
+
+/* HOME STYLE END */
