@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomePage from "../pages/HomePage";
-//import Game from "../pages/GamePage";
+// import HomePage from "../pages/HomePage";
+import HomePage from "../App";
+import GamePage from "../pages/GamePage";
 import Loss from "../pages/LossPage";
 import { GameProvider } from "../context/GameContext";
 
@@ -10,7 +11,7 @@ export default function AppRouter() {
       <GameProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/game" element={<Loss />} />
+          <Route path="/game" element={<GamePage />} />
           <Route path="/loss" element={<Loss />} />
         </Routes>
       </GameProvider>
