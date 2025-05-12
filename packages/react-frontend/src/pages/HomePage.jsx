@@ -27,6 +27,15 @@ function HomePage() {
           <button className="play-button" onClick={() => navigate("/game")}>
             Play
           </button>
+          {/* DELETE THIS BUTTON AFTER DEMO */}
+          <button 
+            className="play-button" 
+            onClick={() => navigate("/loss")}
+            style={{ marginTop: '10px' }}
+          >
+            Demo Loss
+          </button>
+          {/* DELETE THIS BUTTON AFTER DEMO */}
         </div>
       </PageContainer>
     </Layout>
