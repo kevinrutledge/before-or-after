@@ -1,20 +1,16 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import HomePage from "../pages/HomePage";
-import HomePage from "../App";
+import HomePage from "../pages/HomePage";
 import GamePage from "../pages/GamePage";
-import Loss from "../pages/LossPage";
-import { GameProvider } from "../context/GameContext";
+import LossPage from "../pages/LossPage";
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
-      <GameProvider>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/game" element={<GamePage />} />
-          <Route path="/loss" element={<Loss />} />
-        </Routes>
-      </GameProvider>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/game" element={<GamePage />} />
+        <Route path="/loss" element={<LossPage />} />
+      </Routes>
     </BrowserRouter>
   );
 }
