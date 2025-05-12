@@ -29,7 +29,7 @@ weeks, we worked as a team to deploy this web application.
 - [Kevin Rutledge](https://www.linkedin.com/in/kevinrutledge89/) - Software
   Developer
 
-- [Sean Griffin](https://www.linkedin.com/in/your-url-here/) - Software
+- [Sean Griffin](https://www.linkedin.com/in/sean-griffin-9855b126b/) - Software
   Developer
 
 - [Yenny Ma](https://www.linkedin.com/in/yenny-ma/) - Software Developer
