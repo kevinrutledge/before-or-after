@@ -26,7 +26,7 @@ gameplay with knowledge gain.
 The Merge Masters consists of 5 Cal Poly students. Over the course of about 5
 weeks, we worked as a team to deploy this web application.
 
-- [Kevin Rutledge](https://www.linkedin.com/in/kevinrutledge89/) - Software
+- [Kevin Rutledge](https://www.linkedin.com/in/rutledge-kevin/) - Software
   Developer
 
 - [Sean Griffin](https://www.linkedin.com/in/sean-griffin-9855b126b/) - Software
@@ -37,8 +37,7 @@ weeks, we worked as a team to deploy this web application.
 - [Venkata Ande](https://www.linkedin.com/in/venkata-g-ande-1b2057334/) -
   Software Developer
 
-- [Thomas Hagos](https://www.linkedin.com/in/thomashagos/) - Software
-  Developer
+- [Thomas Hagos](https://www.linkedin.com/in/thomashagos/) - Software Developer
 
 ## Getting Started and Contributing
 

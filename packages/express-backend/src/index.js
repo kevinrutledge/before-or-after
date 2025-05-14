@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectToDatabase } from "./db.js";
 import apiRoutes from "./routes/routes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 /**
  * Initialize Express server with API routes.
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
 
 // Mount API routes
 app.use("/api", apiRoutes);
+app.use("/api/auth", authRoutes);
 
 // Start server function
 const startServer = async () => {
