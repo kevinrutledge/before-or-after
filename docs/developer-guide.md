@@ -15,75 +15,71 @@ game.
 7. [Getting Started](#7-getting-started)
 8. [Core Components](#8-core-components)
 9. [API Endpoints](#9-api-endpoints)
-10. [Style & Theming](#10-style--theming)
-11. [Testing](#11-testing)
-12. [Sprint Planning & Onboarding](#12-sprint-planning--onboarding)
-13. [Additional Notes](#13-additional-notes)
+10. [Authentication & Authorization](#10-authentication--authorization)
+11. [Game Logic](#11-game-logic)
+12. [Style & Theming](#12-style--theming)
+13. [Testing](#13-testing)
+14. [Sprint Planning & Onboarding](#14-sprint-planning--onboarding)
+15. [Additional Notes](#15-additional-notes)
 
 ## 3. Project Overview
 
-Summarize game mechanics and admin interface:
-
 - **Name:** Before or After
-- **Gameplay:** Compare release years between cultural items. Show card with
-  year, then prompt for before/after comparison with new card.
+- **Gameplay:** Compare release dates between cultural items. Show card with
+  year and month, then prompt for before/after comparison with new card.
 - **Game Flow:** Start with reference card. Show second card without year.
   Advance on correct guesses using current card as new reference. Show loss
   screen on incorrect guesses.
-- **Card Model:** Store items with title, year, imageUrl, sourceUrl, and
+- **Card Model:** Store items with title, year, month, imageUrl, sourceUrl, and
   category fields.
+- **Authentication:** Support both guest and authenticated play modes with local
+  storage tokens.
 - **Roles:** Allow public gameplay (Home, Game, Loss screens) and admin
   functionality (Dashboard, Card management).
 - **Goals:** Deliver responsive MVP with core features in four-week timeframe.
 
 ## 4. Page Map & UI Flows
 
-Outline the primary pages and navigation patterns.
-
 ### Public Pages
 
-- **Home Page**: display logo, tagline, and start buttons
-- **Game Page**: show two stacked or side-by-side cards; render Higher/Lower
-  controls; auto-scroll on success
-- **Loss Page**: overlay final score; display corresponding loss GIF; provide
-  Back and Play Again buttons
-- **Login Page**: center form card with username, password, Forgot Password, and
-  Sign Up link
-- **Signup Page**: center form card with email, password, confirm password, and
-  Log In link
+- **Home Page**: Display logo, tagline, and start buttons.
+- **Game Page**: Show two cards (stacked on mobile, side-by-side on desktop).
+  Render Before/After controls. Show score. Display login prompt for guest
+  users.
+- **Loss Page**: Display final score with loss GIF. Provide Play Again and Back
+  to Home buttons.
+- **Login Page**: Center form card with email, password fields. Include login
+  button and sign-up link.
+- **Signup Page**: Center form card with email, password, and confirm password
+  fields. Include signup button and login link.
 
 ### Admin Pages
 
-- **Dashboard**: show metrics at top; list Loss GIF categories with headers
-- **Card Viewer**: display infinite-scroll grid of cards; use fixed-width cards
-  that adapt to viewport
+- **Dashboard**: Show metrics at top. List Loss GIF categories with headers.
+- **Card Viewer**: Display infinite-scroll grid of cards. Use fixed-width cards
+  that adapt to viewport.
 
 ### Navigation
 
-- **Desktop Nav**: top bar with brand title center, score and user icon right
-- **Mobile Nav**: bottom tab bar with Home, Game, Dashboard, and Card Viewer
-  icons
+- **Desktop Nav**: Top bar with brand title center, score display, and auth
+  controls on right.
+- **Mobile Nav**: Bottom tab bar with navigation icons and auth controls.
 
-Use React Router (or equivalent) to manage routes and protect admin pages behind
-authentication.
+Use React Router to manage routes and RouteGuard to handle both guest and
+authenticated modes.
 
 ## 5. Architecture & Tech Stack
 
-Define each layer and its technology to establish standards and dependencies.
-
-- **Backend:** Node.js, Express, Mongoose
+- **Backend:** Node.js, Express, MongoDB native driver
 - **Database:** MongoDB Atlas
 - **Storage:** AWS S3 for images
 - **Frontend:** React with Vite
-- **Styling:** Tailwind CSS with custom variables
-- **Authentication:** server-side sessions via `express-session` (stores guest
-  score in `req.session.score`, merges on login)
+- **Styling:** CSS with variables
+- **Authentication:** Token-based with localStorage storage
 - **Testing:** Jest, React Testing Library, Supertest
 - **CI/CD:** GitHub Actions for build, test, and deploy
 
 ## 6. Directory Structure
-
-Organize code and resources as follows:
 
 ```text
 / (repo root)
@@ -91,13 +87,21 @@ Organize code and resources as follows:
 ├── docs/                  # Markdown guides (onboarding, dev guide)
 ├── packages/
 │   ├── express-backend/   # API server
-│   │   ├── controllers/   # HTTP handlers (create when >2 files)
-│   │   ├── models/        # Mongoose schemas (create when >2 files)
-│   │   └── index.js       # Entry point (imports config, sets up sessions with SESSION_SECRET)
+│   │   ├── controllers/   # HTTP handlers
+│   │   ├── middleware/    # Auth middleware, request processing
+│   │   ├── models/        # MongoDB schemas and data access
+│   │   ├── routes/        # API route definitions
+│   │   ├── services/      # Business logic
+│   │   └── src/           # Server entry point and core setup
 │   └── react-frontend/    # SPA client
-│       ├── components/    # Shared React components (start with 1–2 files)
-│       ├── pages/         # Route views (Home, Game, Loss, Login, Signup, Admin)
-│       └── main.jsx       # Entry point (router & Layout)
+│       ├── components/    # Shared React components
+│       ├── context/       # React context providers
+│       ├── hooks/         # Custom React hooks
+│       ├── pages/         # Route components
+│       ├── routes/        # Router configuration
+│       ├── styles/        # Global CSS and theme variables
+│       ├── utils/         # Helper functions and utilities
+│       └── src/           # App entry point
 ```
 
 ## 7. Getting Started
@@ -119,208 +123,220 @@ Set up development environment:
 
 3. **Start applications**
 
-   - Backend: `npm start --workspace=packages/express-backend`
-   - Frontend: `npm start --workspace=packages/react-frontend`
+   - Backend: `npm run dev:backend`
+   - Frontend: `npm run dev:frontend`
+   - Both: `npm run dev`
 
-> NOTE: Copy `.env.example` to `.env.local` and set required variables.
+4. **Environment variables**
+
+   Copy `.env.example` to `.env` and set required variables:
+
+   ```
+   MONGO_URI=<your-mongo-connection-string>
+   PORT=8000
+   SESSION_SECRET=<your_session_secret_here>
+   S3_REGION=<provided-by-admin>
+   S3_BUCKET_NAME=<provided-by-admin>
+   AWS_ACCESS_KEY_ID=<provided-by-admin>
+   AWS_SECRET_ACCESS_KEY=<provided-by-admin>
+   ```
 
 ## 8. Core Components
 
-Break down UI and logic into reusable components.
-
 ### Layout & Navigation
 
-- **Header.jsx**: display brand center, show scores on desktop
-- **BottomNav.jsx**: mobile-only tabs for Home, Game, Dashboard, Card Viewer
-- **Layout.jsx**: render Header or BottomNav based on viewport size
+- **Header.jsx**: Display brand center, scores, and auth controls on desktop.
+- **BottomNav.jsx**: Mobile-only tabs for navigation with auth controls.
+- **Layout.jsx**: Render Header or BottomNav based on viewport size.
+- **RouteGuard.jsx**: Protect routes and enable guest mode functionality.
 
 ### Game Components
 
-- **CardPair.jsx**: Display previous and current cards with years and images.
-  Animate card transition on correct guesses.
-- **GuessButtons.jsx**: Provide Before/After buttons to compare years directly.
-  Send guesses to API endpoint.
-- **StreakDisplay.jsx**: Track and show current streak from local storage.
+- **Card.jsx**: Display card with title, image, and conditional date formatting.
+- **CardPair.jsx**: Render reference and current cards with proper layout.
+- **GuessButtons.jsx**: Provide Before/After buttons to compare dates.
+- **ResultOverlay.jsx**: Show animated feedback on correct/incorrect guesses.
 
 ### Authentication Components
 
-- **LoginForm.jsx**: username/password form; include Forgot Password
-- **SignupForm.jsx**: email/password/confirm form; link to Login
+- **LoginPage.jsx**: Handle login form submission and token storage.
+- **SignupPage.jsx**: Process user registration and redirect to login.
 
-### Admin Viewer Components
+### Game State Management
 
-- **DashboardView\.jsx**: show metrics and Loss GIF categories
-- **CardViewer.jsx**: infinite-scroll grid of cards; fixed-width, responsive
-  layout
+- **GameContext.jsx**: Manage game state, score tracking, and auth state.
+- **deckUtils.js**: Handle card deck shuffling and management.
+- **gameUtils.js**: Process game logic including compareCards function.
+- **authUtils.js**: Handle token management and auth state.
 
 ## 9. API Endpoints
-
-Define REST routes for public gameplay and admin viewing.
 
 ### Public
 
 - **GET `/api/cards/next`**
 
   - Retrieve random card for gameplay session.
-  - Response: `{ id, title, year, imageUrl, sourceUrl, category }`
+  - Response: `{ id, title, year, month, imageUrl, sourceUrl, category }`
 
 - **POST `/api/cards/guess`**
 
-  - Body: `{ previousYear, currentYear, guess }`
+  - Body: `{ previousYear, previousMonth, currentYear, currentMonth, guess }`
   - Returns: `{ correct: boolean, nextCard: Card }`
   - Direct player to Loss page on incorrect guesses.
 
-### Authentication (session-based)
+### Authentication
 
 - **POST `/api/auth/login`**
 
-  - Body: `{ username, password }`
-  - Set `req.session.userId` and merge guest score on success.
+  - Body: `{ email, password }`
+  - Returns: `{ token: string }`
+  - Store token in localStorage on client.
 
 - **POST `/api/auth/signup`**
 
   - Body: `{ email, password }`
-  - Set `req.session.userId` on success.
+  - Returns: `{ success: boolean }`
+  - Redirect to login page on success.
 
 ### Admin
 
 - **GET `/api/admin/cards`**
 
   - List cards with pagination support via `?cursor=&limit=`.
-  - Include year, imageUrl, and other card fields in response.
+  - Include year, month, imageUrl, and other card fields in response.
 
 - **GET `/api/admin/cards/:id`**
 
   - Fetch single card with complete field set.
 
-> NOTE: Secure admin endpoints with `x-admin-key` header or JWT cookie.
+NOTE: Secure admin endpoints with Bearer token in Authorization header.
 
-## 10. Style & Theming
+## 10. Authentication & Authorization
 
-Standardize UI look and responsive behavior.
+### Token-Based Authentication
 
-- **CSS Framework**: use CSS with custom config in `tailwind.config.js`.
-- **Variables**: define colors and spacing in `theme.extend`.
-- **Mobile-first**: build components for narrow screens first.
-- **BottomNav**: use fixed positioning at bottom on mobile only.
-- **Card Grid**: use CSS Grid with
-  `grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))` for
-  `CardViewer`.
+- Use simple token-based authentication with localStorage storage.
+- Token format: Base64-encoded string with user info and timestamp.
+- Include token in Authorization header as Bearer token for API requests.
 
-## 11. Testing
+### Guest Mode Implementation
 
-Validate application behavior through comprehensive test coverage:
+- Enable unregistered users to play as guests with localStorage score tracking.
+- Display login prompt for guest users in Game page.
+- Implement score merging when guest user authenticates.
+- Track high scores separately for guest and authenticated users.
+
+### Auth State Management
+
+- Use GameContext to track authentication state across components.
+- Add isLoggedIn and guestMode flags to context state.
+- Implement login/logout handlers in context.
+- Use storage event listener to sync auth state across browser tabs.
+
+### Route Protection
+
+- Create RouteGuard component to protect routes while allowing guest access.
+- Implement conditional UI in Header and BottomNav based on auth state.
+- Add login/signup routes to router configuration.
+
+## 11. Game Logic
+
+### Card Model
+
+- Store card data with title, year, month, imageUrl, sourceUrl, and category.
+- Use month field (1-12) for more precise date comparisons.
+- Index card collection on year, month, and category fields.
+
+### Deck Management
+
+- Implement card deck shuffling using Fisher-Yates algorithm.
+- Manage deck state in GameContext.
+- Support reshuffle functionality when deck is empty.
+- Track current and reference cards for comparison.
+
+### Game Mechanics
+
+- Compare cards based on both year and month.
+- Use month as tie-breaker when years match.
+- Implement score tracking with localStorage persistence.
+- Separate high score tracking for guest and authenticated users.
+- Add visual feedback for correct/incorrect guesses.
+
+### State Transitions
+
+- Track game state: 'initial', 'playing', 'correct', 'incorrect', 'reshuffling'.
+- Handle transitions between states with appropriate UI updates.
+- Reset game state on reshuffle or restart.
+
+## 12. Style & Theming
+
+- Use CSS variables for consistent theming.
+- Define color palette in global.css:
+  ```css
+  :root {
+    --text: #100910;
+    --background: #f9f5f9;
+    --primary: #121212;
+    --secondary: #e94f37;
+    --accent: #2ab7ca;
+    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  ```
+- Use Inter font for typography.
+- Implement responsive design with mobile-first approach.
+- Create consistent button styles and card layouts.
+
+## 13. Testing
 
 ### MongoDB Testing
 
-- **Core Approach**: Verify database interactions at three distinct levels.
-
-  ```javascript
-  // Create index on year field for optimized queries.
-  await collection.createIndex({ year: 1 });
-  ```
-
-- **Index Tests**: Confirm query performance optimization through index
-  utilization.
-
-  ```javascript
-  // Verify index usage in year-based queries.
-  test("year-based queries use index", async () => {
-    const explanation = await collection
-      .find({ year: { $gt: 1995 } })
-      .explain("executionStats");
-    expect(explanation.executionStats.executionStages.inputStage.stage).toBe(
-      "IXSCAN"
-    );
-  });
-  ```
-
-- **Schema Validation**: Ensure data integrity through model constraints.
-
-- **Aggregation Tests**: Validate complex data operations return expected
-  results.
+- Test index configuration and performance.
+- Validate schema constraints including year and month ranges.
+- Verify aggregation pipeline for random card selection.
 
 ### Backend Tests
 
-- Location: `packages/express-backend/tests/`
-- Use Jest and Supertest for HTTP endpoint validation.
-
-```javascript
-// Test random card retrieval endpoint.
-test("GET /api/cards/next returns valid card", async () => {
-  const response = await request(app).get("/api/cards/next");
-  expect(response.status).toBe(200);
-  expect(response.body).toHaveProperty("title");
-  expect(response.body).toHaveProperty("year");
-});
-```
-
-- Test endpoint error handling returns appropriate status codes.
-- Validate guess processing logic correctly determines win/loss conditions.
-- Assert authentication endpoints manage session state correctly.
+- Test API endpoints with Supertest.
+- Verify token generation and validation.
+- Test guest mode score persistence.
+- Validate card retrieval and guess processing.
 
 ### Frontend Tests
 
-- Location: `packages/react-frontend/tests/`
-- Implement Jest and React Testing Library for component validation.
-
-```javascript
-// Test card pair component renders both cards correctly.
-test("CardPair displays reference and current cards", () => {
-  render(<CardPair referenceCard={mockCard1} currentCard={mockCard2} />);
-  expect(screen.getByText(mockCard1.title)).toBeInTheDocument();
-  expect(screen.getByText(mockCard2.title)).toBeInTheDocument();
-});
-```
-
-- Simulate user interactions with guess buttons to verify behavior.
-- Validate form submissions handle both valid and invalid input.
-- Test responsive behavior adapts correctly to viewport changes.
+- Test component rendering with React Testing Library.
+- Verify auth state management in context.
+- Test card comparison logic.
+- Validate form submissions and error handling.
+- Test responsive behavior on different viewports.
 
 ### Test Scripts
-
-Execute test suites through npm scripts:
 
 ```bash
 # Run all tests
 npm test
 
-# Run only database tests
-npm run test:db
+# Run backend tests
+npm run test --workspace=packages/express-backend
 
-# Run tests with coverage report
-npm run test:coverage
+# Run frontend tests
+npm run test --workspace=packages/react-frontend
 ```
 
-### Continuous Integration
+## 14. Sprint Planning & Onboarding
 
-Automate test execution in GitHub Actions pipeline:
+- **Sprint 1**: Core UI shell for Home, Game, and Loss pages.
+- **Sprint 2**: Authentication system with guest mode and login/signup pages.
+- **Sprint 3**: Enhanced game mechanics with card deck, month-based comparison.
+- **Sprint 4**: UI polish, animations, and testing.
+- **Task sizing**: Small (~1 h), Medium (~2 h), Large (>4 h).
+- **Definition of Done**: List acceptance criteria in each issue.
+- **WIP limit**: Maximum 2 tasks per person in **In Progress**.
+- **Stand-ups**: Daily 15-minute check-ins.
+- **Retros**: End-of-sprint record of wins and improvements.
 
-- Run tests on pull requests to prevent regressions.
-- Enforce minimum coverage thresholds before merging.
-- Generate test reports for performance analysis.
+## 15. Additional Notes
 
-## 12. Sprint Planning & Onboarding
-
-Guide for sprint cadence and task assignments:
-
-- **Sprint length**: 1 week, each due Friday.
-- **Sprint 1**: clickable UI shell for Home, Game, and Loss.
-- **Sprint 2**: login and signup pages; initial Admin Dashboard stub (Kevin).
-- **Sprint 3**: finish Admin Dashboard; enhance Home, Game, Loss, Login, and
-  Signup.
-- **Sprint 4**: polish, tests, CI/CD, and deploy by Week 4.
-- **Task sizing**: Small (\~1 h), Medium (\~2 h), Large (>4 h).
-- **Definition of Done**: list acceptance criteria in each issue.
-- **WIP limit**: max 2 tasks per person in **In Progress**.
-- **Stand-ups**: daily 15 min check-ins.
-- **Retros**: end-of-sprint record of wins and improvements.
-
-## 13. Additional Notes
-
-- Refer to `docs/project-onboarding.md` for contributor workflows and issue
-  guidelines.
-- Track guest scores in `req.session.score` and merge into user records on
-  login.
-- Ensure `SESSION_SECRET` is set to keep sessions secure.
-- Update this guide with new features or architectural changes.
+- Refer to open issues on GitHub for upcoming feature implementations.
+- Implement guest score persistence before building server-side user profiles.
+- Avoid unnecessary complexity in initial implementation.
+- Focus on core gameplay experience before adding administrative features.
