@@ -1,9 +1,10 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
 /**
- * Generate auth token from user credentials.
+ * Generate JWT auth token from user credentials.
  *
  * @param req - Request with email/password in body.
  * @param res - Response returning token on success.
@@ -18,8 +19,17 @@ router.post("/login", (req, res) => {
 
   // Accept any credentials for MVP
 
-  // Generate base64 token
-  const token = Buffer.from(`${email}:${Date.now()}`).toString("base64");
+  // Generate JWT token with user info and expiration
+  const token = jwt.sign(
+    {
+      email
+      // Add additional claims as needed
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "24h" // Token expires in 24 hours
+    }
+  );
 
   // Send token response
   res.json({ token });
