@@ -19,10 +19,7 @@ export function verifyToken(req, res, next) {
 
   // Verify JWT token
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Attach decoded user info to request
     req.user = decoded;
