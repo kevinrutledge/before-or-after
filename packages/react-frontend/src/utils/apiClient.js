@@ -1,13 +1,10 @@
 /**
  * API client utility for making consistent backend requests.
  */
+const API_URL = import.meta.env.VITE_API_URL;
 
 /**
  * Make a request to the API.
- *
- * @param {string} endpoint - API endpoint (starting with '/')
- * @param {object} options - Fetch options
- * @returns {Promise<any>} - Response data
  */
 export async function apiRequest(endpoint, options = {}) {
   // Ensure endpoint starts with a slash
@@ -15,9 +12,15 @@ export async function apiRequest(endpoint, options = {}) {
     ? endpoint
     : `/${endpoint}`;
 
-  // In development, use relative URLs to work with the Vite proxy
-  // In production, use the environment variable if available
-  const url = normalizedEndpoint;
+  // Check if we're in production (using the Vite detection method)
+  const isProduction = import.meta.env.PROD;
+
+  const url =
+    isProduction && API_URL
+      ? `${API_URL}${normalizedEndpoint}`
+      : normalizedEndpoint;
+
+  console.log(`Making API request to: ${url}`);
 
   const headers = {
     "Content-Type": "application/json",
@@ -30,7 +33,6 @@ export async function apiRequest(endpoint, options = {}) {
   };
 
   try {
-    console.log(`Making API request to: ${url}`);
     const response = await fetch(url, config);
 
     if (!response.ok) {
