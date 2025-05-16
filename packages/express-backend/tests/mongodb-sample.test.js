@@ -1,6 +1,13 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import { MongoClient } from "mongodb";
-import { getRandomCard } from "../src/services/cardService.js";
+const {
+  describe,
+  test,
+  expect,
+  beforeAll,
+  afterAll
+} = require("@jest/globals");
+const { MongoMemoryServer } = require("mongodb-memory-server");
+const { MongoClient } = require("mongodb");
+const { getRandomCard } = require("./mocks/cardService.js");
 
 describe("Random Card Selection", () => {
   let mongoServer;

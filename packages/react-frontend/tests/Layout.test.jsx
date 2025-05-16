@@ -2,6 +2,8 @@ import { render, screen } from "@testing-library/react";
 import { jest } from "@jest/globals";
 import Layout from "../src/components/Layout";
 import { describe, test, expect } from "@jest/globals";
+import { MockAuthProvider } from "./mocks/AuthContext";
+import { MemoryRouter } from "react-router-dom";
 
 // Mock the components used by Layout
 jest.mock("../src/components/Header", () => {
@@ -27,6 +29,14 @@ jest.mock("../src/hooks/useIsMobile", () => {
   return jest.fn();
 });
 
+// Mock the AuthContext
+jest.mock("../src/context/AuthContext", () => {
+  const mockModule = jest.requireActual("./mocks/AuthContext");
+  return {
+    useAuth: mockModule.useAuth
+  };
+});
+
 import useIsMobile from "../src/hooks/useIsMobile";
 
 describe("Layout component", () => {
@@ -36,9 +46,13 @@ describe("Layout component", () => {
     useIsMobile.mockReturnValue(false);
 
     render(
-      <Layout>
-        <div data-testid="test-content">Test content</div>
-      </Layout>
+      <MemoryRouter>
+        <MockAuthProvider>
+          <Layout>
+            <div data-testid="test-content">Test content</div>
+          </Layout>
+        </MockAuthProvider>
+      </MemoryRouter>
     );
 
     // Test that the children are rendered correctly

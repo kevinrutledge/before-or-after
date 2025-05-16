@@ -5,9 +5,18 @@ import LossPage from "../src/pages/LossPage";
 import useIsMobile from "../src/hooks/useIsMobile";
 import { MemoryRouter } from "react-router-dom";
 import { GameProvider } from "../src/context/GameContext";
+import { MockAuthProvider } from "./mocks/AuthContext";
 
 // Mock the `useIsMobile` hook
 jest.mock("../src/hooks/useIsMobile");
+
+// Mock the AuthContext
+jest.mock("../src/context/AuthContext", () => {
+  const mockModule = jest.requireActual("./mocks/AuthContext");
+  return {
+    useAuth: mockModule.useAuth
+  };
+});
 
 describe("LossPage Component", () => {
   test("renders the LossPage with all elements", () => {
@@ -16,9 +25,11 @@ describe("LossPage Component", () => {
 
     render(
       <MemoryRouter>
-        <GameProvider>
-          <LossPage />
-        </GameProvider>
+        <MockAuthProvider>
+          <GameProvider>
+            <LossPage />
+          </GameProvider>
+        </MockAuthProvider>
       </MemoryRouter>
     );
 
@@ -42,9 +53,11 @@ describe("LossPage Component", () => {
 
     render(
       <MemoryRouter>
-        <GameProvider>
-          <LossPage />
-        </GameProvider>
+        <MockAuthProvider>
+          <GameProvider>
+            <LossPage />
+          </GameProvider>
+        </MockAuthProvider>
       </MemoryRouter>
     );
 

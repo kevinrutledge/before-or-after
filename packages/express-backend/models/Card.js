@@ -1,8 +1,17 @@
 import { MongoClient } from "mongodb";
-import dotenv from "dotenv";
 import { MongoMemoryServer } from "mongodb-memory-server";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+let dirName;
+try {
+  dirName = path.dirname(fileURLToPath(import.meta.url));
+} catch {
+  dirName = process.cwd();
+}
+
+dotenv.config({ path: path.join(dirName, "../.env") });
 
 /**
  * Card schema for year-based comparison game.

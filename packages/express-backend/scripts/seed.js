@@ -1,7 +1,16 @@
-import dotenv from "dotenv";
 import { getCardsCollection } from "../models/Card.js";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+let dirName;
+try {
+  dirName = path.dirname(fileURLToPath(import.meta.url));
+} catch {
+  dirName = process.cwd();
+}
+
+dotenv.config({ path: path.join(dirName, "../.env") });
 
 /**
  * Seed database with sample cards for gameplay testing.

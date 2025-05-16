@@ -1,14 +1,25 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { connectToDatabase } from "./db.js";
 import apiRoutes from "./routes/routes.js";
 import authRoutes from "./routes/authRoutes.js";
+import passwordResetRoutes from "./routes/passwordResetRoutes.js";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+let dirName;
+try {
+  dirName = path.dirname(fileURLToPath(import.meta.url));
+} catch {
+  dirName = process.cwd();
+}
+
+dotenv.config({ path: path.join(dirName, "../.env") });
 
 /**
  * Initialize Express server with API routes.
  */
-dotenv.config();
 const app = express();
 
 // Configure middleware
@@ -23,6 +34,7 @@ app.get("/", (req, res) => {
 // Mount API routes
 app.use("/api", apiRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", passwordResetRoutes);
 
 // Start server function
 const startServer = async () => {

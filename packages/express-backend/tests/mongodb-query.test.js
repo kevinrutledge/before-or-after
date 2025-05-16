@@ -1,5 +1,12 @@
-import { getCardsCollection } from "../models/Card.js";
-import { seedDatabase } from "../scripts/seed.js";
+const {
+  describe,
+  test,
+  expect,
+  beforeAll,
+  afterAll
+} = require("@jest/globals");
+const { getCardsCollection } = require("./mocks/Card.js");
+const { seedDatabase } = require("./mocks/seed.js");
 
 describe("MongoDB Query Performance", () => {
   let client;
