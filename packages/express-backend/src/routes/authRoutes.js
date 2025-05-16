@@ -1,13 +1,25 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 import { createUser, validateUser } from "../../models/User.js";
 
 const router = express.Router();
 
 /**
+ * Configure rate limiter for auth endpoints.
+ */
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 login attempts per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many login attempts, please try again after 15 minutes"
+});
+
+/**
  * Generate JWT auth token from user credentials.
  */
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   const { email, password } = req.body;
 
   // Validate required credentials
@@ -53,7 +65,7 @@ router.post("/login", async (req, res) => {
 /**
  * Register a new user.
  */
-router.post("/signup", async (req, res) => {
+router.post("/signup", authLimiter, async (req, res) => {
   const { email, password } = req.body;
 
   // Validate required fields
@@ -62,8 +74,19 @@ router.post("/signup", async (req, res) => {
   }
 
   // Basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
+  if (!email.includes("@") || email.length > 254) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+
+  // Check if email is already registered
+  const emailParts = email.split("@");
+  if (
+    emailParts.length !== 2 ||
+    !emailParts[0] ||
+    !emailParts[1] ||
+    !emailParts[1].includes(".") ||
+    emailParts[1].endsWith(".")
+  ) {
     return res.status(400).json({ message: "Invalid email format" });
   }
 

@@ -1,10 +1,24 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import { verifyToken, adminOnly } from "../../middleware/auth.js";
 import { getCardsCollection } from "../../models/Card.js";
+import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
-// Apply auth middleware to all admin routes
+/**
+ * Configure rate limiter for admin routes.
+ */
+const adminRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many requests, please try again after 15 minutes"
+});
+
+// Apply middleware to all admin routes
+router.use(adminRateLimiter);
 router.use(verifyToken);
 router.use(adminOnly);
 
@@ -21,7 +35,8 @@ router.get("/cards", async (req, res) => {
 
     const query = {};
     if (cursor) {
-      query._id = { $gt: cursor };
+      // Convert string cursor to ObjectId
+      query._id = { $gt: new ObjectId(cursor) };
     }
 
     const cards = await collection.find(query).limit(parseInt(limit)).toArray();

@@ -1,5 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 import { getUsersCollection } from "../../models/User.js";
 import nodemailer from "nodemailer";
 
@@ -17,9 +18,20 @@ const transporter = nodemailer.createTransport({
 });
 
 /**
+ * Configure rate limiter for password reset endpoints.
+ */
+const resetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // Limit each IP to 3 reset attempts per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: "Too many password reset attempts, please try again later"
+});
+
+/**
  * Route to request password reset
  */
-router.post("/forgot-password", async (req, res) => {
+router.post("/forgot-password", resetLimiter, async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
@@ -66,14 +78,14 @@ router.post("/forgot-password", async (req, res) => {
         subject: "Your verification code",
         text: `Your Before or After verification code is: ${verificationCode}\n\nThis code will expire in 15 minutes.`,
         html: `
-         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
-           <h2 style="color: #2563eb;">Before or After Game</h2>
-           <p>Your verification code is: <strong style="font-size: 18px;">${verificationCode}</strong></p>
-           <p>This code will expire in 15 minutes.</p>
-           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
-           <p style="font-size: 14px; color: #6b7280;">This is an automated message, please do not reply.</p>
-         </div>
-       `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+            <h2 style="color: #2563eb;">Before or After Game</h2>
+            <p>Your verification code is: <strong style="font-size: 18px;">${verificationCode}</strong></p>
+            <p>This code will expire in 15 minutes.</p>
+            <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
+            <p style="font-size: 12px; color: #6b7280;">This is an automated message, please do not reply.</p>
+          </div>
+        `
       });
 
       return res.status(200).json({
@@ -92,7 +104,7 @@ router.post("/forgot-password", async (req, res) => {
 /**
  * Route to verify reset code
  */
-router.post("/verify-code", async (req, res) => {
+router.post("/verify-code", resetLimiter, async (req, res) => {
   const { email, code } = req.body;
 
   if (!email || !code) {
@@ -120,7 +132,7 @@ router.post("/verify-code", async (req, res) => {
       // Generate a temporary token for password reset
       const resetToken = jwt.sign(
         { id: user._id.toString(), email },
-        process.env.JWT_SECRET || "before-or-after-secret-key",
+        process.env.JWT_SECRET,
         { expiresIn: "15m" } // Token expires in 15 minutes
       );
 
@@ -140,7 +152,7 @@ router.post("/verify-code", async (req, res) => {
 /**
  * Route to reset password
  */
-router.post("/reset-password", async (req, res) => {
+router.post("/reset-password", resetLimiter, async (req, res) => {
   const { email, resetToken, newPassword } = req.body;
 
   if (!email || !resetToken || !newPassword) {
@@ -156,10 +168,7 @@ router.post("/reset-password", async (req, res) => {
 
   try {
     // Verify the reset token
-    const decoded = jwt.verify(
-      resetToken,
-      process.env.JWT_SECRET || "before-or-after-secret-key"
-    );
+    const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
 
     if (decoded.email !== email) {
       return res.status(400).json({ message: "Invalid reset token" });
