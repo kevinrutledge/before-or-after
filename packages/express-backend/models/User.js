@@ -92,8 +92,11 @@ export async function validateUser(email, password) {
     }
 
     // Return user info without password
-    const { password: _, ...userInfo } = user;
-    return { success: true, user: userInfo };
+    const { _id, email: userEmail, role, createdAt } = user;
+    return {
+      success: true,
+      user: { _id, email: userEmail, role, createdAt }
+    };
   } finally {
     await client.close();
   }
