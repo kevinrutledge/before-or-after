@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 let dirName;
 try {
   dirName = path.dirname(fileURLToPath(import.meta.url));
-} catch (e) {
+} catch {
   dirName = process.cwd();
 }
 
