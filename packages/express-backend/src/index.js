@@ -14,7 +14,6 @@ try {
 } catch {
   dirName = process.cwd();
 }
-
 dotenv.config({ path: path.join(dirName, "../.env") });
 
 /**
@@ -36,24 +35,34 @@ app.use("/api", apiRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/auth", passwordResetRoutes);
 
-// Start server function
-const startServer = async () => {
-  try {
-    // Connect to database
-    await connectToDatabase();
+// Check if this is being run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const startServer = async () => {
+    try {
+      // Connect to database
+      await connectToDatabase();
 
-    // Start Express server
-    const PORT = process.env.PORT || 8000;
-    app.listen(PORT, () => {
-      console.log();
-      console.log(`🚀 Server listening at http://localhost:${PORT}/`);
-      console.log();
-    });
-  } catch (error) {
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  }
-};
+      // Start Express server
+      const PORT = process.env.PORT || 8000;
+      app.listen(PORT, () => {
+        console.log();
+        console.log(`🚀 Server listening at http://localhost:${PORT}/`);
+        console.log();
+      });
+    } catch (error) {
+      console.error("Failed to start server:", error);
+      process.exit(1);
+    }
+  };
 
-// Execute server startup
-startServer();
+  // Execute server startup for local development
+  startServer();
+} else {
+  // Connect to database when imported (serverless environment)
+  connectToDatabase().catch((err) => {
+    console.error("Database connection failed:", err);
+  });
+}
+
+// Export the Express app for Vercel
+export default app;
