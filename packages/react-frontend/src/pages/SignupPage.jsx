@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { apiRequest } from "../utils/apiClient";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 
-/**
- * Signup page component with registration form.
- */
 function SignupPage() {
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,68 +21,40 @@ function SignupPage() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset error state
     setError("");
 
     // Validate form
-    if (!email || !username || !password || !confirmPassword) {
-      setError("Please fill in all fields");
+    if (!email || !password) {
+      setError("Email and password are required");
       return;
     }
 
-    // Check if passwords match
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    // Basic password strength validation
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long");
+      setError("Password must be at least 6 characters");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Call signup API
-      const response = await fetch("/api/auth/signup", {
+      await apiRequest("/api/auth/signup", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password })
+        body: JSON.stringify({ email, password })
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Registration failed");
-      }
-
-      // Navigate to login page on success
       navigate("/login", {
-        state: {
-          message: "Account created successfully! Please sign in.",
-          email
-        }
+        state: { message: "Account created! Please sign in." }
       });
     } catch (err) {
-      setError(err.message || "Registration failed. Please try again.");
-      console.error("Signup error:", err);
+      setError(err.message || "Registration failed");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Handle cancel
-  const handleCancel = () => {
-    navigate("/");
   };
 
   return (
@@ -106,19 +75,6 @@ function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="username">Username</label>
-              <input
-                type="text"
-                id="username"
-                className="form-control"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Choose a username"
                 required
               />
             </div>
@@ -185,7 +141,7 @@ function SignupPage() {
               <button
                 type="button"
                 className="cancel-button"
-                onClick={handleCancel}>
+                onClick={() => navigate("/")}>
                 Cancel
               </button>
             </div>

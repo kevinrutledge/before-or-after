@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { apiRequest } from "../utils/apiClient";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 
-/**
- * Login page component with email/password form.
- */
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,7 +12,9 @@ function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
+  const message = location.state?.message;
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
@@ -24,49 +24,29 @@ function LoginPage() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset error state
     setError("");
 
     // Validate form
     if (!email || !password) {
-      setError("Please enter both email and password");
+      setError("Email and password are required");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      // Call login API
-      const response = await fetch("/api/auth/login", {
+      const data = await apiRequest("/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password })
       });
 
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
-
-      const data = await response.json();
-
-      // Use auth context login function
       login(data.token);
-
-      // Navigate to game page
-      navigate("/game");
-    } catch (error) {
-      // Log error for debugging
-      console.error("Login error:", error.message);
+      navigate("/");
+    } catch {
       setError("Invalid email or password");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Handle cancel
-  const handleCancel = () => {
-    navigate("/");
   };
 
   return (
@@ -75,6 +55,7 @@ function LoginPage() {
         <div className="login-page">
           <h1 className="login-title">Sign In</h1>
 
+          {message && <div className="success-message">{message}</div>}
           {error && <div className="error-message">{error}</div>}
 
           <form onSubmit={handleSubmit} className="login-form">
@@ -127,7 +108,7 @@ function LoginPage() {
               <button
                 type="button"
                 className="cancel-button"
-                onClick={handleCancel}>
+                onClick={() => navigate("/")}>
                 Cancel
               </button>
             </div>

@@ -47,10 +47,35 @@ const createMockRes = () => {
   return res;
 };
 
-// Create a simple HTTP server to route requests to the appropriate handler
+// CORS middleware handler
+const handleCors = (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    res.statusCode = 204; // No content
+    res.end();
+    return true;
+  }
+
+  return false;
+};
+
+// Simple HTTP server to route requests to appropriate handler
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const path = url.pathname;
+
+  // Handle CORS preflight requests
+  if (handleCors(req, res)) {
+    return;
+  }
 
   // Collect request body data
   let body = "";
@@ -119,12 +144,4 @@ const server = http.createServer(async (req, res) => {
 const PORT = process.env.PORT;
 server.listen(PORT, () => {
   console.log(`Local development server running at http://localhost:${PORT}`);
-  console.log(`Available endpoints:`);
-  console.log(`  GET  /`);
-  console.log(`  GET  /api/cards/next`);
-  console.log(`  POST /api/cards/guess`);
-  console.log(`  POST /api/auth/login`);
-  console.log(`  POST /api/auth/signup`);
-  console.log(`  GET  /api/admin/cards`);
-  console.log(`  POST /api/admin/cards`);
 });

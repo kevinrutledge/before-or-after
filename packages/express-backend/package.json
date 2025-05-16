@@ -8,7 +8,7 @@
     "test:watch": "jest --watch --config=jest.config.cjs",
     "test:coverage": "jest --coverage --config=jest.config.cjs",
     "dev": "nodemon --experimental-json-modules api/local-dev.js",
-    "build": "mkdir -p public && echo \"Express API\" > public/index.html",
+    "build": "mkdir -p public && echo \"Before or After API\" > public/index.html",
     "start": "node --experimental-json-modules api/local-dev.js",
     "test-db": "jest --config=jest.config.cjs tests/mongodb-*.test.js",
     "seed": "node scripts/seed.js"

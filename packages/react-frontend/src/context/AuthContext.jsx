@@ -12,9 +12,6 @@ import {
 // Create auth context
 const AuthContext = createContext();
 
-/**
- * Provide authentication state and methods to the app.
- */
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(checkAuth());
   const [isGuest, setIsGuest] = useState(checkGuestMode());
@@ -36,13 +33,9 @@ export function AuthProvider({ children }) {
     // Check on mount
     checkAuthStatus();
 
-    // Listen for storage events (when localStorage changes in another tab)
-    const handleStorageChange = () => {
-      checkAuthStatus();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    // Listen for storage events
+    window.addEventListener("storage", checkAuthStatus);
+    return () => window.removeEventListener("storage", checkAuthStatus);
   }, []);
 
   // Login function
@@ -59,7 +52,6 @@ export function AuthProvider({ children }) {
     removeAuthToken();
     setIsAuthenticated(false);
     setUser(null);
-    // Note: We don't automatically switch to guest mode on logout
   };
 
   // Enable guest mode
@@ -76,24 +68,23 @@ export function AuthProvider({ children }) {
     setIsGuest(false);
   };
 
-  // Auth context value
-  const value = {
-    isAuthenticated,
-    isGuest,
-    user,
-    isLoading,
-    login,
-    logout,
-    enableGuestMode,
-    disableGuestMode
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        isGuest,
+        user,
+        isLoading,
+        login,
+        logout,
+        enableGuestMode,
+        disableGuestMode
+      }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
-/**
- * Hook to access auth context.
- */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

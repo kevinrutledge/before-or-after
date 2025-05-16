@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { apiRequest } from "../utils/apiClient";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 
-/**
- * Forgot password page component with verification code workflow.
- */
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [verificationCode, setVerificationCode] = useState("");
@@ -14,21 +12,7 @@ function ForgotPasswordPage() {
   const [stage, setStage] = useState("request"); // request, verification, reset
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
   const navigate = useNavigate();
-
-  // Timer for verification code expiration
-  useEffect(() => {
-    if (stage === "verification" && timeLeft > 0) {
-      const timer = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && stage === "verification") {
-      setError("Verification code expired. Please try again.");
-      setStage("request");
-    }
-  }, [timeLeft, stage]);
 
   // Handle request password reset
   const handleRequestReset = async (e) => {
@@ -43,24 +27,13 @@ function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/forgot-password", {
+      await apiRequest("/api/auth/forgot-password", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to send reset code");
-      }
-
-      // Move to verification stage
       setStage("verification");
-      setTimeLeft(15 * 60); // Reset timer to 15 minutes
     } catch (err) {
-      setError(err.message || "Failed to send reset code. Please try again.");
-      console.error("Password reset error:", err);
+      setError(err.message || "Failed to send reset code");
     } finally {
       setIsLoading(false);
     }
@@ -79,24 +52,16 @@ function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/verify-code", {
+      const data = await apiRequest("/api/auth/verify-code", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code: verificationCode })
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to verify code");
-      }
 
       // Store reset token and move to reset password stage
       localStorage.setItem("resetToken", data.resetToken);
       setStage("reset");
     } catch (err) {
-      setError(err.message || "Failed to verify code. Please try again.");
-      console.error("Verification error:", err);
+      setError(err.message || "Invalid verification code");
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +72,6 @@ function ForgotPasswordPage() {
     e.preventDefault();
     setError("");
 
-    // Validate password
     if (!newPassword) {
       setError("Please enter a new password");
       return;
@@ -129,24 +93,17 @@ function ForgotPasswordPage() {
       const resetToken = localStorage.getItem("resetToken");
 
       if (!resetToken) {
-        throw new Error("Reset token missing, please try again");
+        throw new Error("Reset token missing");
       }
 
-      const response = await fetch("/api/auth/reset-password", {
+      await apiRequest("/api/auth/reset-password", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
           resetToken,
           newPassword
         })
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to reset password");
-      }
 
       // Clear reset token and redirect to login
       localStorage.removeItem("resetToken");
@@ -157,21 +114,12 @@ function ForgotPasswordPage() {
         }
       });
     } catch (err) {
-      setError(err.message || "Failed to reset password. Please try again.");
-      console.error("Password reset error:", err);
+      setError(err.message || "Failed to reset password");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Format time remaining as MM:SS
-  const formatTimeLeft = () => {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  };
-
-  // Render different forms based on current stage
   const renderStageContent = () => {
     switch (stage) {
       case "request":
@@ -229,15 +177,14 @@ function ForgotPasswordPage() {
                 className="form-control"
                 value={verificationCode}
                 onChange={(e) => setVerificationCode(e.target.value)}
-                placeholder="Enter 6-digit code"
+                placeholder="Enter verification code"
                 maxLength={6}
                 required
               />
             </div>
 
             <p className="help-text">
-              Enter the 6-digit code sent to your email. Time remaining:{" "}
-              {formatTimeLeft()}
+              Enter the code sent to your email. It will expire in 15 minutes.
             </p>
 
             <button type="submit" className="login-button" disabled={isLoading}>
@@ -311,9 +258,7 @@ function ForgotPasswordPage() {
       <PageContainer>
         <div className="login-page">
           <h1 className="login-title">Reset Password</h1>
-
           {error && <div className="error-message">{error}</div>}
-
           {renderStageContent()}
         </div>
       </PageContainer>
