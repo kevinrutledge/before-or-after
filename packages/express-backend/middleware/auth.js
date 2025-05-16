@@ -21,7 +21,7 @@ export function verifyToken(req, res, next) {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "before-or-after-secret-key"
+      process.env.JWT_SECRET
     );
 
     // Check if token is expired
