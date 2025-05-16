@@ -5,9 +5,18 @@ import HomePage from "../src/pages/HomePage";
 import useIsMobile from "../src/hooks/useIsMobile";
 import { MemoryRouter } from "react-router-dom";
 import { GameProvider } from "../src/context/GameContext";
+import { MockAuthProvider } from "./mocks/AuthContext";
 
 // Mock the useIsMobile hook
 jest.mock("../src/hooks/useIsMobile");
+
+// Mock the AuthContext
+jest.mock("../src/context/AuthContext", () => {
+  const mockModule = jest.requireActual("./mocks/AuthContext");
+  return {
+    useAuth: mockModule.useAuth
+  };
+});
 
 describe("HomePage Component", () => {
   test("renders all expected elements in desktop view", () => {
@@ -16,9 +25,11 @@ describe("HomePage Component", () => {
 
     render(
       <MemoryRouter>
-        <GameProvider>
-          <HomePage />
-        </GameProvider>
+        <MockAuthProvider>
+          <GameProvider>
+            <HomePage />
+          </GameProvider>
+        </MockAuthProvider>
       </MemoryRouter>
     );
 
@@ -49,9 +60,11 @@ describe("HomePage Component", () => {
 
     render(
       <MemoryRouter>
-        <GameProvider>
-          <HomePage />
-        </GameProvider>
+        <MockAuthProvider>
+          <GameProvider>
+            <HomePage />
+          </GameProvider>
+        </MockAuthProvider>
       </MemoryRouter>
     );
 
