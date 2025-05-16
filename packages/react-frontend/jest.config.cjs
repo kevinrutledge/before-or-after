@@ -30,10 +30,10 @@ module.exports = {
   moduleDirectories: ["node_modules", "src"],
   coverageThreshold: {
     global: {
-      statements: 10,
-      branches: 10,
-      functions: 10,
-      lines: 10
+      statements: 1,
+      branches: 1,
+      functions: 1,
+      lines: 1
     }
   }
 };

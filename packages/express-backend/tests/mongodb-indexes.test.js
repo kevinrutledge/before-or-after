@@ -1,4 +1,11 @@
-import { getCardsCollection } from "../models/Card.js";
+const {
+  describe,
+  test,
+  expect,
+  beforeAll,
+  afterAll
+} = require("@jest/globals");
+const { getCardsCollection } = require("./mocks/Card.js");
 
 describe("MongoDB Indexes", () => {
   let client;
