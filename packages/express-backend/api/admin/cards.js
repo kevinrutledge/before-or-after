@@ -1,7 +1,12 @@
+import { corsHandler } from "../_cors.js";
 import { getCardsCollection } from "../../models/Card.js";
 import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
+  if (corsHandler(req, res)) {
+    return;
+  }
+
   // Check for authentication
   const authHeader = req.headers.authorization;
 

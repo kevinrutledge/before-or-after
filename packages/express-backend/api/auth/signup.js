@@ -1,6 +1,11 @@
+import { corsHandler } from "../_cors.js";
 import { createUser } from "../../models/User.js";
 
 export default async function handler(req, res) {
+  if (corsHandler(req, res)) {
+    return;
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }

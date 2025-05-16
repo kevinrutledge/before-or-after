@@ -1,6 +1,11 @@
+import { corsHandler } from "../_cors.js";
 import { getCardsCollection } from "../../models/Card.js";
 
 export default async function handler(req, res) {
+  if (corsHandler(req, res)) {
+    return;
+  }
+
   let client;
   try {
     const { client: dbClient, collection } = await getCardsCollection();

@@ -1,5 +1,6 @@
 import http from "http";
 import { URL } from "url";
+import { corsHandler } from "./_cors.js";
 import indexHandler from "./index.js";
 import cardsNextHandler from "./cards/next.js";
 import cardsGuessHandler from "./cards/guess.js";
@@ -7,7 +8,9 @@ import authLoginHandler from "./auth/login.js";
 import authSignupHandler from "./auth/signup.js";
 import adminCardsHandler from "./admin/cards.js";
 
-// Mock req and res objects that simulate Express functionality
+/**
+ * Create mock request object with Express-like properties.
+ */
 const createMockReq = (url, method, body = null, headers = {}) => {
   const parsedUrl = new URL(url, "http://localhost");
   return {
@@ -19,6 +22,9 @@ const createMockReq = (url, method, body = null, headers = {}) => {
   };
 };
 
+/**
+ * Create mock response object with Express-like methods.
+ */
 const createMockRes = () => {
   const res = {
     status: (code) => {
@@ -47,33 +53,13 @@ const createMockRes = () => {
   return res;
 };
 
-// CORS middleware handler
-const handleCors = (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    res.statusCode = 204; // No content
-    res.end();
-    return true;
-  }
-
-  return false;
-};
-
-// Simple HTTP server to route requests to appropriate handler
+// Create HTTP server to simulate API endpoints
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
   const path = url.pathname;
 
-  // Handle CORS preflight requests
-  if (handleCors(req, res)) {
+  // Handle CORS using shared handler
+  if (corsHandler(req, res)) {
     return;
   }
 
@@ -84,7 +70,7 @@ const server = http.createServer(async (req, res) => {
   });
 
   req.on("end", async () => {
-    // Parse body if it exists
+    // Parse JSON body when present
     if (body && req.headers["content-type"] === "application/json") {
       try {
         body = JSON.parse(body);
@@ -93,12 +79,12 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    // Create mock req and res objects for the handlers
+    // Create Express-compatible request and response objects
     const mockReq = createMockReq(req.url, req.method, body, req.headers);
     const mockRes = createMockRes();
 
     try {
-      // Route to the appropriate handler
+      // Route requests to appropriate handler
       if (path === "/") {
         await indexHandler(mockReq, mockRes);
       } else if (path === "/api/cards/next") {
@@ -115,22 +101,22 @@ const server = http.createServer(async (req, res) => {
         mockRes.status(404).send("Not Found");
       }
 
-      // Send the response
+      // Set response status code
       res.statusCode = mockRes.statusCode;
 
-      // Set headers
+      // Apply response headers
       if (mockRes.headers) {
         for (const [key, value] of Object.entries(mockRes.headers)) {
           res.setHeader(key, value);
         }
       }
 
-      // Set content type if not already set
+      // Set default content type if not specified
       if (!res.getHeader("Content-Type")) {
         res.setHeader("Content-Type", "application/json");
       }
 
-      // Send the response body
+      // Send response body
       res.end(mockRes.body);
     } catch (error) {
       console.error("Error handling request:", error);
