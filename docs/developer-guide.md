@@ -215,29 +215,41 @@ NOTE: Secure admin endpoints with Bearer token in Authorization header.
 
 ### Token-Based Authentication
 
-- Use simple token-based authentication with localStorage storage.
-- Token format: Base64-encoded string with user info and timestamp.
+- Use JWT-based authentication with localStorage storage.
+- Token format: JWT with user info (email, role, id) and expiration.
 - Include token in Authorization header as Bearer token for API requests.
+- Support session expiration with 24-hour token lifetime.
 
 ### Guest Mode Implementation
 
 - Enable unregistered users to play as guests with localStorage score tracking.
 - Display login prompt for guest users in Game page.
-- Implement score merging when guest user authenticates.
-- Track high scores separately for guest and authenticated users.
+- Implement score merging when guest user authenticates via GameContext.
+- Track high scores separately for guest and authenticated users using different
+  localStorage keys.
+
+### Password Reset Flow
+
+- Three-stage password reset process: request, verification, reset.
+- Endpoints: `/api/auth/forgot-password`, `/api/auth/verify-code`,
+  `/api/auth/reset-password`.
+- Email verification using 6-digit code with 15-minute expiration.
+- Temporary JWT token for password reset authorization.
+- Secure implementation with email obfuscation for privacy.
 
 ### Auth State Management
 
-- Use GameContext to track authentication state across components.
-- Add isLoggedIn and guestMode flags to context state.
-- Implement login/logout handlers in context.
+- Use AuthContext to track authentication state across components.
+- Track isAuthenticated, isGuest, and user profile information.
+- Implement login/logout and guest mode toggle handlers.
 - Use storage event listener to sync auth state across browser tabs.
 
 ### Route Protection
 
-- Create RouteGuard component to protect routes while allowing guest access.
+- Use ProtectedRoute component to guard routes while allowing guest access.
 - Implement conditional UI in Header and BottomNav based on auth state.
-- Add login/signup routes to router configuration.
+- Support role-based access control for admin routes.
+- Redirect to login with return path for unauthenticated users.
 
 ## 11. Game Logic
 
