@@ -10,7 +10,6 @@ try {
 } catch {
   dirName = process.cwd();
 }
-
 dotenv.config({ path: path.join(dirName, "../.env") });
 
 /**
@@ -33,25 +32,32 @@ export async function getUsersCollection() {
     throw new Error("MONGO_URI environment variable not set");
   }
 
-  const client = new MongoClient(uri);
-  await client.connect();
+  try {
+    const client = new MongoClient(uri);
+    await client.connect();
 
-  const db = client.db();
-  const collection = db.collection("users");
+    const db = client.db();
+    const collection = db.collection("users");
 
-  // Create unique index on email
-  await collection.createIndex({ email: 1 }, { unique: true });
+    // Create unique index on email if it doesn't exist
+    await collection.createIndex({ email: 1 }, { unique: true });
 
-  return { client, collection };
+    return { client, collection };
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    throw error;
+  }
 }
 
 /**
  * Create a new user with hashed password.
  */
 export async function createUser(email, password, role = "user") {
-  const { client, collection } = await getUsersCollection();
-
+  let client;
   try {
+    const { client: dbClient, collection } = await getUsersCollection();
+    client = dbClient;
+
     // Hash the password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -70,9 +76,10 @@ export async function createUser(email, password, role = "user") {
     if (error.code === 11000) {
       return { success: false, message: "Email already exists" };
     }
+    console.error("User creation error:", error);
     throw error;
   } finally {
-    await client.close();
+    if (client) await client.close();
   }
 }
 
