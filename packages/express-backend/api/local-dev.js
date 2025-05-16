@@ -6,8 +6,10 @@ import cardsNextHandler from "./cards/next.js";
 import cardsGuessHandler from "./cards/guess.js";
 import authLoginHandler from "./auth/login.js";
 import authSignupHandler from "./auth/signup.js";
+import authForgotPasswordHandler from "./auth/forgot-password.js";
+import authVerifyCodeHandler from "./auth/verify-code.js";
+import authResetPasswordHandler from "./auth/reset-password.js";
 import adminCardsHandler from "./admin/cards.js";
-
 /**
  * Create mock request object with Express-like properties.
  */
@@ -84,7 +86,7 @@ const server = http.createServer(async (req, res) => {
     const mockRes = createMockRes();
 
     try {
-      // Route requests to appropriate handler
+      // Route to the appropriate handler
       if (path === "/") {
         await indexHandler(mockReq, mockRes);
       } else if (path === "/api/cards/next") {
@@ -95,6 +97,12 @@ const server = http.createServer(async (req, res) => {
         await authLoginHandler(mockReq, mockRes);
       } else if (path === "/api/auth/signup") {
         await authSignupHandler(mockReq, mockRes);
+      } else if (path === "/api/auth/forgot-password") {
+        await authForgotPasswordHandler(mockReq, mockRes);
+      } else if (path === "/api/auth/verify-code") {
+        await authVerifyCodeHandler(mockReq, mockRes);
+      } else if (path === "/api/auth/reset-password") {
+        await authResetPasswordHandler(mockReq, mockRes);
       } else if (path === "/api/admin/cards") {
         await adminCardsHandler(mockReq, mockRes);
       } else {
