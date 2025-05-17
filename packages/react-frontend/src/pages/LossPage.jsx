@@ -6,30 +6,36 @@ import { useGame } from "../context/GameContext";
 
 function LossPage() {
   const isMobile = useIsMobile();
-
   const navigate = useNavigate();
   const { score } = useGame();
 
   return (
     <Layout>
       <PageContainer>
-        <div className="loss-page">
+        <div className="loss-outer">
           <h1 className="loss-title">Game Over</h1>
-          <p className="final-score">Your score: {score}</p>
-          <div className="loss-gif-placeholder">
-            {isMobile
-              ? "GIF Placeholder (Mobile)"
-              : "GIF Placeholder (Desktop)"}
-          </div>
-          <div className="loss-buttons">
-            <button
-              className="play-again-button"
-              onClick={() => navigate("/game")}>
-              Play Again
-            </button>
-            <button className="back-home-button" onClick={() => navigate("/")}>
-              Back to Home
-            </button>
+          <div className="loss-card">
+            <div className="loss-gif-large">
+              {isMobile
+                ? "GIF Placeholder (Mobile)"
+                : "GIF Placeholder (Desktop)"}
+            </div>
+            <div className="loss-score">
+              <span className="score-label">Your score</span>
+              <span className="score-value">{score}</span>
+            </div>
+            <div className="loss-buttons-row">
+              <button
+                className="play-again-button"
+                onClick={() => navigate("/game")}>
+                Play Again
+              </button>
+              <button
+                className="back-home-button"
+                onClick={() => navigate("/")}>
+                Back to Home
+              </button>
+            </div>
           </div>
         </div>
       </PageContainer>

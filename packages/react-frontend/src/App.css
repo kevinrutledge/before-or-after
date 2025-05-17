@@ -174,68 +174,142 @@ footer {
   color: var(--secondary-color);
 }
 
-.loss-page {
-  text-align: center;
-  padding: 2rem 1rem;
+/* Loss Page Styles */
+/* ...existing code... */
+
+.loss-outer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 2rem 0;
 }
 
 .loss-title {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  font-weight: 800;
   color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
-.final-score {
-  font-size: 1.5rem;
-  color: var(--text-color);
   margin-bottom: 2rem;
+  letter-spacing: 0.01em;
+  text-align: center;
 }
 
-.loss-gif-placeholder {
+.loss-card {
+  background: white;
+  border-radius: 1.25rem;
+  box-shadow: var(--card-shadow);
+  padding: 2.5rem 2rem;
+  max-width: 480px;
   width: 100%;
-  max-width: 400px;
-  height: 200px;
-  background-color: var(--secondary-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.loss-gif-large {
+  width: 100%;
+  max-width: 360px;
+  height: 240px;
+  background: var(--secondary-color);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 2rem;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
 }
 
-.loss-buttons {
+.loss-score {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.score-label {
+  font-size: 1.1rem;
+  color: var(--secondary-color);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.02em;
+}
+
+.score-value {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  line-height: 1;
+}
+
+.loss-buttons-row {
+  display: flex;
+  gap: 1.25rem;
+  width: 100%;
+  justify-content: center;
 }
 
 .play-again-button,
 .back-home-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  flex: 1 1 0;
+  padding: 0.9rem 0;
+  font-size: 1.1rem;
   border: none;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .play-again-button {
-  background-color: var(--primary-color);
-  color: white;
+  background: var(--primary-color);
+  color: #fff;
 }
 
 .play-again-button:hover {
-  background-color: #1d4ed8;
+  background: #1d4ed8;
+  transform: translateY(-2px) scale(1.03);
 }
 
 .back-home-button {
-  background-color: var(--accent-color);
-  color: white;
+  background: var(--accent-color);
+  color: #fff;
 }
 
 .back-home-button:hover {
-  background-color: #d97706;
+  background: #d97706;
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .loss-title {
+    font-size: 2rem;
+    margin-bottom: 1.2rem;
+  }
+  .loss-card {
+    padding: 1.25rem 0.5rem;
+    max-width: 98vw;
+    gap: 1.5rem;
+  }
+  .loss-gif-large {
+    max-width: 95vw;
+    height: 160px;
+    font-size: 1rem;
+  }
+  .score-value {
+    font-size: 2rem;
+  }
+  .loss-buttons-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 }
 
 /* HOME PAGE STYLES */
