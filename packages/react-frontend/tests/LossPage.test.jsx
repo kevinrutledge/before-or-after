@@ -36,8 +36,9 @@ describe("LossPage Component", () => {
     // Check for the title
     expect(screen.getByText("Game Over")).toBeInTheDocument();
 
-    // Check for the final score
-    expect(screen.getByText("Your score: 0")).toBeInTheDocument();
+    // Check for the score label and value separately
+    expect(screen.getByText("Your score")).toBeInTheDocument();
+    expect(screen.getByText("0")).toBeInTheDocument();
 
     // Check for the GIF placeholder (on desktop btw)
     expect(screen.getByText("GIF Placeholder (Desktop)")).toBeInTheDocument();
