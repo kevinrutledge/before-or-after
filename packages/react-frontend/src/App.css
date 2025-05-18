@@ -1,5 +1,8 @@
 :root {
-  --primary-color: #2563eb;
+  --primary-color: rgb(37, 99, 235);
+  --before-blue:rgb(86, 54, 230);
+  --before-red:rgb(214, 37, 37);
+  --before-purple:rgb(121, 51, 209);
   --secondary-color: #4b5563;
   --accent-color: #f59e0b;
   --background-color: #f8fafc;
@@ -338,12 +341,6 @@ footer {
   border-radius: 8px;
 }
 
-.home-title {
-  font-size: 2.5rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-}
-
 .home-tagline {
   font-size: 1.2rem;
   color: var(--secondary-color);
@@ -351,7 +348,7 @@ footer {
 }
 
 .play-button {
-  background-color: var(--primary-color);
+  background-color: var(--before-purple);
   color: white;
   border: 2px solid black;
   padding: 0.75rem 2rem;
@@ -362,7 +359,7 @@ footer {
 }
 
 .play-button:hover {
-  background-color: darkblue;
+  background-color: rgb(153, 102, 215);
 }
 
 /* HOME STYLE END */

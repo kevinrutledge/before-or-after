@@ -16,14 +16,13 @@ function HomePage() {
             alt="Before or After Logo"
             src={
               isMobile
-                ? "https://openclipart.org/image/2000px/232064"
-                : "https://openclipart.org/image/2000px/232064"
+                ? "/images/logo.svg"
+                : "/images/logo.svg"
             }></img>
-          <h1 className="home-title">Welcome to Before or After!</h1>
-          <h2 className="home-tagline">
+          <h1 className="home-tagline">
             A daily game where players guess the release year of various
             cultural artifacts
-          </h2>
+          </h1>
           <button className="play-button" onClick={() => navigate("/game")}>
             Play
           </button>
