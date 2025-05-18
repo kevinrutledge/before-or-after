@@ -33,23 +33,17 @@ describe("HomePage Component", () => {
       </MemoryRouter>
     );
 
-    // Title
-    expect(screen.getByText("Welcome to Before or After!")).toBeInTheDocument();
-
     // Tagline
     expect(
       screen.getByText(
-        "A daily game where players guess the release year of various cultural artifacts"
+        "A daily game where players compare the release dates of various cultural artifacts"
       )
     ).toBeInTheDocument();
 
     // Image logo
     const logo = screen.getByRole("img");
     expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute(
-      "src",
-      "https://openclipart.org/image/2000px/232064"
-    );
+    expect(logo).toHaveAttribute("src", "/assets/logo.svg");
 
     // Play button
     expect(screen.getByText("Play")).toBeInTheDocument();
@@ -70,9 +64,6 @@ describe("HomePage Component", () => {
 
     const logo = screen.getByRole("img");
     expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute(
-      "src",
-      "https://openclipart.org/image/2000px/232064"
-    );
+    expect(logo).toHaveAttribute("src", "/assets/logo.svg");
   });
 });

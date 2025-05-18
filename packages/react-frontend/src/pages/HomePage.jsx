@@ -14,27 +14,14 @@ function HomePage() {
           <img
             className="home-logo"
             alt="Before or After Logo"
-            src={
-              isMobile
-                ? "https://openclipart.org/image/2000px/232064"
-                : "https://openclipart.org/image/2000px/232064"
-            }></img>
-          <h1 className="home-title">Welcome to Before or After!</h1>
-          <h2 className="home-tagline">
-            A daily game where players guess the release year of various
+            src={isMobile ? "/assets/logo.svg" : "/assets/logo.svg"}></img>
+          <h1 className="home-tagline">
+            A daily game where players compare the release dates of various
             cultural artifacts
-          </h2>
+          </h1>
           <button className="play-button" onClick={() => navigate("/game")}>
             Play
           </button>
-          {/* DELETE THIS BUTTON AFTER DEMO */}
-          <button
-            className="play-button"
-            onClick={() => navigate("/loss")}
-            style={{ marginTop: "10px" }}>
-            Demo Loss
-          </button>
-          {/* DELETE THIS BUTTON AFTER DEMO */}
         </div>
       </PageContainer>
     </Layout>
