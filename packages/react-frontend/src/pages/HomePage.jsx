@@ -14,13 +14,10 @@ function HomePage() {
           <img
             className="home-logo"
             alt="Before or After Logo"
-            src={
-              isMobile
-                ? "/assets/logo.svg"
-                : "/assets/logo.svg"
-            }></img>
+            src={isMobile ? "/assets/logo.svg" : "/assets/logo.svg"}></img>
           <h1 className="home-tagline">
-            A daily game where players compare the release dates of various cultural artifacts
+            A daily game where players compare the release dates of various
+            cultural artifacts
           </h1>
           <button className="play-button" onClick={() => navigate("/game")}>
             Play
