@@ -21,6 +21,7 @@ jest.mock("../models/Card", () => ({
           {
             title: "Test Card",
             year: 2000,
+            month: 5,
             imageUrl: "https://example.com/image.jpg",
             sourceUrl: "https://example.com/source",
             category: "test"
@@ -48,6 +49,7 @@ describe("Card Service Tests", () => {
     expect(card).toBeDefined();
     expect(card.title).toBe("Test Card");
     expect(card.year).toBe(2000);
+    expect(card.month).toBe(5);
     expect(getCardsCollection).toHaveBeenCalled();
   });
 
@@ -67,29 +69,54 @@ describe("Card Service Tests", () => {
 
   // Test processGuess
   test("processGuess returns correct=true for correct 'after' guess", async () => {
-    const result = await processGuess(1990, 2000, "after");
+    const result = await processGuess(1990, 6, 2000, 5, "after");
 
     expect(result.correct).toBe(true);
     expect(result.nextCard).toBeDefined();
   });
 
   test("processGuess returns correct=false for incorrect 'after' guess", async () => {
-    const result = await processGuess(2000, 1990, "after");
+    const result = await processGuess(2000, 5, 1990, 6, "after");
 
     expect(result.correct).toBe(false);
     expect(result.nextCard).toBeNull();
   });
 
   test("processGuess returns correct=true for correct 'before' guess", async () => {
-    const result = await processGuess(2000, 1990, "before");
+    const result = await processGuess(2000, 5, 1990, 6, "before");
 
     expect(result.correct).toBe(true);
     expect(result.nextCard).toBeDefined();
   });
 
   test("processGuess returns correct=false for incorrect 'before' guess", async () => {
-    const result = await processGuess(1990, 2000, "before");
+    const result = await processGuess(1990, 6, 2000, 5, "before");
 
+    expect(result.correct).toBe(false);
+    expect(result.nextCard).toBeNull();
+  });
+
+  // Test processGuess with months
+  test("processGuess returns correct=true for correct 'after' when same year", async () => {
+    const result = await processGuess(2000, 6, 2000, 7, "after");
+    expect(result.correct).toBe(true);
+    expect(result.nextCard).toBeDefined();
+  });
+
+  test("processGuess returns correct=false for incorrect 'after' guess when same year", async () => {
+    const result = await processGuess(2000, 6, 2000, 5, "after");
+    expect(result.correct).toBe(false);
+    expect(result.nextCard).toBeNull();
+  });
+
+  test("processGuess returns correct=true for correct 'before' guess when same year", async () => {
+    const result = await processGuess(2000, 5, 2000, 2, "before");
+    expect(result.correct).toBe(true);
+    expect(result.nextCard).toBeDefined();
+  });
+
+  test("processGuess returns correct=false for incorrect 'before' guess when same year", async () => {
+    const result = await processGuess(2000, 6, 2000, 10, "before");
     expect(result.correct).toBe(false);
     expect(result.nextCard).toBeNull();
   });
