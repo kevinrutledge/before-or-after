@@ -42,6 +42,7 @@ describe("Seed script", () => {
     const sampleCard = {
       title: "Test Card",
       year: 2000,
+      month: 5,
       imageUrl: "https://example.com/image.jpg",
       sourceUrl: "https://example.com",
       category: "test",
@@ -59,6 +60,7 @@ describe("Seed script", () => {
     const retrievedCard = cards[0];
     expect(retrievedCard).toHaveProperty("title", "Test Card");
     expect(retrievedCard).toHaveProperty("year", 2000);
+    expect(retrievedCard).toHaveProperty("month", 5);
     expect(retrievedCard).toHaveProperty("category", "test");
   });
 });

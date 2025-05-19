@@ -36,6 +36,7 @@ describe("API Routes", () => {
       res.json({
         title: "Test Card",
         year: 2000,
+        month: 5,
         imageUrl: "https://example.com/image.jpg",
         sourceUrl: "https://example.com",
         category: "test"
@@ -43,9 +44,16 @@ describe("API Routes", () => {
     });
 
     app.post("/api/cards/guess", (req, res) => {
-      const { previousYear, currentYear, guess } = req.body;
+      const { previousYear, currentYear, previousMonth, currentMonth, guess } =
+        req.body;
 
-      if (previousYear === undefined || currentYear === undefined || !guess) {
+      if (
+        previousYear === undefined ||
+        currentYear === undefined ||
+        previousMonth === undefined ||
+        currentMonth === undefined ||
+        !guess
+      ) {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
@@ -55,7 +63,10 @@ describe("API Routes", () => {
           .json({ message: "Guess must be 'before' or 'after'" });
       }
 
-      const isAfter = currentYear > previousYear;
+      const isAfter =
+        currentYear > previousYear ||
+        (currentYear === previousYear && currentMonth > previousMonth);
+
       const correct =
         (guess === "after" && isAfter) || (guess === "before" && !isAfter);
 
@@ -95,6 +106,8 @@ describe("API Routes", () => {
       const payload = {
         previousYear: 1980,
         currentYear: 1990,
+        previousMonth: 5,
+        currentMonth: 6,
         guess: "after"
       };
 
@@ -109,6 +122,8 @@ describe("API Routes", () => {
       const payload = {
         previousYear: 2000,
         currentYear: 1990,
+        previousMonth: 5,
+        currentMonth: 6,
         guess: "after"
       };
 
@@ -117,6 +132,22 @@ describe("API Routes", () => {
         .send(payload);
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("correct", false);
+    });
+
+    test("correct=true when year is same but currentMonth is later", async () => {
+      const payload = {
+        previousYear: 2000,
+        currentYear: 2000,
+        previousMonth: 3,
+        currentMonth: 7,
+        guess: "after"
+      };
+
+      const response = await request(app)
+        .post("/api/cards/guess")
+        .send(payload);
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("correct", true);
     });
   });
 });
