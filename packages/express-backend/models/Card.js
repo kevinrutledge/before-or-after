@@ -19,7 +19,7 @@ dotenv.config({ path: path.join(dirName, "../.env") });
 export const cardSchema = {
   title: { type: String, required: true },
   year: { type: Number, required: true },
-  month: {type: Number, required: true, min: 1, max: 12},
+  month: { type: Number, required: true, min: 1, max: 12 },
   imageUrl: { type: String, required: true },
   sourceUrl: { type: String, required: true },
   category: { type: String, required: true },

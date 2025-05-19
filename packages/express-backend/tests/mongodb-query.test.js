@@ -66,7 +66,7 @@ describe("MongoDB Query Performance", () => {
 
     // Execute query with explain
     const explanation = await collection
-      .find({ month:5, category: "movie" })
+      .find({ month: 5, category: "movie" })
       .explain("executionStats");
 
     // Verify execution plan
