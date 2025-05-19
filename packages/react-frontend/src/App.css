@@ -891,3 +891,62 @@ footer {
 .text-button:hover {
   color: #1d4ed8;
 }
+
+/* Issue 19 code */
+
+.result-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.result-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.result-message {
+  font-size: 2rem;
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 1rem;
+  transform: scale(0.8);
+  transition: transform 0.3s ease-in-out;
+}
+
+.result-overlay.visible .result-message {
+  transform: scale(1);
+}
+
+/* Issue 19 code: Card transition animations */
+.card {
+  transition: transform 0.5s ease-in-out;
+}
+
+.card-enter {
+  transform: translateX(100%);
+}
+
+.card-enter-active {
+  transform: translateX(0);
+}
+
+.card-exit {
+  transform: translateX(0);
+}
+
+.card-exit-active {
+  transform: translateX(-100%);
+}

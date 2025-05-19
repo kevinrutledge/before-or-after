@@ -5,6 +5,7 @@ import { useGame } from "../context/GameContext";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
+import ResultOverlay from "../components/ResultOverlay";
 
 function GamePage() {
   const isMobile = useIsMobile();
@@ -15,6 +16,15 @@ function GamePage() {
   const [currentCard, setCurrentCard] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Overlay and animation state
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [overlayData, setOverlayData] = useState({
+    oldTitle: "",
+    newTitle: "",
+    relation: ""
+  });
+  const [cardAnim, setCardAnim] = useState(""); // '', 'card-exit-active', etc.
 
   // Fetch initial card on component mount
   useEffect(() => {
@@ -55,14 +65,32 @@ function GamePage() {
         })
       });
 
+      // Show overlay with result
+      setOverlayData({
+        oldTitle: referenceCard.title,
+        newTitle: currentCard.title,
+        relation: guess === "before" ? "Before" : "After"
+      });
+      setShowOverlay(true);
+      setCardAnim("card-exit-active");
+
+      setTimeout(() => {
+        setCardAnim("card-enter-active");
+      }, 500);
+
       if (result.correct) {
-        // Update score and continue
-        incrementScore();
-        setReferenceCard(currentCard);
-        setCurrentCard(result.nextCard);
+        // Update score and continue after overlay
+        setTimeout(() => {
+          incrementScore();
+          setReferenceCard(currentCard);
+          setCurrentCard(result.nextCard);
+          setCardAnim("");
+        }, 1500);
       } else {
-        // Game over
-        navigate("/loss");
+        // Game over after overlay
+        setTimeout(() => {
+          navigate("/loss");
+        }, 1500);
       }
 
       setIsLoading(false);
@@ -70,6 +98,10 @@ function GamePage() {
       setError("Failed to process guess");
       setIsLoading(false);
     }
+  };
+
+  const handleOverlayComplete = () => {
+    setShowOverlay(false);
   };
 
   if (isLoading && !referenceCard) {
@@ -107,7 +139,7 @@ function GamePage() {
           <div
             className={`cards-container ${isMobile ? "stacked" : "side-by-side"}`}>
             {/* Reference Card */}
-            <div className="card reference-card">
+            <div className={`card reference-card ${cardAnim}`}>
               <h2>{referenceCard?.title}</h2>
               <p>Year: {referenceCard?.year}</p>
               <div className="placeholder-image">
@@ -128,7 +160,7 @@ function GamePage() {
             </div>
 
             {/* Current Card */}
-            <div className="card current-card">
+            <div className={`card current-card ${cardAnim}`}>
               <h2>{currentCard?.title}</h2>
               <div className="spacer"></div>
               <div className="placeholder-image">
@@ -171,6 +203,13 @@ function GamePage() {
             Back to Home
           </button>
         </div>
+        <ResultOverlay
+          visible={showOverlay}
+          oldTitle={overlayData.oldTitle}
+          newTitle={overlayData.newTitle}
+          relation={overlayData.relation}
+          onAnimationComplete={handleOverlayComplete}
+        />
       </PageContainer>
     </Layout>
   );
