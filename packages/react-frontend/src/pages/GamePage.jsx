@@ -1,17 +1,131 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { apiRequest } from "../utils/apiClient";
+import { useGame } from "../context/GameContext";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
-import { useNavigate } from "react-router-dom";
-import { useGame } from "../context/GameContext";
+import ResultOverlay from "../components/ResultOverlay";
 
 function GamePage() {
   const isMobile = useIsMobile();
-  const { score } = useGame();
+  const { score, incrementScore, resetScore } = useGame();
   const navigate = useNavigate();
-  const handleCardClick = (selection) => {
-    console.log(`User selected: ${selection}`);
-    // Add logic for handling the selection
+
+  const [referenceCard, setReferenceCard] = useState(null);
+  const [currentCard, setCurrentCard] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Overlay and animation state
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [overlayData, setOverlayData] = useState({
+    oldTitle: "",
+    newTitle: "",
+    relation: ""
+  });
+  const [cardAnim, setCardAnim] = useState(""); // '', 'card-exit-active', etc.
+
+  // Fetch initial card on component mount
+  useEffect(() => {
+    const fetchInitialCard = async () => {
+      try {
+        setIsLoading(true);
+        const card = await apiRequest("/api/cards/next");
+        setReferenceCard(card);
+
+        // Get a second card
+        const nextCard = await apiRequest("/api/cards/next");
+        setCurrentCard(nextCard);
+
+        setIsLoading(false);
+      } catch {
+        setError("Failed to load cards");
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialCard();
+    resetScore();
+  }, [resetScore]);
+
+  // Handle guess
+  const handleGuess = async (guess) => {
+    if (!referenceCard || !currentCard) return;
+
+    try {
+      setIsLoading(true);
+
+      const result = await apiRequest("/api/cards/guess", {
+        method: "POST",
+        body: JSON.stringify({
+          previousYear: referenceCard.year,
+          currentYear: currentCard.year,
+          guess
+        })
+      });
+
+      // Show overlay with result
+      setOverlayData({
+        oldTitle: referenceCard.title,
+        newTitle: currentCard.title,
+        relation: guess === "before" ? "Before" : "After"
+      });
+      setShowOverlay(true);
+      setCardAnim("card-exit-active");
+
+      setTimeout(() => {
+        setCardAnim("card-enter-active");
+      }, 500);
+
+      if (result.correct) {
+        // Update score and continue after overlay
+        setTimeout(() => {
+          incrementScore();
+          setReferenceCard(currentCard);
+          setCurrentCard(result.nextCard);
+          setCardAnim("");
+        }, 1500);
+      } else {
+        // Game over after overlay
+        setTimeout(() => {
+          navigate("/loss");
+        }, 1500);
+      }
+
+      setIsLoading(false);
+    } catch {
+      setError("Failed to process guess");
+      setIsLoading(false);
+    }
   };
+
+  const handleOverlayComplete = () => {
+    setShowOverlay(false);
+  };
+
+  if (isLoading && !referenceCard) {
+    return (
+      <Layout>
+        <PageContainer>
+          <div className="loading">Loading game...</div>
+        </PageContainer>
+      </Layout>
+    );
+  }
+
+  if (error) {
+    return (
+      <Layout>
+        <PageContainer>
+          <div className="error-message">{error}</div>
+          <button className="back-home-button" onClick={() => navigate("/")}>
+            Back to Home
+          </button>
+        </PageContainer>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -21,37 +135,81 @@ function GamePage() {
           <div className="score-display">
             <p>Current Score: {score}</p>
           </div>
+
           <div
             className={`cards-container ${isMobile ? "stacked" : "side-by-side"}`}>
-            <div
-              className="card before-card"
-              onClick={() => handleCardClick("before")}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && handleCardClick("before")}>
-              <h2>Before</h2>
-              <p>Item: Example Item</p>
-              <p>Year: Example Year</p>
-              <div className="placeholder-image">Image Placeholder</div>
+            {/* Reference Card */}
+            <div className={`card reference-card ${cardAnim}`}>
+              <h2>{referenceCard?.title}</h2>
+              <p>Year: {referenceCard?.year}</p>
+              <div className="placeholder-image">
+                {referenceCard?.imageUrl ? (
+                  <img
+                    src={referenceCard.imageUrl}
+                    alt={referenceCard.title}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "fallback-image.jpg"; // Optional fallback image
+                      e.target.alt = "Image not available";
+                    }}
+                  />
+                ) : (
+                  "No Image"
+                )}
+              </div>
             </div>
-            <div
-              className="card after-card"
-              onClick={() => handleCardClick("after")}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === "Enter" && handleCardClick("after")}>
-              <h2>After</h2>
-              <p>Item: Example Item</p>
+
+            {/* Current Card */}
+            <div className={`card current-card ${cardAnim}`}>
+              <h2>{currentCard?.title}</h2>
               <div className="spacer"></div>
-              <div className="placeholder-image">Image Placeholder</div>
+              <div className="placeholder-image">
+                {currentCard?.imageUrl ? (
+                  <img
+                    src={currentCard.imageUrl}
+                    alt={currentCard.title}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "fallback-image.jpg"; // Optional fallback image
+                      e.target.alt = "Image not available";
+                    }}
+                  />
+                ) : (
+                  "No Image"
+                )}
+              </div>
             </div>
           </div>
-          <div>
-            <button className="back-home-button" onClick={() => navigate("/")}>
-              Back to Home
+
+          <div className="guess-buttons">
+            <button
+              className="before-button"
+              onClick={() => handleGuess("before")}
+              disabled={isLoading}>
+              Before
+            </button>
+            <button
+              className="after-button"
+              onClick={() => handleGuess("after")}
+              disabled={isLoading}>
+              After
             </button>
           </div>
+
+          <button
+            className="back-home-button"
+            onClick={() => navigate("/")}
+            style={{ marginTop: "20px" }}>
+            Back to Home
+          </button>
         </div>
+        <ResultOverlay
+          visible={showOverlay}
+          oldTitle={overlayData.oldTitle}
+          newTitle={overlayData.newTitle}
+          relation={overlayData.relation}
+          onAnimationComplete={handleOverlayComplete}
+        />
       </PageContainer>
     </Layout>
   );

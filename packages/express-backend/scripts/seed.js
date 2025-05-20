@@ -1,7 +1,16 @@
-import dotenv from "dotenv";
 import { getCardsCollection } from "../models/Card.js";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+let dirName;
+try {
+  dirName = path.dirname(fileURLToPath(import.meta.url));
+} catch {
+  dirName = process.cwd();
+}
+
+dotenv.config({ path: path.join(dirName, "../.env") });
 
 /**
  * Seed database with sample cards for gameplay testing.
@@ -29,6 +38,7 @@ export async function seedDatabase() {
       {
         title: "Star Wars: A New Hope",
         year: 1977,
+        month: 5,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/8/82/Leiadeathstar.jpg",
         sourceUrl: "https://www.imdb.com/title/tt0076759/",
@@ -39,6 +49,7 @@ export async function seedDatabase() {
       {
         title: "The Beatles - Abbey Road",
         year: 1969,
+        month: 9,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg",
         sourceUrl: "https://en.wikipedia.org/wiki/Abbey_Road",
@@ -49,6 +60,7 @@ export async function seedDatabase() {
       {
         title: "Super Mario Bros",
         year: 1985,
+        month: 9,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/0/03/Super_Mario_Bros._box.png",
         sourceUrl: "https://en.wikipedia.org/wiki/Super_Mario_Bros",
@@ -59,6 +71,7 @@ export async function seedDatabase() {
       {
         title: "iPhone First Generation",
         year: 2007,
+        month: 6,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/IPhone_1st_Gen.svg/800px-IPhone_1st_Gen.svg.png",
         sourceUrl: "https://en.wikipedia.org/wiki/IPhone_(1st_generation)",
@@ -69,6 +82,7 @@ export async function seedDatabase() {
       {
         title: "Mona Lisa",
         year: 1503,
+        month: 10,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/commons/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
         sourceUrl: "https://en.wikipedia.org/wiki/Mona_Lisa",
@@ -79,6 +93,7 @@ export async function seedDatabase() {
       {
         title: "The Shining",
         year: 1980,
+        month: 5,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/b/bb/The_shining_heres_johnny.jpg",
         sourceUrl: "https://www.imdb.com/title/tt0081505/",
@@ -89,6 +104,7 @@ export async function seedDatabase() {
       {
         title: "Michael Jackson - Thriller",
         year: 1982,
+        month: 11,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/5/55/Michael_Jackson_-_Thriller.png",
         sourceUrl: "https://en.wikipedia.org/wiki/Thriller_(album)",
@@ -99,6 +115,7 @@ export async function seedDatabase() {
       {
         title: "World Wide Web",
         year: 1989,
+        month: 3,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/First_Web_Server.jpg/1920px-First_Web_Server.jpg",
         sourceUrl: "https://en.wikipedia.org/wiki/World_Wide_Web",
@@ -109,6 +126,7 @@ export async function seedDatabase() {
       {
         title: "The Starry Night",
         year: 1889,
+        month: 6,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1920px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
         sourceUrl: "https://en.wikipedia.org/wiki/The_Starry_Night",
@@ -119,6 +137,7 @@ export async function seedDatabase() {
       {
         title: "Minecraft",
         year: 2011,
+        month: 11,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/1/17/Minecraft_explore_landscape.png",
         sourceUrl: "https://en.wikipedia.org/wiki/Minecraft",
@@ -127,6 +146,13 @@ export async function seedDatabase() {
         updatedAt: new Date()
       }
     ];
+
+    // Validate each card has valid month before inserting
+    for (const card of sampleCards) {
+      if (card.month < 1 || card.month > 12) {
+        throw new Error(`Invalid month: ${card.month} in card: ${card.title}`);
+      }
+    }
 
     // Insert sample cards
     const insertResult = await collection.insertMany(sampleCards);

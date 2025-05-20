@@ -1,7 +1,16 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+let dirName;
+try {
+  dirName = path.dirname(fileURLToPath(import.meta.url));
+} catch {
+  dirName = process.cwd();
+}
+
+dotenv.config({ path: path.join(dirName, "../.env") });
 
 /**
  * Connect to MongoDB cluster with mongoose.
@@ -13,9 +22,8 @@ export async function connectToDatabase() {
   }
 
   try {
-    // Establish connection to cluster
+    // Connect with default options
     await mongoose.connect(process.env.MONGO_URI);
-
     console.info("MongoDB connection established");
     return mongoose.connection;
   } catch (error) {
@@ -30,17 +38,13 @@ export async function connectToDatabase() {
 export async function testConnection() {
   try {
     await connectToDatabase();
-
-    // Verify connection with simple command
     const result = await mongoose.connection.db.admin().ping();
     console.info("MongoDB connection successful:", result);
-
     return true;
   } catch (error) {
     console.error("MongoDB connection test failed:", error);
     return false;
   } finally {
-    // Close connection after test
     if (mongoose.connection.readyState !== 0) {
       await mongoose.disconnect();
       console.info("MongoDB connection closed");

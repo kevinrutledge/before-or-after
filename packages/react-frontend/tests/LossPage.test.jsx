@@ -5,9 +5,18 @@ import LossPage from "../src/pages/LossPage";
 import useIsMobile from "../src/hooks/useIsMobile";
 import { MemoryRouter } from "react-router-dom";
 import { GameProvider } from "../src/context/GameContext";
+import { MockAuthProvider } from "./mocks/AuthContext";
 
 // Mock the `useIsMobile` hook
 jest.mock("../src/hooks/useIsMobile");
+
+// Mock the AuthContext
+jest.mock("../src/context/AuthContext", () => {
+  const mockModule = jest.requireActual("./mocks/AuthContext");
+  return {
+    useAuth: mockModule.useAuth
+  };
+});
 
 describe("LossPage Component", () => {
   test("renders the LossPage with all elements", () => {
@@ -16,17 +25,20 @@ describe("LossPage Component", () => {
 
     render(
       <MemoryRouter>
-        <GameProvider>
-          <LossPage />
-        </GameProvider>
+        <MockAuthProvider>
+          <GameProvider>
+            <LossPage />
+          </GameProvider>
+        </MockAuthProvider>
       </MemoryRouter>
     );
 
     // Check for the title
     expect(screen.getByText("Game Over")).toBeInTheDocument();
 
-    // Check for the final score
-    expect(screen.getByText("Your score: 0")).toBeInTheDocument();
+    // Check for the score label and value separately
+    expect(screen.getByText("Your score")).toBeInTheDocument();
+    expect(screen.getByText("0")).toBeInTheDocument();
 
     // Check for the GIF placeholder (on desktop btw)
     expect(screen.getByText("GIF Placeholder (Desktop)")).toBeInTheDocument();
@@ -42,9 +54,11 @@ describe("LossPage Component", () => {
 
     render(
       <MemoryRouter>
-        <GameProvider>
-          <LossPage />
-        </GameProvider>
+        <MockAuthProvider>
+          <GameProvider>
+            <LossPage />
+          </GameProvider>
+        </MockAuthProvider>
       </MemoryRouter>
     );
 

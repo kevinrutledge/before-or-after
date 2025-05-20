@@ -7,8 +7,9 @@
     "test": "jest --config=jest.config.cjs",
     "test:watch": "jest --watch --config=jest.config.cjs",
     "test:coverage": "jest --coverage --config=jest.config.cjs",
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "dev": "nodemon --experimental-json-modules api/local-dev.js",
+    "build": "mkdir -p public && echo \"Before or After API\" > public/index.html",
+    "start": "node --experimental-json-modules api/local-dev.js",
     "test-db": "jest --config=jest.config.cjs tests/mongodb-*.test.js",
     "seed": "node scripts/seed.js"
   },
@@ -17,13 +18,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "@aws-sdk/client-s3": "^3.800.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
-    "mongoose": "^8.14.2"
+    "mongoose": "^8.14.2",
+    "nodemailer": "^7.0.3"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.8",
