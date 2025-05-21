@@ -1,6 +1,6 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { jest } from "@jest/globals";
 import { beforeEach, describe, test, expect } from "@jest/globals";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import GamePage from "../../src/pages/GamePage";
 import { GameProvider } from "../../src/context/GameContext";
