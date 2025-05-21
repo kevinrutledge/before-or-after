@@ -1,7 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import { useAuth } from "./AuthContext";
 
-
 const GameContext = createContext();
 
 // Storage keys for scores
@@ -103,24 +102,6 @@ export function GameProvider({ children }) {
     }
   };
 
-//increments score and changes game status
-const handleCorrectGuess = () => {
-  setScore(prev => prev + 1);
-  setGameStatus("correct");
-};
-
-//updates highscore and changes game status
-const handleIncorrectGuess = () =>{
-  //update high score
-  if(score > highscore){
-    setHighscore(score)
-  }
-
-  setGameStatus('incorrect');
-}
-
-  
-
   return (
     <GameContext.Provider
       value={{
@@ -129,8 +110,6 @@ const handleIncorrectGuess = () =>{
         highscore,
         setHighscore,
         gameStatus,
-        handleCorrectGuess,
-        handleIncorrectGuess,
         setGameStatus,
         incrementScore,
         resetScore,
@@ -140,8 +119,6 @@ const handleIncorrectGuess = () =>{
     </GameContext.Provider>
   );
 }
-
-
 
 export function useGame() {
   return useContext(GameContext);
