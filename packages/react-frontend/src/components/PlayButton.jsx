@@ -3,7 +3,7 @@ import styled from "styled-components";
 const PlayButton = () => {
   return (
     <StyledWrapper>
-      <button>
+      <button className="play-button">
         Play
         <div className="star-1">
           <svg
@@ -155,154 +155,127 @@ const PlayButton = () => {
 };
 
 const StyledWrapper = styled.div`
-  button {
+  .play-button {
     position: relative;
     padding: 12px 35px;
-    background: #fec195;
-    font-size: 17px;
-    font-weight: 500;
-    color: #181818;
-    border: 3px solid #fec195;
+    background: #a259e6; /* main purple */
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    border: 2px solid #7c3aed; /* darker purple */
     border-radius: 8px;
-    box-shadow: 0 0 0 #fec1958c;
+    box-shadow: 0 0 0 #e0bbff;
     transition: all 0.3s ease-in-out;
     cursor: pointer;
+    outline: none;
   }
 
-  .star-1 {
+  .play-button:hover,
+  .play-button:focus {
+    background: #c084fc; /* lighter purple */
+    color: #fff;
+    box-shadow: 0 0 25px #e0bbff;
+    border-color: #a259e6;
+  }
+
+  .star-1,
+  .star-2,
+  .star-3,
+  .star-4,
+  .star-5,
+  .star-6 {
     position: absolute;
-    top: 20%;
-    left: 20%;
-    width: 25px;
-    height: auto;
-    filter: drop-shadow(0 0 0 #fffdef);
+    filter: drop-shadow(0 0 0 #e0bbff);
     z-index: -5;
     transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96);
   }
 
+  .star-1 {
+    top: 20%;
+    left: 20%;
+    width: 25px;
+    height: auto;
+  }
+
   .star-2 {
-    position: absolute;
     top: 45%;
     left: 45%;
     width: 15px;
     height: auto;
-    filter: drop-shadow(0 0 0 #fffdef);
-    z-index: -5;
-    transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
   }
 
   .star-3 {
-    position: absolute;
     top: 40%;
     left: 40%;
     width: 5px;
     height: auto;
-    filter: drop-shadow(0 0 0 #fffdef);
-    z-index: -5;
-    transition: all 1s cubic-bezier(0, 0.4, 0, 1.01);
   }
 
   .star-4 {
-    position: absolute;
     top: 20%;
     left: 40%;
     width: 8px;
     height: auto;
-    filter: drop-shadow(0 0 0 #fffdef);
-    z-index: -5;
-    transition: all 0.8s cubic-bezier(0, 0.4, 0, 1.01);
   }
 
   .star-5 {
-    position: absolute;
     top: 25%;
     left: 45%;
     width: 15px;
     height: auto;
-    filter: drop-shadow(0 0 0 #fffdef);
-    z-index: -5;
-    transition: all 0.6s cubic-bezier(0, 0.4, 0, 1.01);
   }
 
   .star-6 {
-    position: absolute;
     top: 5%;
     left: 50%;
     width: 5px;
     height: auto;
-    filter: drop-shadow(0 0 0 #fffdef);
-    z-index: -5;
-    transition: all 0.8s ease;
   }
 
-  button:hover {
-    background: transparent;
-    color: #fec195;
-    box-shadow: 0 0 25px #fec1958c;
-  }
-
-  button:hover .star-1 {
-    position: absolute;
+  .play-button:hover .star-1 {
     top: -80%;
     left: -30%;
-    width: 25px;
-    height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
   }
 
-  button:hover .star-2 {
-    position: absolute;
+  .play-button:hover .star-2 {
     top: -25%;
     left: 10%;
-    width: 15px;
-    height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
   }
 
-  button:hover .star-3 {
-    position: absolute;
+  .play-button:hover .star-3 {
     top: 55%;
     left: 25%;
-    width: 5px;
-    height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
   }
 
-  button:hover .star-4 {
-    position: absolute;
+  .play-button:hover .star-4 {
     top: 30%;
     left: 80%;
-    width: 8px;
-    height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
   }
 
-  button:hover .star-5 {
-    position: absolute;
+  .play-button:hover .star-5 {
     top: 25%;
     left: 115%;
-    width: 15px;
-    height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
   }
 
-  button:hover .star-6 {
-    position: absolute;
+  .play-button:hover .star-6 {
     top: 5%;
     left: 60%;
-    width: 5px;
-    height: auto;
     filter: drop-shadow(0 0 10px #fffdef);
     z-index: 2;
   }
 
   .fil0 {
-    fill: #fffdef;
+    fill: #e0bbff; /* pastel/light purple for stars */
   }
 `;
 

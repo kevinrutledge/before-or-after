@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import ResultOverlay from "../components/ResultOverlay";
+import Card from "../components/Card";
 
 function GamePage() {
   const isMobile = useIsMobile();
@@ -24,7 +25,7 @@ function GamePage() {
     newTitle: "",
     relation: ""
   });
-  const [cardAnim, setCardAnim] = useState(""); // '', 'card-exit-active', etc.
+  const [, /*cardAnim*/ setCardAnim] = useState(""); // '', 'card-exit-active', etc.
 
   // Fetch initial card on component mount
   useEffect(() => {
@@ -56,11 +57,21 @@ function GamePage() {
     try {
       setIsLoading(true);
 
+      console.log({
+        previousYear: referenceCard?.year,
+        previousMonth: referenceCard?.month,
+        currentYear: currentCard?.year,
+        currentMonth: currentCard?.month,
+        guess
+      });
+
       const result = await apiRequest("/api/cards/guess", {
         method: "POST",
         body: JSON.stringify({
           previousYear: referenceCard.year,
+          previousMonth: referenceCard.month,
           currentYear: currentCard.year,
+          currentMonth: currentCard.month,
           guess
         })
       });
@@ -139,46 +150,22 @@ function GamePage() {
           <div
             className={`cards-container ${isMobile ? "stacked" : "side-by-side"}`}>
             {/* Reference Card */}
-            <div className={`card reference-card ${cardAnim}`}>
-              <h2>{referenceCard?.title}</h2>
-              <p>Year: {referenceCard?.year}</p>
-              <div className="placeholder-image">
-                {referenceCard?.imageUrl ? (
-                  <img
-                    src={referenceCard.imageUrl}
-                    alt={referenceCard.title}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "fallback-image.jpg"; // Optional fallback image
-                      e.target.alt = "Image not available";
-                    }}
-                  />
-                ) : (
-                  "No Image"
-                )}
-              </div>
-            </div>
+            <Card
+              title={referenceCard?.title}
+              imageUrl={referenceCard?.imageUrl}
+              year={referenceCard?.year}
+              month={referenceCard?.month}
+              isReference={true}
+            />
 
-            {/* Current Card */}
-            <div className={`card current-card ${cardAnim}`}>
-              <h2>{currentCard?.title}</h2>
-              <div className="spacer"></div>
-              <div className="placeholder-image">
-                {currentCard?.imageUrl ? (
-                  <img
-                    src={currentCard.imageUrl}
-                    alt={currentCard.title}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "fallback-image.jpg"; // Optional fallback image
-                      e.target.alt = "Image not available";
-                    }}
-                  />
-                ) : (
-                  "No Image"
-                )}
-              </div>
-            </div>
+            {/* Current Card (guess card) */}
+            <Card
+              title={currentCard?.title}
+              imageUrl={currentCard?.imageUrl}
+              year={currentCard?.year}
+              month={currentCard?.month}
+              isReference={false}
+            />
           </div>
 
           <div className="guess-buttons">

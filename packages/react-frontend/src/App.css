@@ -118,6 +118,12 @@ main {
   display: block;
 }
 
+.card-date {
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-top: 0.5rem;
+}
+
 .placeholder-image {
   background-color: #e5e7eb;
   height: 300px;
