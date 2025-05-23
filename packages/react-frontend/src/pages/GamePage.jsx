@@ -156,8 +156,7 @@ function GamePage() {
               imageUrl={currentCard?.imageUrl}
               year={currentCard?.year}
               month={currentCard?.month}
-              isReference={false}
-            >
+              isReference={false}>
               <div className="guess-buttons">
                 <button
                   className="before-button"

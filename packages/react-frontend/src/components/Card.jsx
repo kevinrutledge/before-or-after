@@ -46,7 +46,8 @@ function Card({ title, imageUrl, year, month, isReference, children }) {
     <div className={`card ${isReference ? "reference-card" : "current-card"}`}>
       <h3 className="card-title">{title}</h3>
       <div className="card-date">
-        {isReference ? `${month}/${year}` : "?"} {/* Display date only for reference cards */}
+        {isReference ? `${month}/${year}` : "?"}{" "}
+        {/* Display date only for reference cards */}
       </div>
       <div className="card-image">
         <img src={imageUrl} alt={title} />
