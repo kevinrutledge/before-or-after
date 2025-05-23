@@ -3,7 +3,7 @@ import Card from "../../src/components/Card";
 import { describe, it, expect } from "@jest/globals";
 
 describe("Card component", () => {
-  it("shows formatted date as 'Month Year' for reference card", () => {
+  it("shows numeric date format for reference card", () => {
     render(
       <Card
         title="Mona Lisa"
@@ -13,7 +13,7 @@ describe("Card component", () => {
         isReference={true}
       />
     );
-    expect(screen.getByText("October 1503")).toBeInTheDocument();
+    expect(screen.getByText("10/1503")).toBeInTheDocument();
   });
 
   it("hides date for non-reference card", () => {
@@ -26,15 +26,13 @@ describe("Card component", () => {
         isReference={false}
       />
     );
-    // Should not find any month name
-    expect(
-      screen.queryByText(
-        /January|February|March|April|May|June|July|August|September|October|November|December/
-      )
-    ).not.toBeInTheDocument();
+    // Should show question mark instead of date
+    expect(screen.getByText("?")).toBeInTheDocument();
+    // Should not show the actual date
+    expect(screen.queryByText("9/1969")).not.toBeInTheDocument();
   });
 
-  it("shows correct month name for single-digit month", () => {
+  it("shows correct numeric format for single-digit month", () => {
     render(
       <Card
         title="Star Wars"
@@ -44,6 +42,6 @@ describe("Card component", () => {
         isReference={true}
       />
     );
-    expect(screen.getByText("May 1977")).toBeInTheDocument();
+    expect(screen.getByText("5/1977")).toBeInTheDocument();
   });
 });
