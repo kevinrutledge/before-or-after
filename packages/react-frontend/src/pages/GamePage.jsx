@@ -58,7 +58,6 @@ function GamePage() {
     try {
       setIsLoading(true);
 
-
       // Use compareCards utility for core logic
       const isCorrect = compareCards(referenceCard, currentCard, guess);
 
