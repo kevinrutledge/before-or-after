@@ -157,7 +157,10 @@ function GamePage() {
               year={currentCard?.year}
               month={currentCard?.month}
               isReference={false}>
-              <div className="guess-buttons">
+              <div className="guess-sentence">
+                <span className="card-sentence">
+                  <strong>{currentCard?.title}</strong> is
+                </span>
                 <button
                   className="before-button"
                   onClick={() => handleGuess("before")}
@@ -170,6 +173,9 @@ function GamePage() {
                   disabled={isLoading}>
                   After
                 </button>
+                <span className="card-sentence">
+                  <strong>{referenceCard?.title}</strong>
+                </span>
               </div>
             </Card>
 
