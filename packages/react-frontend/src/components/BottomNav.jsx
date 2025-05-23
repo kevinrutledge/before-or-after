@@ -27,6 +27,13 @@ function BottomNav() {
     <nav className="mobile-only bottom-nav">
       <div className="container">
         <div className="nav-items">
+          <button
+              className="back-home-button"
+              onClick={() => navigate("/")}
+              style={{ marginTop: "20px" }}>
+              Back to Home
+          </button>
+          
           {/* Left: High Score */}
           <div className="high-score">High: {highscore}</div>
 
