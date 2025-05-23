@@ -41,6 +41,9 @@ function Header() {
     <header className="desktop-only">
       <div className="container">
         <nav className="header-nav">
+          <button className="back-home-button" onClick={() => navigate("/")}>
+            Back to Home
+          </button>
           {/* Left: High Score */}
           <div className="high-score">High Score: {highscore}</div>
 

@@ -1,3 +1,5 @@
+import React from "react";
+
 /**
  * Card component for displaying artifact info.
  * @param {Object} props
@@ -27,15 +29,35 @@ function formatDate(month, year) {
   const monthName = monthNames[month - 1] || "";
   return `${monthName} ${year}`;
 }
+function Card({ title, imageUrl, year, month, isReference, children }) {
+  // Extract the domain name from the imageUrl
+  const getSourceFromUrl = (url) => {
+    try {
+      const { hostname } = new URL(url);
+      return hostname.replace("www.", ""); // Remove "www." for cleaner display
+    } catch {
+      return "Unknown Source"; // Fallback if the URL is invalid
+    }
+  };
 
-const Card = ({ title, imageUrl, year, month, isReference }) => (
-  <div className="card">
-    <h2>{title}</h2>
-    {isReference && <div className="card-date">{formatDate(month, year)}</div>}
-    <div className="placeholder-image">
-      {imageUrl ? <img src={imageUrl} alt={title} /> : "No Image"}
+  const source = getSourceFromUrl(imageUrl);
+
+  return (
+    <div className={`card ${isReference ? "reference-card" : "current-card"}`}>
+      <h3 className="card-title">{title}</h3>
+      <div className="card-date">
+        {isReference ? `${month}/${year}` : "?"}{" "}
+        {/* Display date only for reference cards */}
+      </div>
+      <div className="card-image">
+        <img src={imageUrl} alt={title} />
+      </div>
+      {children}
+      <div className={`card-source ${isReference ? "left" : "right"}`}>
+        Source: {source}
+      </div>
     </div>
-  </div>
-);
+  );
+}
 
 export default Card;

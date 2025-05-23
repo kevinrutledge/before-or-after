@@ -149,46 +149,40 @@ function GamePage() {
 
           <div
             className={`cards-container ${isMobile ? "stacked" : "side-by-side"}`}>
+            {/* Current Card (guess card) */}
+            <Card
+              className="current-card"
+              title={currentCard?.title}
+              imageUrl={currentCard?.imageUrl}
+              year={currentCard?.year}
+              month={currentCard?.month}
+              isReference={false}>
+              <div className="guess-buttons">
+                <button
+                  className="before-button"
+                  onClick={() => handleGuess("before")}
+                  disabled={isLoading}>
+                  Before
+                </button>
+                <button
+                  className="after-button"
+                  onClick={() => handleGuess("after")}
+                  disabled={isLoading}>
+                  After
+                </button>
+              </div>
+            </Card>
+
             {/* Reference Card */}
             <Card
+              className="reference-card"
               title={referenceCard?.title}
               imageUrl={referenceCard?.imageUrl}
               year={referenceCard?.year}
               month={referenceCard?.month}
               isReference={true}
             />
-
-            {/* Current Card (guess card) */}
-            <Card
-              title={currentCard?.title}
-              imageUrl={currentCard?.imageUrl}
-              year={currentCard?.year}
-              month={currentCard?.month}
-              isReference={false}
-            />
           </div>
-
-          <div className="guess-buttons">
-            <button
-              className="before-button"
-              onClick={() => handleGuess("before")}
-              disabled={isLoading}>
-              Before
-            </button>
-            <button
-              className="after-button"
-              onClick={() => handleGuess("after")}
-              disabled={isLoading}>
-              After
-            </button>
-          </div>
-
-          <button
-            className="back-home-button"
-            onClick={() => navigate("/")}
-            style={{ marginTop: "20px" }}>
-            Back to Home
-          </button>
         </div>
         <ResultOverlay
           visible={showOverlay}
