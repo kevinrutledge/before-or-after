@@ -1,8 +1,8 @@
 :root {
   --primary-color: rgb(37, 99, 235);
-  --before-blue:rgb(86, 54, 230);
-  --before-red:rgb(214, 37, 37);
-  --before-purple:rgb(121, 51, 209);
+  --before-blue: rgb(86, 54, 230);
+  --before-red: rgb(214, 37, 37);
+  --before-purple: rgb(121, 51, 209);
   --secondary-color: #4b5563;
   --accent-color: #f59e0b;
   --background-color: #f8fafc;
@@ -601,7 +601,9 @@ footer {
   border: none;
   border-radius: 0.5rem;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 

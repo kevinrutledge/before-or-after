@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * Card component for displaying artifact info.
  * @param {Object} props
@@ -9,7 +7,7 @@ import React from "react";
  * @param {Number} props.month - Release month (1-12)
  * @param {Boolean} props.isReference - Whether this is a reference card
  */
-function formatDate(month, year) {
+/*function formatDate(month, year) {  // uncomment when needed
   if (!month || !year) return "";
   const monthNames = [
     "January",
@@ -28,7 +26,7 @@ function formatDate(month, year) {
   // month is 1-based, so subtract 1 for array index
   const monthName = monthNames[month - 1] || "";
   return `${monthName} ${year}`;
-}
+}*/
 function Card({ title, imageUrl, year, month, isReference, children }) {
   // Extract the domain name from the imageUrl
   const getSourceFromUrl = (url) => {
