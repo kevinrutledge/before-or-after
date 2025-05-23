@@ -19,6 +19,7 @@ dotenv.config({ path: path.join(dirName, "../.env") });
 export const cardSchema = {
   title: { type: String, required: true },
   year: { type: Number, required: true },
+  month: { type: Number, required: true, min: 1, max: 12 },
   imageUrl: { type: String, required: true },
   sourceUrl: { type: String, required: true },
   category: { type: String, required: true },
@@ -61,7 +62,8 @@ async function ensureIndexes(collection) {
   await collection.createIndexes([
     { key: { year: 1 }, name: "year_index" },
     { key: { category: 1 }, name: "category_index" },
-    { key: { year: 1, category: 1 }, name: "year_category_index" }
+    { key: { year: 1, category: 1 }, name: "year_category_index" },
+    { key: { month: 1, category: 1 }, name: "month_category_index" }
   ]);
 }
 

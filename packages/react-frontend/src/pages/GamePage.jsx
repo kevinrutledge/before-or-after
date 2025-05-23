@@ -7,6 +7,7 @@ import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import ResultOverlay from "../components/ResultOverlay";
 import { compareCards } from "../utils/gameUtils";
+import Card from "../components/Card";
 
 function GamePage() {
   const isMobile = useIsMobile();
@@ -25,7 +26,7 @@ function GamePage() {
     newTitle: "",
     relation: ""
   });
-  const [cardAnim, setCardAnim] = useState(""); // '', 'card-exit-active', etc.
+  const [, /*cardAnim*/ setCardAnim] = useState(""); // '', 'card-exit-active', etc.
 
   // Fetch initial card on component mount
   useEffect(() => {
@@ -57,8 +58,28 @@ function GamePage() {
     try {
       setIsLoading(true);
 
+
       // Use compareCards utility for core logic
       const isCorrect = compareCards(referenceCard, currentCard, guess);
+
+      console.log({
+        previousYear: referenceCard?.year,
+        previousMonth: referenceCard?.month,
+        currentYear: currentCard?.year,
+        currentMonth: currentCard?.month,
+        guess
+      });
+
+      const result = await apiRequest("/api/cards/guess", {
+        method: "POST",
+        body: JSON.stringify({
+          previousYear: referenceCard.year,
+          previousMonth: referenceCard.month,
+          currentYear: currentCard.year,
+          currentMonth: currentCard.month,
+          guess
+        })
+      });
 
       // Show overlay with result
       setOverlayData({
@@ -135,70 +156,40 @@ function GamePage() {
 
           <div
             className={`cards-container ${isMobile ? "stacked" : "side-by-side"}`}>
+            {/* Current Card (guess card) */}
+            <Card
+              className="current-card"
+              title={currentCard?.title}
+              imageUrl={currentCard?.imageUrl}
+              year={currentCard?.year}
+              month={currentCard?.month}
+              isReference={false}>
+              <div className="guess-buttons">
+                <button
+                  className="before-button"
+                  onClick={() => handleGuess("before")}
+                  disabled={isLoading}>
+                  Before
+                </button>
+                <button
+                  className="after-button"
+                  onClick={() => handleGuess("after")}
+                  disabled={isLoading}>
+                  After
+                </button>
+              </div>
+            </Card>
+
             {/* Reference Card */}
-            <div className={`card reference-card ${cardAnim}`}>
-              <h2>{referenceCard?.title}</h2>
-              <p>Year: {referenceCard?.year}</p>
-              <div className="placeholder-image">
-                {referenceCard?.imageUrl ? (
-                  <img
-                    src={referenceCard.imageUrl}
-                    alt={referenceCard.title}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "fallback-image.jpg"; // Optional fallback image
-                      e.target.alt = "Image not available";
-                    }}
-                  />
-                ) : (
-                  "No Image"
-                )}
-              </div>
-            </div>
-
-            {/* Current Card */}
-            <div className={`card current-card ${cardAnim}`}>
-              <h2>{currentCard?.title}</h2>
-              <div className="spacer"></div>
-              <div className="placeholder-image">
-                {currentCard?.imageUrl ? (
-                  <img
-                    src={currentCard.imageUrl}
-                    alt={currentCard.title}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "fallback-image.jpg"; // Optional fallback image
-                      e.target.alt = "Image not available";
-                    }}
-                  />
-                ) : (
-                  "No Image"
-                )}
-              </div>
-            </div>
+            <Card
+              className="reference-card"
+              title={referenceCard?.title}
+              imageUrl={referenceCard?.imageUrl}
+              year={referenceCard?.year}
+              month={referenceCard?.month}
+              isReference={true}
+            />
           </div>
-
-          <div className="guess-buttons">
-            <button
-              className="before-button"
-              onClick={() => handleGuess("before")}
-              disabled={isLoading}>
-              Before
-            </button>
-            <button
-              className="after-button"
-              onClick={() => handleGuess("after")}
-              disabled={isLoading}>
-              After
-            </button>
-          </div>
-
-          <button
-            className="back-home-button"
-            onClick={() => navigate("/")}
-            style={{ marginTop: "20px" }}>
-            Back to Home
-          </button>
         </div>
         <ResultOverlay
           visible={showOverlay}

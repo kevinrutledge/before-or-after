@@ -27,9 +27,17 @@ export async function getRandomCard() {
 /**
  * Process user's before/after guess.
  */
-export async function processGuess(previousYear, currentYear, guess) {
-  // Determine if guess is correct based on year comparison
-  const isAfter = currentYear > previousYear;
+export async function processGuess(
+  previousYear,
+  previousMonth,
+  currentYear,
+  currentMonth,
+  guess
+) {
+  // Determine if guess is correct based on year and month comparison
+  const isAfter =
+    currentYear > previousYear ||
+    (currentYear === previousYear && currentMonth > previousMonth);
   const correct =
     (guess === "after" && isAfter) || (guess === "before" && !isAfter);
 
