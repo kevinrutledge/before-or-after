@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import ResultOverlay from "../components/ResultOverlay";
+import { compareCards } from "../utils/gameUtils";
 import Card from "../components/Card";
 
 function GamePage() {
@@ -57,6 +58,10 @@ function GamePage() {
     try {
       setIsLoading(true);
 
+
+      // Use compareCards utility for core logic
+      const isCorrect = compareCards(referenceCard, currentCard, guess);
+
       console.log({
         previousYear: referenceCard?.year,
         previousMonth: referenceCard?.month,
@@ -89,12 +94,14 @@ function GamePage() {
         setCardAnim("card-enter-active");
       }, 500);
 
-      if (result.correct) {
+      if (isCorrect) {
         // Update score and continue after overlay
-        setTimeout(() => {
+        setTimeout(async () => {
           incrementScore();
           setReferenceCard(currentCard);
-          setCurrentCard(result.nextCard);
+          // Fetch a new card for the next round
+          const nextCard = await apiRequest("/api/cards/next");
+          setCurrentCard(nextCard);
           setCardAnim("");
         }, 1500);
       } else {
