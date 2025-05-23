@@ -4,199 +4,209 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import GamePage from "../../src/pages/GamePage";
 import { GameProvider } from "../../src/context/GameContext";
-import * as gameUtils from "../../src/utils/gameUtils";
 
-// Mock the game context
+// Mock the game context at module level
+const mockIncrementScore = jest.fn();
+const mockResetScore = jest.fn();
+
 jest.mock("../../src/context/GameContext", () => ({
   ...jest.requireActual("../../src/context/GameContext"),
   useGame: () => ({
     score: 3,
-    setScore: jest.fn(),
-    highscore: 10,
-    gameStatus: "playing",
-    setGameStatus: jest.fn(),
-    handleCorrectGuess: jest.fn(),
-    handleIncorrectGuess: jest.fn()
+    incrementScore: mockIncrementScore,
+    resetScore: mockResetScore,
+    highscore: 10
   })
 }));
 
-// Mock the compareCards function
-jest.mock("../../src/utils/gameUtils", () => ({
-  compareCards: jest.fn()
+// Mock the API client
+jest.mock("../../src/utils/apiClient", () => ({
+  apiRequest: jest.fn()
 }));
+
+// Mock the navigate hook
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate
+}));
+
+// Mock the auth context
+jest.mock("../../src/context/AuthContext", () => {
+  const mockModule = jest.requireActual("../mocks/AuthContext");
+  return {
+    useAuth: mockModule.useAuth
+  };
+});
+
+import { apiRequest } from "../../src/utils/apiClient";
+import { MockAuthProvider } from "../mocks/AuthContext";
 
 describe("GamePage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+
+    // Setup default API responses
+    apiRequest.mockImplementation((endpoint) => {
+      if (endpoint === "/api/cards/next") {
+        return Promise.resolve({
+          _id: "test-id",
+          title: "Test Card",
+          year: 2000,
+          month: 5,
+          imageUrl: "test.jpg"
+        });
+      }
+      if (endpoint === "/api/cards/guess") {
+        return Promise.resolve({
+          correct: true,
+          nextCard: {
+            _id: "next-id",
+            title: "Next Card",
+            year: 2001,
+            month: 6,
+            imageUrl: "next.jpg"
+          }
+        });
+      }
+      return Promise.resolve({});
+    });
   });
 
-  test("renders game page with cards and buttons", () => {
+  test("renders game page with cards and buttons", async () => {
     render(
       <MemoryRouter>
-        <GameProvider>
-          <GamePage />
-        </GameProvider>
+        <MockAuthProvider>
+          <GameProvider>
+            <GamePage />
+          </GameProvider>
+        </MockAuthProvider>
       </MemoryRouter>
     );
+
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByText("Loading game...")).not.toBeInTheDocument();
+    });
 
     // Check page title
     expect(screen.getByText("Before or After?")).toBeInTheDocument();
 
-    // Check score display
-    expect(screen.getByText(/Score: 3/)).toBeInTheDocument();
+    // Check score display - use more specific selector to avoid Header/GamePage conflict
+    expect(screen.getByText("Current Score: 3")).toBeInTheDocument();
 
     // Check buttons
     expect(screen.getByText("Before")).toBeInTheDocument();
     expect(screen.getByText("After")).toBeInTheDocument();
-
-    // Check cards are rendered
-    const cards = screen.getAllByRole("button");
-    expect(cards.length).toBeGreaterThanOrEqual(2);
-  });
-});
-
-test("handles 'Before' button click correctly", () => {
-  // Set up the mock to return true (correct guess)
-  gameUtils.compareCards.mockReturnValue(true);
-
-  render(
-    <MemoryRouter>
-      <GameProvider>
-        <GamePage />
-      </GameProvider>
-    </MemoryRouter>
-  );
-
-  // Click the Before button
-  fireEvent.click(screen.getByText("Before"));
-
-  // Check that compareCards was called with "before"
-  expect(gameUtils.compareCards).toHaveBeenCalledWith(
-    expect.any(Object),
-    expect.any(Object),
-    "before"
-  );
-});
-
-test("handles 'After' button click correctly", () => {
-  // Set up the mock to return false (incorrect guess)
-  gameUtils.compareCards.mockReturnValue(false);
-
-  const { getByText } = render(
-    <MemoryRouter>
-      <GameProvider>
-        <GamePage />
-      </GameProvider>
-    </MemoryRouter>
-  );
-
-  // Click the After button
-  fireEvent.click(getByText("After"));
-
-  // Check that compareCards was called with "after"
-  expect(gameUtils.compareCards).toHaveBeenCalledWith(
-    expect.any(Object),
-    expect.any(Object),
-    "after"
-  );
-});
-
-test("handles correct guess with animation and new card", async () => {
-  // Mock implementation
-  const mockHandleCorrectGuess = jest.fn();
-  jest.mock("../../src/context/GameContext", () => ({
-    ...jest.requireActual("../../src/context/GameContext"),
-    useGame: () => ({
-      score: 3,
-      handleCorrectGuess: mockHandleCorrectGuess,
-      gameStatus: "correct"
-    })
-  }));
-
-  gameUtils.compareCards.mockReturnValue(true);
-
-  render(
-    <MemoryRouter>
-      <GameProvider>
-        <GamePage />
-      </GameProvider>
-    </MemoryRouter>
-  );
-
-  // Click the Before button
-  fireEvent.click(screen.getByText("Before"));
-
-  // Check that handleCorrectGuess was called
-  await waitFor(() => {
-    expect(mockHandleCorrectGuess).toHaveBeenCalled();
   });
 
-  // Check for animation class
-  const cardElement = screen.getAllByRole("button")[0];
-  expect(cardElement).toHaveClass("card-exit-active");
-});
+  test("handles 'Before' button click correctly", async () => {
+    render(
+      <MemoryRouter>
+        <MockAuthProvider>
+          <GameProvider>
+            <GamePage />
+          </GameProvider>
+        </MockAuthProvider>
+      </MemoryRouter>
+    );
 
-test("handles incorrect guess by navigating to loss page", () => {
-  // Mock implementation
-  const mockHandleIncorrectGuess = jest.fn();
-  const mockNavigate = jest.fn();
+    // Wait for loading
+    await waitFor(() => {
+      expect(screen.queryByText("Loading game...")).not.toBeInTheDocument();
+    });
 
-  jest.mock("react-router-dom", () => ({
-    ...jest.requireActual("react-router-dom"),
-    useNavigate: () => mockNavigate
-  }));
+    // Click the Before button
+    fireEvent.click(screen.getByText("Before"));
 
-  jest.mock("../../src/context/GameContext", () => ({
-    ...jest.requireActual("../../src/context/GameContext"),
-    useGame: () => ({
-      score: 3,
-      handleIncorrectGuess: mockHandleIncorrectGuess,
-      gameStatus: "incorrect"
-    })
-  }));
+    // Check that API was called for guess
+    await waitFor(() => {
+      expect(apiRequest).toHaveBeenCalledWith(
+        "/api/cards/guess",
+        expect.objectContaining({
+          method: "POST",
+          body: expect.stringContaining('"guess":"before"')
+        })
+      );
+    });
+  });
 
-  gameUtils.compareCards.mockReturnValue(false);
+  test("handles 'After' button click correctly", async () => {
+    render(
+      <MemoryRouter>
+        <MockAuthProvider>
+          <GameProvider>
+            <GamePage />
+          </GameProvider>
+        </MockAuthProvider>
+      </MemoryRouter>
+    );
 
-  render(
-    <MemoryRouter>
-      <GameProvider>
-        <GamePage />
-      </GameProvider>
-    </MemoryRouter>
-  );
+    // Wait for loading
+    await waitFor(() => {
+      expect(screen.queryByText("Loading game...")).not.toBeInTheDocument();
+    });
 
-  // Click the After button
-  fireEvent.click(screen.getByText("After"));
+    // Click the After button
+    fireEvent.click(screen.getByText("After"));
 
-  // Check that handleIncorrectGuess was called
-  expect(mockHandleIncorrectGuess).toHaveBeenCalled();
+    // Check that API was called for guess
+    await waitFor(() => {
+      expect(apiRequest).toHaveBeenCalledWith(
+        "/api/cards/guess",
+        expect.objectContaining({
+          method: "POST",
+          body: expect.stringContaining('"guess":"after"')
+        })
+      );
+    });
+  });
 
-  // Check navigation to loss page
-  expect(mockNavigate).toHaveBeenCalledWith("/loss");
-});
+  test("handles incorrect guess by navigating to loss page", async () => {
+    // Mock incorrect guess response
+    apiRequest.mockImplementation((endpoint) => {
+      if (endpoint === "/api/cards/next") {
+        return Promise.resolve({
+          _id: "test-id",
+          title: "Test Card",
+          year: 2000,
+          month: 5,
+          imageUrl: "test.jpg"
+        });
+      }
+      if (endpoint === "/api/cards/guess") {
+        return Promise.resolve({
+          correct: false,
+          nextCard: null
+        });
+      }
+      return Promise.resolve({});
+    });
 
-test("handles empty deck by triggering reshuffle", () => {
-  // Mock implementation
-  const mockReshuffleCards = jest.fn();
+    render(
+      <MemoryRouter>
+        <MockAuthProvider>
+          <GameProvider>
+            <GamePage />
+          </GameProvider>
+        </MockAuthProvider>
+      </MemoryRouter>
+    );
 
-  jest.mock("../../src/context/GameContext", () => ({
-    ...jest.requireActual("../../src/context/GameContext"),
-    useGame: () => ({
-      score: 3,
-      reshuffleCards: mockReshuffleCards,
-      gameStatus: "reshuffling"
-    })
-  }));
+    // Wait for loading
+    await waitFor(() => {
+      expect(screen.queryByText("Loading game...")).not.toBeInTheDocument();
+    });
 
-  render(
-    <MemoryRouter>
-      <GameProvider>
-        <GamePage />
-      </GameProvider>
-    </MemoryRouter>
-  );
+    // Click the After button
+    fireEvent.click(screen.getByText("After"));
 
-  // Check that reshuffleCards is called when component mounts
-  // with empty deck (simulated by our mock)
-  expect(mockReshuffleCards).toHaveBeenCalled();
+    // Check navigation to loss page after timeout
+    await waitFor(
+      () => {
+        expect(mockNavigate).toHaveBeenCalledWith("/loss");
+      },
+      { timeout: 2000 }
+    );
+  });
 });
