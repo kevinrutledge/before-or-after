@@ -3,6 +3,7 @@ import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
 import PlayButton from "../components/PlayButton";
+import Background from "../components/Background";
 
 function HomePage() {
   const isMobile = useIsMobile();
@@ -10,6 +11,7 @@ function HomePage() {
 
   return (
     <Layout>
+      <Background />
       <PageContainer>
         <div className="home-page">
           <img
