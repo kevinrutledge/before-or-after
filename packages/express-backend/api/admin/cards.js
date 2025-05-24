@@ -1,5 +1,6 @@
 import { corsHandler } from "../_cors.js";
 import { getCardsCollection } from "../../models/Card.js";
+import { verifyToken, adminOnly } from "../../middleware/auth.js";
 import { ObjectId } from "mongodb";
 
 export default async function handler(req, res) {
@@ -7,11 +8,17 @@ export default async function handler(req, res) {
     return;
   }
 
-  // Check for authentication
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Authentication required" });
+  // Use existing auth middleware
+  try {
+    await new Promise((resolve, reject) => {
+      verifyToken(req, res, (err) => err ? reject(err) : resolve());
+    });
+    
+    await new Promise((resolve, reject) => {
+      adminOnly(req, res, (err) => err ? reject(err) : resolve());
+    });
+  } catch (error) {
+    return; // Middleware already sent error response
   }
 
   let client;
