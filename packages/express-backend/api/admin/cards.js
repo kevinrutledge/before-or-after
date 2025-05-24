@@ -11,13 +11,13 @@ export default async function handler(req, res) {
   // Use existing auth middleware
   try {
     await new Promise((resolve, reject) => {
-      verifyToken(req, res, (err) => err ? reject(err) : resolve());
+      verifyToken(req, res, (err) => (err ? reject(err) : resolve()));
     });
-    
+
     await new Promise((resolve, reject) => {
-      adminOnly(req, res, (err) => err ? reject(err) : resolve());
+      adminOnly(req, res, (err) => (err ? reject(err) : resolve()));
     });
-  } catch (error) {
+  } catch {
     return; // Middleware already sent error response
   }
 

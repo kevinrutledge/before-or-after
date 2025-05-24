@@ -69,7 +69,7 @@ function GamePage() {
         guess
       });
 
-      const result = await apiRequest("/api/cards/guess", {
+      await apiRequest("/api/cards/guess", {
         method: "POST",
         body: JSON.stringify({
           previousYear: referenceCard.year,
