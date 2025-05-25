@@ -11,7 +11,7 @@ import Card from "../components/Card";
 
 function GamePage() {
   const isMobile = useIsMobile();
-  const { score, incrementScore, resetScore, updateScore } = useGame();
+  const { score, incrementScore, resetScore } = useGame();
   const navigate = useNavigate();
 
   const [referenceCard, setReferenceCard] = useState(null);
@@ -85,7 +85,7 @@ function GamePage() {
         oldTitle: referenceCard.title,
         newTitle: currentCard.title,
         relation: guess === "before" ? "Before" : "After",
-        isCorrect: result.correct
+        isCorrect
       });
       setShowOverlay(true);
       setCardAnim("card-exit-active");

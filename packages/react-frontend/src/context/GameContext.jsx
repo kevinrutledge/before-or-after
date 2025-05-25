@@ -7,24 +7,23 @@ const GameContext = createContext();
 const GUEST_SCORE_KEY = "guestScore";
 const GUEST_HIGHSCORE_KEY = "guestHighscore";
 
-
 export function GameProvider({ children }) {
   const { isAuthenticated, isGuest, user } = useAuth();
 
   const [score, setScore] = useState(0);
   //const [highscore, setHighscore] = useState(0);
-  const [highscore, setHighscore] = useState( () => {
-    
-    if(isAuthenticated && user?.email) {
-      return parseInt(localStorage.getItem(`userHighscore_${user.email}`) || "0", 10);
+  const [highscore, setHighscore] = useState(() => {
+    if (isAuthenticated && user?.email) {
+      return parseInt(
+        localStorage.getItem(`userHighscore_${user.email}`) || "0",
+        10
+      );
     }
     if (isGuest) {
       return parseInt(localStorage.getItem(GUEST_HIGHSCORE_KEY) || "0", 10);
     }
-    
-    return parseInt(localStorage.getItem(GUEST_HIGHSCORE_KEY) || "0", 10);
 
-    
+    return parseInt(localStorage.getItem(GUEST_HIGHSCORE_KEY) || "0", 10);
   });
   const [gameStatus, setGameStatus] = useState("not-started"); // or "playing", "lost", etc.
 
@@ -51,14 +50,15 @@ export function GameProvider({ children }) {
       } else {
         // Not authenticated or guest, reset scores
         setScore(0);
+        console.log("Not authenticated or guest, resetting scores");
         //setHighscore(0);
       }
     };
-      loadScores();
-    }, [isAuthenticated, isGuest, user]);
+    loadScores();
+  }, [isAuthenticated, isGuest, user]);
 
-    useEffect(() => {
-    
+  useEffect(() => {
+    console.log("score was updated", score);
     if (isAuthenticated && user?.email) {
       localStorage.setItem(`userScore_${user.email}`, score.toString());
     } else if (isGuest) {
@@ -73,33 +73,48 @@ export function GameProvider({ children }) {
     } else if (isGuest) {
       localStorage.setItem(GUEST_HIGHSCORE_KEY, highscore.toString());
     }
-
-    const savedHighscore = localStorage.getItem(GUEST_HIGHSCORE_KEY) || "0";
     //console.log("Setting guest highscore", highscore, savedHighscore);
   }, [highscore]);
 
   // Save scores whenever they change
 
-  useEffect(() => {
-    console.log("highscore", highscore);
-    if( score > highscore) {
-      setHighscore(score);
-      if (isAuthenticated && user?.email) {
-        localStorage.setItem(`userHighscore_${user.email}`, highscore.toString());
-        //fix the check for guest vs non guest and non authenticated
-      } else {
-        localStorage.setItem(GUEST_HIGHSCORE_KEY, highscore.toString());
-      }
-  }
-  }, [score]); 
+  //This block can auto update highscore anytime score is updated, but has delay issues resulting in incorrect data storage
+  // useEffect(() => {
+  //   console.log("highscore", highscore);
+  //   if (score > highscore) {
+  //     setHighscore(score);
+  //     if (isAuthenticated && user?.email) {
+  //       localStorage.setItem(
+  //         `userHighscore_${user.email}`,
+  //         highscore.toString()
+  //       );
+  //       //fix the check for guest vs non guest and non authenticated
+  //     } else {
+  //       localStorage.setItem(GUEST_HIGHSCORE_KEY, highscore.toString());
+  //     }
+  //   }
+  // }, [score]);
 
   // Increment score and update highscore if needed
   const incrementScore = () => {
     setScore((prevScore) => {
       const newScore = prevScore + 1;
+      if (newScore > highscore) {
+        setHighscore(newScore);
+        // Save highscore immediately
+        if (isAuthenticated && user?.email) {
+          localStorage.setItem(
+            `userHighscore_${user.email}`,
+            newScore.toString()
+          );
+        } else if (isGuest) {
+          localStorage.setItem(GUEST_HIGHSCORE_KEY, newScore.toString());
+        } else {
+          localStorage.setItem(GUEST_HIGHSCORE_KEY, newScore.toString());
+        }
+      }
       return newScore;
     });
-
   };
   // Update score (called when game ends)
   const updateScore = () => {
@@ -121,7 +136,7 @@ export function GameProvider({ children }) {
         setHighscore(score);
         localStorage.setItem(GUEST_HIGHSCORE_KEY, score.toString());
       }
-    }else{
+    } else {
       localStorage.setItem(GUEST_SCORE_KEY, score.toString());
 
       if (score > highscore) {
@@ -129,7 +144,7 @@ export function GameProvider({ children }) {
         localStorage.setItem(GUEST_HIGHSCORE_KEY, score.toString());
       }
     }
-  }
+  };
 
   // Reset score
   const resetScore = () => {
@@ -163,7 +178,6 @@ export function GameProvider({ children }) {
     }
   };
 
-  
   return (
     <GameContext.Provider
       value={{

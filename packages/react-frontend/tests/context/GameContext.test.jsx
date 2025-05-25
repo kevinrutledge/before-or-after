@@ -9,8 +9,8 @@ jest.mock("../../src/context/AuthContext", () => ({
   useAuth: () => ({
     isAuthenticated: false,
     isGuest: true,
-    user: null,
-  }),
+    user: null
+  })
 }));
 
 function TestComponent() {
@@ -21,9 +21,7 @@ function TestComponent() {
     incrementScore,
     resetScore,
     setGameStatus,
-    setScore,
-    setHighscore,
-    updateScore,
+    updateScore
   } = useGame();
 
   return (
@@ -127,4 +125,3 @@ describe("GameContext", () => {
     expect(await screen.findByTestId("highscore")).toHaveTextContent("10");
   });
 });
-
