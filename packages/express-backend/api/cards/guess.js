@@ -10,9 +10,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { previousYear, currentYear, guess } = req.body;
+  const { previousYear, previousMonth, currentYear, currentMonth, guess } =
+    req.body;
 
-  if (previousYear === undefined || currentYear === undefined || !guess) {
+  if (
+    previousYear === undefined ||
+    previousMonth === undefined ||
+    currentYear === undefined ||
+    currentMonth === undefined ||
+    !guess
+  ) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
@@ -25,7 +32,9 @@ export default async function handler(req, res) {
   let client;
   try {
     // Determine if guess is correct
-    const isAfter = currentYear > previousYear;
+    const isAfter =
+      currentYear > previousYear ||
+      (currentYear === previousYear && currentMonth > previousMonth);
     const correct =
       (guess === "after" && isAfter) || (guess === "before" && !isAfter);
 

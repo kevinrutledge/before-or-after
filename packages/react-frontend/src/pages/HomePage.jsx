@@ -2,6 +2,7 @@ import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
+import PlayButton from "../components/PlayButton";
 
 function HomePage() {
   const isMobile = useIsMobile();
@@ -19,9 +20,9 @@ function HomePage() {
             A daily game where players compare the release dates of various
             cultural artifacts
           </h1>
-          <button className="play-button" onClick={() => navigate("/game")}>
-            Play
-          </button>
+          <div onClick={() => navigate("/game")}>
+            <PlayButton />
+          </div>
         </div>
       </PageContainer>
     </Layout>

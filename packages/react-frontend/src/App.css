@@ -1,8 +1,8 @@
 :root {
   --primary-color: rgb(37, 99, 235);
-  --before-blue:rgb(86, 54, 230);
-  --before-red:rgb(214, 37, 37);
-  --before-purple:rgb(121, 51, 209);
+  --before-blue: rgb(86, 54, 230);
+  --before-red: rgb(214, 37, 37);
+  --before-purple: rgb(121, 51, 209);
   --secondary-color: #4b5563;
   --accent-color: #f59e0b;
   --background-color: #f8fafc;
@@ -118,6 +118,12 @@ main {
   display: block;
 }
 
+.card-date {
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-top: 0.5rem;
+}
+
 .placeholder-image {
   background-color: #e5e7eb;
   height: 300px;
@@ -135,7 +141,7 @@ main {
   object-fit: contain;
 }
 
-.guess-buttons {
+.current-card .guess-buttons {
   display: flex;
   gap: 1rem;
   justify-content: center;
@@ -366,49 +372,165 @@ footer {
 
 /* Game Page Styling */
 
+.header-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.desktop-only {
+  padding: 0;
+  margin: 0;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.main-content {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
 .game-page {
+  position: relative;
   text-align: center;
-  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100vh;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .cards-container {
   display: flex;
+  justify-content: space-between;
+  align-items: stretch;
   gap: 1rem;
-  justify-content: center;
-  margin-bottom: 2rem;
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.cards-container.side-by-side {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .cards-container.stacked {
   flex-direction: column;
 }
 
-.cards-container.side-by-side {
-  flex-direction: row;
+.cards-container.side-by-side .reference-card {
+  order: 1 !important;
+}
+
+.cards-container.side-by-side .current-card {
+  order: 2 !important;
+}
+
+.cards-container.stacked .reference-card {
+  order: 2;
+}
+
+.cards-container.stacked .current-card {
+  order: 1;
 }
 
 .card {
+  flex: 1 1 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: var(--card-shadow);
-  padding: 1rem;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
   text-align: center;
-  width: 100%;
-  max-width: 300px;
-  height: 300px;
-  cursor: pointer;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  overflow: hidden;
+  position: relative;
 }
 
 .card:hover {
-  transform: scale(1.05);
-  box-shadow:
-    0 6px 10px -1px rgba(0, 0, 0, 0.2),
-    0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-enter {
+  transform: translateX(100%);
+}
+
+.card-enter-active {
+  transform: translateX(0);
+}
+
+.card-exit {
+  transform: translateX(0);
+}
+
+.card-exit-active {
+  transform: translateX(-100%);
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem 0;
+  margin-top: 0;
+}
+
+.card-date {
+  font-size: 1rem;
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+.card-image {
+  flex-grow: 1;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  max-height: none !important;
+}
+
+.card-source {
+  position: absolute;
+  bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--background-color);
+  opacity: 0.8rem;
+}
+
+.card-source.left {
+  left: 0.5rem; /* Align to the bottom left */
+}
+
+.card-source.right {
+  right: 0.5rem; /* Align to the bottom right */
+  text-align: right;
 }
 
 .spacer {
@@ -426,22 +548,87 @@ footer {
   margin-top: auto;
 }
 
-.score-display {
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
+.game-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1rem 0;
+  pointer-events: none;
+  z-index: 10;
 }
 
-.back-home-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  background-color: var(--accent-color);
+.game-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  padding: 0;
+}
+
+.score-display {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.guess-buttons {
+  position: absolute;
+  top: 25%;
+  left: 33%;
+  transform: translateX(-50%, -50%);
+  display: flex;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.current-card .before-button,
+.current-card .after-button {
+  padding: 0.75rem 2rem;
+  font-size: 1.2rem;
+  background-color: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
   cursor: pointer;
   transition:
     background-color 0.2s,
     transform 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.current-card .before-button:hover,
+.current-card .after-button:hover {
+  background-color: #1d4ed8;
+  transform: scale(1.05);
+}
+
+.current-card .before-button:active,
+.current-card .after-button:active {
+  transform: scale(0.95);
+}
+
+.back-home-button {
+  font-weight: 100;
+  font-size: 0.9rem;
+  background-color: var(--accent-color);
+  color: black !important;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: auto;
+  max-width: 120px;
+  max-height: 50px;
+  height: auto;
 }
 
 .back-home-button:hover {
@@ -451,6 +638,27 @@ footer {
 
 .back-home-button:active {
   transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .cards-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .card {
+    flex: 1 1 auto;
+    width: 100%;
+    height: 50%;
+  }
+}
+
+@media (min-width: 769px) {
+  .cards-container.side-by-side {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 /* Login Form Styles */
