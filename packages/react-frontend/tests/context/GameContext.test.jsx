@@ -23,6 +23,7 @@ function TestComponent() {
     setGameStatus,
     setScore,
     setHighscore,
+    updateScore,
   } = useGame();
 
   return (
@@ -33,6 +34,7 @@ function TestComponent() {
       <button onClick={incrementScore}>Increment</button>
       <button onClick={resetScore}>Reset</button>
       <button onClick={() => setGameStatus("playing")}>Play</button>
+      <button onClick={() => updateScore()}>Update</button>
     </div>
   );
 }
@@ -63,10 +65,12 @@ describe("GameContext", () => {
     const score = screen.getByTestId("score");
     const highscore = screen.getByTestId("highscore");
     const incrementBtn = screen.getByText("Increment");
+    const updateScore = screen.getByText("Update");
 
     act(() => {
       incrementBtn.click();
       incrementBtn.click();
+      updateScore.click();
     });
 
     expect(score).toHaveTextContent("2");
@@ -123,3 +127,4 @@ describe("GameContext", () => {
     expect(await screen.findByTestId("highscore")).toHaveTextContent("10");
   });
 });
+

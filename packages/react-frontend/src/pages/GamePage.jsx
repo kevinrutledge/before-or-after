@@ -9,7 +9,7 @@ import ResultOverlay from "../components/ResultOverlay";
 
 function GamePage() {
   const isMobile = useIsMobile();
-  const { score, incrementScore, resetScore } = useGame();
+  const { score, incrementScore, resetScore, updateScore } = useGame();
   const navigate = useNavigate();
 
   const [referenceCard, setReferenceCard] = useState(null);
@@ -47,7 +47,7 @@ function GamePage() {
 
     fetchInitialCard();
     resetScore();
-  }, [resetScore]);
+  }, []);
 
   // Handle guess
   const handleGuess = async (guess) => {
