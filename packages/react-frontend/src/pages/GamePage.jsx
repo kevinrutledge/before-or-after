@@ -142,7 +142,6 @@ function GamePage() {
     <Layout>
       <PageContainer>
         <div className="game-page">
-          <h1 className="game-title">Before or After?</h1>
           <div className="score-display">
             <p>Current Score: {score}</p>
           </div>
