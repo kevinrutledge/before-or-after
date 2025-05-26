@@ -49,7 +49,7 @@ function GamePage() {
 
     fetchInitialCard();
     resetScore();
-  }, [resetScore]);
+  }, []);
 
   // Handle guess
   const handleGuess = async (guess) => {
@@ -84,7 +84,8 @@ function GamePage() {
       setOverlayData({
         oldTitle: referenceCard.title,
         newTitle: currentCard.title,
-        relation: guess === "before" ? "Before" : "After"
+        relation: guess === "before" ? "Before" : "After",
+        isCorrect
       });
       setShowOverlay(true);
       setCardAnim("card-exit-active");
@@ -195,6 +196,7 @@ function GamePage() {
           oldTitle={overlayData.oldTitle}
           newTitle={overlayData.newTitle}
           relation={overlayData.relation}
+          isCorrect={overlayData.isCorrect}
           onAnimationComplete={handleOverlayComplete}
         />
       </PageContainer>

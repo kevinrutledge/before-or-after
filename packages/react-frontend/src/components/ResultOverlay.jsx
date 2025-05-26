@@ -15,6 +15,7 @@ function ResultOverlay({
   oldTitle,
   newTitle,
   relation,
+  isCorrect,
   onAnimationComplete
 }) {
   useEffect(() => {
@@ -30,7 +31,11 @@ function ResultOverlay({
     <div
       className={`result-overlay${visible ? " visible" : ""}`}
       data-testid="result-overlay">
-      <div className="result-message" data-testid="result-message">
+      <div
+        className={`result-message ${
+          isCorrect === undefined ? "" : isCorrect ? "correct" : "incorrect"
+        }`}
+        data-testid="result-message">
         <strong>{newTitle}</strong> is <strong>{relation}</strong>{" "}
         <strong>{oldTitle}</strong>
       </div>
