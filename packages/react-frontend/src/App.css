@@ -874,7 +874,7 @@ footer {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background-color: var(--primary);
+  background-color: rgb(194, 192, 192);
   color: white;
   display: flex;
   align-items: center;
@@ -892,7 +892,7 @@ footer {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-width: 10rem;
   z-index: 10;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .profile-menu-item {
@@ -1157,4 +1157,16 @@ footer {
 
 .card-exit-active {
   transform: translateX(-100%);
+}
+
+.result-message.correct {
+  background-color: #2ecc40;
+  opacity: 0.8;
+  color: white
+}
+
+.result-message.incorrect {
+  background-color: #e74c3c;
+  opacity: 0.8;
+  color: white;
 }

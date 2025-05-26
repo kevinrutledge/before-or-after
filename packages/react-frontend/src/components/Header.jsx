@@ -37,6 +37,7 @@ function Header() {
     return user.email.charAt(0).toUpperCase();
   };
 
+
   return (
     <header className="desktop-only">
       <div className="container">
