@@ -41,18 +41,27 @@ function Card({ title, imageUrl, year, month, isReference, children }) {
   const source = getSourceFromUrl(imageUrl);
 
   return (
-    <div className={`card ${isReference ? "reference-card" : "current-card"}`}>
-      <h3 className="card-title">{title}</h3>
-      <div className="card-date">
-        {isReference ? `${month}/${year}` : "?"}{" "}
-        {/* Display date only for reference cards */}
-      </div>
-      <div className="card-image">
-        <img src={imageUrl} alt={title} />
-      </div>
-      {children}
-      <div className={`card-source ${isReference ? "left" : "right"}`}>
-        Source: {source}
+    <div
+      className={`card ${isReference ? "reference-card" : "current-card"}`}
+      style={{
+        backgroundImage: `url(${imageUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        position: "relative",
+        overflow: "hidden"
+      }}>
+      {/* Dark overlay */}
+      <div className="card-image-overlay" />
+      {/* Card content */}
+      <div className="card-content">
+        <h3 className="card-title">{title}</h3>
+        <div className="card-date">
+          {isReference ? `${month}/${year}` : "?"}{" "}
+        </div>
+        {children}
+        <div className={`card-source ${isReference ? "left" : "right"}`}>
+          Source: {source}
+        </div>
       </div>
     </div>
   );
