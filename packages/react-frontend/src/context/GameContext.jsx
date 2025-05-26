@@ -34,8 +34,9 @@ export function GameProvider({ children }) {
       if (isAuthenticated) {
         // If authenticated, we would normally fetch from API
         // For this MVP, we'll use localStorage but with different keys
+        console.log("Loading scores for authenticated user:", user?.email, score, highscore);
         const savedScore =
-          localStorage.getItem(`userScore_${user?.email}`) || "0";
+          localStorage.getItem(`userScore_${user?.email}`) || "100";
         const savedHighscore =
           localStorage.getItem(`userHighscore_${user?.email}`) || "0";
 
@@ -54,7 +55,7 @@ export function GameProvider({ children }) {
       }
     };
     loadScores();
-  }, [isAuthenticated, isGuest, user]);
+  }, []);
 
   // Save scores whenever they change
 
