@@ -84,15 +84,5 @@ body {
 }
 
 
-.result-message.correct {
-  background-color: #2ecc40;
-  opacity: 0.8;
-  color: white
-}
 
-.result-message.incorrect {
-  background-color: #e74c3c;
-  opacity: 0.8;
-  color: white;
-}
 
