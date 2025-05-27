@@ -41,6 +41,7 @@ export async function seedDatabase() {
         month: 5,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/8/82/Leiadeathstar.jpg",
+        thumbnailUrl: null,
         sourceUrl: "https://www.imdb.com/title/tt0076759/",
         category: "movie",
         createdAt: new Date(),
@@ -52,6 +53,7 @@ export async function seedDatabase() {
         month: 9,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg",
+        thumbnailUrl: null,
         sourceUrl: "https://en.wikipedia.org/wiki/Abbey_Road",
         category: "album",
         createdAt: new Date(),
@@ -63,6 +65,7 @@ export async function seedDatabase() {
         month: 9,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/0/03/Super_Mario_Bros._box.png",
+        thumbnailUrl: null,
         sourceUrl: "https://en.wikipedia.org/wiki/Super_Mario_Bros",
         category: "game",
         createdAt: new Date(),
@@ -74,6 +77,7 @@ export async function seedDatabase() {
         month: 6,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/IPhone_1st_Gen.svg/800px-IPhone_1st_Gen.svg.png",
+        thumbnailUrl: null,
         sourceUrl: "https://en.wikipedia.org/wiki/IPhone_(1st_generation)",
         category: "technology",
         createdAt: new Date(),
@@ -85,6 +89,7 @@ export async function seedDatabase() {
         month: 10,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/commons/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg",
+        thumbnailUrl: null,
         sourceUrl: "https://en.wikipedia.org/wiki/Mona_Lisa",
         category: "art",
         createdAt: new Date(),
@@ -96,6 +101,7 @@ export async function seedDatabase() {
         month: 5,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/b/bb/The_shining_heres_johnny.jpg",
+        thumbnailUrl: null,
         sourceUrl: "https://www.imdb.com/title/tt0081505/",
         category: "movie",
         createdAt: new Date(),
@@ -107,6 +113,7 @@ export async function seedDatabase() {
         month: 11,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/5/55/Michael_Jackson_-_Thriller.png",
+        thumbnailUrl: null,
         sourceUrl: "https://en.wikipedia.org/wiki/Thriller_(album)",
         category: "album",
         createdAt: new Date(),
@@ -118,6 +125,7 @@ export async function seedDatabase() {
         month: 3,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/First_Web_Server.jpg/1920px-First_Web_Server.jpg",
+        thumbnailUrl: null,
         sourceUrl: "https://en.wikipedia.org/wiki/World_Wide_Web",
         category: "technology",
         createdAt: new Date(),
@@ -129,6 +137,7 @@ export async function seedDatabase() {
         month: 6,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1920px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+        thumbnailUrl: null,
         sourceUrl: "https://en.wikipedia.org/wiki/The_Starry_Night",
         category: "art",
         createdAt: new Date(),
@@ -140,6 +149,7 @@ export async function seedDatabase() {
         month: 11,
         imageUrl:
           "https://upload.wikimedia.org/wikipedia/en/1/17/Minecraft_explore_landscape.png",
+        thumbnailUrl: null,
         sourceUrl: "https://en.wikipedia.org/wiki/Minecraft",
         category: "game",
         createdAt: new Date(),

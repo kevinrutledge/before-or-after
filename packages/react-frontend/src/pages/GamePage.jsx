@@ -6,6 +6,7 @@ import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import ResultOverlay from "../components/ResultOverlay";
+import { compareCards } from "../utils/gameUtils";
 import Card from "../components/Card";
 import Background from "../components/Background";
 
@@ -49,7 +50,7 @@ function GamePage() {
 
     fetchInitialCard();
     resetScore();
-  }, [resetScore]);
+  }, []);
 
   // Handle guess
   const handleGuess = async (guess) => {
@@ -58,15 +59,10 @@ function GamePage() {
     try {
       setIsLoading(true);
 
-      console.log({
-        previousYear: referenceCard?.year,
-        previousMonth: referenceCard?.month,
-        currentYear: currentCard?.year,
-        currentMonth: currentCard?.month,
-        guess
-      });
+      // Use compareCards utility for core logic
+      const isCorrect = compareCards(referenceCard, currentCard, guess);
 
-      const result = await apiRequest("/api/cards/guess", {
+      await apiRequest("/api/cards/guess", {
         method: "POST",
         body: JSON.stringify({
           previousYear: referenceCard.year,
@@ -81,7 +77,8 @@ function GamePage() {
       setOverlayData({
         oldTitle: referenceCard.title,
         newTitle: currentCard.title,
-        relation: guess === "before" ? "Before" : "After"
+        relation: guess === "before" ? "Before" : "After",
+        isCorrect
       });
       setShowOverlay(true);
       setCardAnim("card-exit-active");
@@ -90,12 +87,14 @@ function GamePage() {
         setCardAnim("card-enter-active");
       }, 500);
 
-      if (result.correct) {
+      if (isCorrect) {
         // Update score and continue after overlay
-        setTimeout(() => {
+        setTimeout(async () => {
           incrementScore();
           setReferenceCard(currentCard);
-          setCurrentCard(result.nextCard);
+          // Fetch a new card for the next round
+          const nextCard = await apiRequest("/api/cards/next");
+          setCurrentCard(nextCard);
           setCardAnim("");
         }, 1500);
       } else {
@@ -197,6 +196,7 @@ function GamePage() {
           oldTitle={overlayData.oldTitle}
           newTitle={overlayData.newTitle}
           relation={overlayData.relation}
+          isCorrect={overlayData.isCorrect}
           onAnimationComplete={handleOverlayComplete}
         />
       </PageContainer>

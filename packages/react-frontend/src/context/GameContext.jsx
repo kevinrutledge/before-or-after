@@ -8,10 +8,25 @@ const GUEST_SCORE_KEY = "guestScore";
 const GUEST_HIGHSCORE_KEY = "guestHighscore";
 
 export function GameProvider({ children }) {
-  const [score, setScore] = useState(0);
-  const [highscore, setHighscore] = useState(0);
-  const [gameStatus, setGameStatus] = useState("not-started"); // or "playing", "lost", etc.
   const { isAuthenticated, isGuest, user } = useAuth();
+
+  const [score, setScore] = useState(0);
+  //const [highscore, setHighscore] = useState(0);
+  //on initial load, check for existing scores in localStorage
+  const [highscore, setHighscore] = useState(() => {
+    if (isAuthenticated && user?.email) {
+      return parseInt(
+        localStorage.getItem(`userHighscore_${user.email}`) || "0",
+        10
+      );
+    }
+    if (isGuest) {
+      return parseInt(localStorage.getItem(GUEST_HIGHSCORE_KEY) || "0", 10);
+    }
+
+    return parseInt(localStorage.getItem(GUEST_HIGHSCORE_KEY) || "0", 10);
+  });
+  const [gameStatus, setGameStatus] = useState("not-started"); // or "playing", "lost", etc.
 
   // Load scores from storage or API based on auth state
   useEffect(() => {
@@ -36,39 +51,60 @@ export function GameProvider({ children }) {
       } else {
         // Not authenticated or guest, reset scores
         setScore(0);
-        setHighscore(0);
       }
     };
-
     loadScores();
   }, [isAuthenticated, isGuest, user]);
 
   // Save scores whenever they change
-  useEffect(() => {
-    if (isAuthenticated && user?.email) {
-      localStorage.setItem(`userScore_${user.email}`, score.toString());
 
-      if (score > highscore) {
-        setHighscore(score);
-        localStorage.setItem(`userHighscore_${user.email}`, score.toString());
-      }
-    } else if (isGuest) {
-      localStorage.setItem(GUEST_SCORE_KEY, score.toString());
-
-      if (score > highscore) {
-        setHighscore(score);
-        localStorage.setItem(GUEST_HIGHSCORE_KEY, score.toString());
-      }
-    }
-  }, [score, highscore, isAuthenticated, isGuest, user]);
+  //This block can auto update highscore anytime score is updated, but has delay issues resulting in incorrect data storage
+  // useEffect(() => {
+  //   console.log("highscore", highscore);
+  //   if (score > highscore) {
+  //     setHighscore(score);
+  //     if (isAuthenticated && user?.email) {
+  //       localStorage.setItem(
+  //         `userHighscore_${user.email}`,
+  //         highscore.toString()
+  //       );
+  //       //fix the check for guest vs non guest and non authenticated
+  //     } else {
+  //       localStorage.setItem(GUEST_HIGHSCORE_KEY, highscore.toString());
+  //     }
+  //   }
+  // }, [score]);
 
   // Increment score and update highscore if needed
   const incrementScore = () => {
     setScore((prevScore) => {
       const newScore = prevScore + 1;
+      if (newScore > highscore) {
+        setHighscore(newScore);
+      }
       return newScore;
     });
   };
+
+  //anytime score is updated, save it to localStorage
+  useEffect(() => {
+    if (isAuthenticated && user?.email) {
+      localStorage.setItem(`userScore_${user.email}`, score.toString());
+    } else if (isGuest) {
+      localStorage.setItem(GUEST_SCORE_KEY, score.toString());
+    }
+  }, [score]);
+
+  //anytime highscore is updated, save it to localStorage
+  useEffect(() => {
+    if (isAuthenticated && user?.email) {
+      localStorage.setItem(`userHighscore_${user.email}`, highscore.toString());
+    } else if (isGuest) {
+      localStorage.setItem(GUEST_HIGHSCORE_KEY, highscore.toString());
+    } else {
+      localStorage.setItem(GUEST_HIGHSCORE_KEY, highscore.toString());
+    }
+  }, [highscore]);
 
   // Reset score
   const resetScore = () => {

@@ -1,0 +1,60 @@
+@startuml BeforeOrAfterDataModel
+
+!theme plain
+skinparam classAttributeIconSize 0
+hide circle
+skinparam classFontSize 14
+skinparam classFontStyle bold
+skinparam packageFontSize 12
+
+class User {
+  - email : String
+  - password : String
+  - role : String
+  - createdAt : DateTime
+  --
+  - resetCode : String
+  - resetCodeExpires : DateTime
+}
+
+class Card {
+  - title : String
+  - year : Integer
+  - month : Integer
+  - imageUrl : String
+  - sourceUrl : String
+  - category : String
+  - createdAt : DateTime
+  - updatedAt : DateTime
+  - createdBy : String
+  - modifiedBy : String
+}
+
+class GameSession {
+  - sessionId : String
+  - currentScore : Integer
+  - gameStatus : String
+  - startTime : DateTime
+  - referenceCardId : String
+  - currentCardId : String
+}
+
+class Score {
+  - currentScore : Integer
+  - highScore : Integer
+  - lastUpdated : DateTime
+}
+
+' Primary relationships
+User ||--o{ Score : owns
+User ||--o{ GameSession : plays
+User ||--o{ Card : manages
+GameSession }o--|| Card : references
+
+' Role constraint
+note top of User : Deleting user removes\nscores and sessions
+note bottom of GameSession : Sessions reference\nexisting cards
+note right of User : role = "user" | "admin"
+note bottom of Card : Only admin users can\ncreate/modify cards
+
+@enduml

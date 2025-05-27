@@ -17,6 +17,7 @@ export async function startMemoryServer() {
 export async function stopMemoryServer() {
   if (mongoServer) {
     await mongoServer.stop();
+    mongoServer = null;
   }
 }
 
@@ -30,11 +31,14 @@ export async function getTestDbConnection() {
 // Clear all collections between tests
 export async function clearDatabase() {
   const { client, db } = await getTestDbConnection();
-  const collections = await db.collections();
 
-  for (const collection of collections) {
-    await collection.deleteMany({});
+  try {
+    const collections = await db.collections();
+
+    for (const collection of collections) {
+      await collection.deleteMany({});
+    }
+  } finally {
+    await client.close();
   }
-
-  await client.close();
 }
