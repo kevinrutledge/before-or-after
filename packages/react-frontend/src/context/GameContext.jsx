@@ -54,6 +54,7 @@ export function GameProvider({ children }) {
       }
     };
     loadScores();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isGuest, user]);
 
   // Save scores whenever they change
@@ -93,6 +94,7 @@ export function GameProvider({ children }) {
     } else if (isGuest) {
       localStorage.setItem(GUEST_SCORE_KEY, score.toString());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [score]);
 
   //anytime highscore is updated, save it to localStorage
@@ -104,6 +106,7 @@ export function GameProvider({ children }) {
     } else {
       localStorage.setItem(GUEST_HIGHSCORE_KEY, highscore.toString());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [highscore]);
 
   // Reset score

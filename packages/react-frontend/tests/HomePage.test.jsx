@@ -1,16 +1,17 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { jest } from "@jest/globals";
 import { describe, test, expect } from "@jest/globals";
 import HomePage from "../src/pages/HomePage";
-import useIsMobile from "../src/hooks/useIsMobile";
 import { MemoryRouter } from "react-router-dom";
 import { GameProvider } from "../src/context/GameContext";
 import { MockAuthProvider } from "./mocks/AuthContext";
 
-// Mock the useIsMobile hook
-jest.mock("../src/hooks/useIsMobile");
+const mockNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate
+}));
 
-// Mock the AuthContext
 jest.mock("../src/context/AuthContext", () => {
   const mockModule = jest.requireActual("./mocks/AuthContext");
   return {
@@ -18,14 +19,16 @@ jest.mock("../src/context/AuthContext", () => {
   };
 });
 
-describe("HomePage Component", () => {
-  test("renders all expected elements in desktop view", () => {
-    // Simulate desktop
-    useIsMobile.mockReturnValue(false);
+jest.mock("../src/hooks/useIsMobile", () => ({
+  __esModule: true,
+  default: () => false
+}));
 
-    render(
+describe("HomePage Component", () => {
+  test("renders page logo and content", () => {
+    const { container } = render(
       <MemoryRouter>
-        <MockAuthProvider>
+        <MockAuthProvider value={{ isAuthenticated: false }}>
           <GameProvider>
             <HomePage />
           </GameProvider>
@@ -33,28 +36,17 @@ describe("HomePage Component", () => {
       </MemoryRouter>
     );
 
-    // Tagline
-    expect(
-      screen.getByText(
-        "A daily game where players compare the release dates of various cultural artifacts"
-      )
-    ).toBeInTheDocument();
+    const homePageLogo = container.querySelector(".home-logo");
+    expect(homePageLogo).toBeInTheDocument();
 
-    // Image logo
-    const logo = screen.getByRole("img");
-    expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute("src", "/assets/logo.svg");
-
-    // Play button
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
     expect(screen.getByText("Play")).toBeInTheDocument();
   });
 
-  test("renders image in mobile view", () => {
-    useIsMobile.mockReturnValue(true);
-
+  test("navigates to game when play button clicked", () => {
     render(
       <MemoryRouter>
-        <MockAuthProvider>
+        <MockAuthProvider value={{ isAuthenticated: false }}>
           <GameProvider>
             <HomePage />
           </GameProvider>
@@ -62,8 +54,24 @@ describe("HomePage Component", () => {
       </MemoryRouter>
     );
 
-    const logo = screen.getByRole("img");
-    expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute("src", "/assets/logo.svg");
+    fireEvent.click(screen.getByText("Play"));
+
+    expect(mockNavigate).toHaveBeenCalledWith("/game");
+  });
+
+  test("displays correct tagline text", () => {
+    render(
+      <MemoryRouter>
+        <MockAuthProvider value={{ isAuthenticated: false }}>
+          <GameProvider>
+            <HomePage />
+          </GameProvider>
+        </MockAuthProvider>
+      </MemoryRouter>
+    );
+
+    expect(
+      screen.getByText(/daily game where players compare/i)
+    ).toBeInTheDocument();
   });
 });

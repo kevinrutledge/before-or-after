@@ -1909,7 +1909,7 @@ footer {
   --secondary-purple: #5636e6;
   --light-purple: #c186fc;
   --main-gray: #4b5563;
-  --nav-background: #e9ecef;
+  --nav-background: #e8e0d6;
   --nav-border: rgba(75, 85, 99, 0.15);
 }
 
@@ -1918,7 +1918,6 @@ footer {
   width: 100vw;
   background-color: var(--nav-background);
   border-bottom: 1px solid var(--nav-border);
-  margin-left: calc(-50vw + 50%);
 }
 
 .header-nav .container {
@@ -1968,7 +1967,7 @@ footer {
   font-size: 1rem;
   font-weight: 700;
   color: var(--main-gray);
-  margin-left: 2rem;
+  text-align: center;
 }
 
 /* Account Dropdown */
