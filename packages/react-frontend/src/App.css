@@ -1,3 +1,11 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
 :root {
   --primary-color: rgb(37, 99, 235);
   --before-blue: rgb(86, 54, 230);
@@ -98,16 +106,37 @@ main {
 }
 
 .card {
+  flex: 1 1 0;
+  min-width: 250px;
+  max-width: 500px;
+  min-height: 250px;
+  max-height: 500px;
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: var(--card-shadow);
   padding: 2rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  overflow: hidden;
 }
 
-.card h3 {
+.card-content {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+}
+
+.card-title {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
+  color: #fff; /* Make title white */
 }
 
 .card img {
@@ -120,7 +149,7 @@ main {
 
 .card-date {
   font-weight: bold;
-  color: var(--primary-color);
+  color: #fff; /* Make date white */
   margin-top: 0.5rem;
 }
 
@@ -412,19 +441,19 @@ footer {
 
 .cards-container {
   display: flex;
-  justify-content: space-between;
-  align-items: stretch;
+  justify-content: center;
+  align-items: stretch; /* Ensures children fill container vertically */
   gap: 1rem;
-  height: 100vh;
-  width: 100vw;
-  padding: 0;
-  margin: 0;
+  height: calc(100vh - 1in);
+  width: calc(100vw - 1in);
+  margin: 0.5in;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .cards-container.side-by-side {
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center; /* <-- Change from space-between to center */
   align-items: center;
 }
 
@@ -449,71 +478,50 @@ footer {
 }
 
 .card {
-  flex: 1 1 100%;
-  height: 100%;
+  flex: 1 1 0;
+  min-width: 250px;
+  max-width: 500px;
+  height: 100%; /* Fill the container vertically */
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: var(--card-shadow);
+  padding: 2rem;
+  text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  background-color: white;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  text-align: center;
+  justify-content: flex-start;
   overflow: hidden;
+}
+
+.card-content {
   position: relative;
-}
-
-.card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.card-enter {
-  transform: translateX(100%);
-}
-
-.card-enter-active {
-  transform: translateX(0);
-}
-
-.card-exit {
-  transform: translateX(0);
-}
-
-.card-exit-active {
-  transform: translateX(-100%);
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
 }
 
 .card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  margin-bottom: 0.5rem 0;
-  margin-top: 0;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: #fff; /* Make title white */
 }
 
 .card-date {
-  font-size: 1rem;
-  color: var(--secondary-color);
-  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #fff; /* Make date white */
+  margin-top: 0.5rem;
 }
 
-.card-image {
-  flex-grow: 1;
-  height: 100%;
-  overflow: hidden;
-  position: relative;
-}
-
-.card-image img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.card img {
+  max-width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+  margin: 0 auto;
   display: block;
-  max-height: none !important;
 }
 
 .card-source {
@@ -656,7 +664,7 @@ footer {
 @media (min-width: 769px) {
   .cards-container.side-by-side {
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center; /* <-- Change from space-between to center */
     align-items: center;
   }
 }
@@ -1978,4 +1986,34 @@ footer {
   .form-actions {
     flex-direction: column;
   }
+}
+
+.guess-sentence {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 1.1rem;
+}
+
+.guess-sentence .before-button,
+.guess-sentence .after-button {
+  margin: 0 0.25rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+}
+
+.card-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(
+    30,
+    41,
+    59,
+    0.55
+  ); /* Increase the alpha for a darker overlay */
+  z-index: 1;
+  pointer-events: none;
 }
