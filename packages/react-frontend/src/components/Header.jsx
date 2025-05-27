@@ -4,89 +4,99 @@ import { useGame } from "../context/GameContext";
 import { useAuth } from "../context/AuthContext";
 
 function Header() {
-  const { score, highscore } = useGame();
+  const { highscore } = useGame();
   const { isAuthenticated, user, logout } = useAuth();
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
   const navigate = useNavigate();
 
-  // Handle navigation to login page
-  const handleSignIn = () => {
-    navigate("/login");
+  const toggleAccountMenu = () => {
+    setShowAccountMenu(!showAccountMenu);
   };
 
-  // Handle navigation to signup page
-  const handleSignUp = () => {
-    navigate("/signup");
-  };
-
-  // Toggle profile dropdown menu
-  const toggleProfileMenu = () => {
-    setShowProfileMenu(!showProfileMenu);
-  };
-
-  // Handle logout
-  const handleLogout = () => {
+  const signOut = () => {
     logout();
-    setShowProfileMenu(false);
+    setShowAccountMenu(false);
     navigate("/");
   };
 
-  // Get user initials for avatar
-  const getUserInitials = () => {
-    if (!user || !user.email) return "?";
-    return user.email.charAt(0).toUpperCase();
+  const signIn = () => {
+    setShowAccountMenu(false);
+    navigate("/login");
   };
+
+  const signUp = () => {
+    setShowAccountMenu(false);
+    navigate("/signup");
+  };
+
+  const openDashboard = () => {
+    setShowAccountMenu(false);
+    navigate("/admin");
+  };
+
+  const goHome = () => navigate("/");
 
   return (
     <header className="desktop-only">
-      <div className="container">
-        <nav className="header-nav">
-          <button className="back-home-button" onClick={() => navigate("/")}>
-            Back to Home
+      <div className="header-nav">
+        <div className="container">
+          <button className="logo-button" onClick={goHome}>
+            <div className="logo-square">
+              <img
+                src="/assets/logo.svg"
+                alt="Before or After Logo"
+                width="48"
+                height="48"
+              />
+            </div>
           </button>
-          {/* Left: High Score */}
-          <div className="high-score">High Score: {highscore}</div>
 
-          {/* Center: Current Score */}
-          <div className="current-score">Score: {score}</div>
+          <div className="high-score-display">High Score: {highscore}</div>
 
-          {/* Right: Auth Controls */}
-          {isAuthenticated ? (
-            <div className="profile-dropdown">
-              <button
-                className="profile-button"
-                onClick={toggleProfileMenu}
-                aria-expanded={showProfileMenu}
-                aria-haspopup="true">
-                <div className="profile-icon">{getUserInitials()}</div>
-              </button>
+          <div className="account-dropdown">
+            <button
+              className="account-button"
+              onClick={toggleAccountMenu}
+              aria-expanded={showAccountMenu}
+              aria-haspopup="true">
+              <div className="account-button-pill">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="#4B5563">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+              </div>
+            </button>
 
-              {showProfileMenu && (
-                <div className="profile-menu">
-                  <button
-                    className="profile-menu-item logout-item"
-                    onClick={handleLogout}>
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="auth-buttons">
-              <button
-                className="auth-button signin-button"
-                onClick={handleSignIn}>
-                Sign In
-              </button>
-              <button
-                className="auth-button signup-button"
-                onClick={handleSignUp}
-                style={{ color: "black" }}>
-                Sign Up
-              </button>
-            </div>
-          )}
-        </nav>
+            {showAccountMenu && (
+              <div className="account-menu">
+                {isAuthenticated ? (
+                  <>
+                    {user?.role === "admin" && (
+                      <button
+                        className="account-menu-item"
+                        onClick={openDashboard}>
+                        Dashboard
+                      </button>
+                    )}
+                    <button
+                      className="account-menu-item logout-item"
+                      onClick={signOut}>
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="account-menu-item" onClick={signIn}>
+                      Sign In
+                    </button>
+                    <button className="account-menu-item" onClick={signUp}>
+                      Sign Up
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );

@@ -290,8 +290,7 @@ footer {
   justify-content: center;
 }
 
-.play-again-button,
-.back-home-button {
+.play-again-button {
   flex: 1 1 0;
   padding: 0.9rem 0;
   font-size: 1.1rem;
@@ -400,24 +399,6 @@ footer {
 /* HOME STYLE END */
 
 /* Game Page Styling */
-
-.header-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-  margin: 0;
-}
-
-.desktop-only {
-  padding: 0;
-  margin: 0;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
-}
 
 .main-content {
   padding: 0;
@@ -826,103 +807,6 @@ footer {
 }
 
 /* Auth Button Styles */
-
-.auth-buttons {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.auth-button {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-}
-
-.signin-button {
-  background-color: #e5e7eb;
-  color: #1e40af;
-  border: 1px solid #2563eb;
-}
-
-.signin-button:hover {
-  background-color: #d1d5db;
-}
-
-.signup-button {
-  background-color: var(--accent-color);
-  color: black !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.signup-button:hover {
-  background-color: #f59e0b;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-.profile-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.profile-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.profile-icon {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background-color: var(--primary);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-.profile-menu {
-  position: absolute;
-  right: 0;
-  top: 100%;
-  margin-top: 0.5rem;
-  background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-width: 10rem;
-  z-index: 10;
-  overflow: hidden;
-}
-
-.profile-menu-item {
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  display: block;
-  width: 100%;
-  text-align: left;
-  border: none;
-  background-color: transparent;
-  color: var(--text);
-  transition: background-color 0.2s ease;
-}
-
-.profile-menu-item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.logout-item {
-  color: #d32f2f;
-  border-top: 1px solid #eee;
-}
 
 /* Password visibility toggle */
 .password-toggle {
@@ -2016,4 +1900,215 @@ footer {
   ); /* Increase the alpha for a darker overlay */
   z-index: 1;
   pointer-events: none;
+}
+
+/* Navigation Theme Colors */
+:root {
+  --error-red: #d62525;
+  --primary-purple: #7933d1;
+  --secondary-purple: #5636e6;
+  --light-purple: #c186fc;
+  --main-gray: #4b5563;
+  --nav-background: #e8e0d6;
+  --nav-border: rgba(75, 85, 99, 0.15);
+}
+
+/* Header Styles */
+.header-nav {
+  width: 100vw;
+  background-color: var(--nav-background);
+  border-bottom: 1px solid var(--nav-border);
+}
+
+.header-nav .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Logo Button */
+.logo-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 16px;
+  transition: none;
+}
+
+.logo-button:hover {
+  background: none;
+}
+
+.logo-square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(75, 85, 99, 0.25);
+  border-radius: 28px;
+  padding: 4px 28px;
+  transition: all 0.2s ease;
+  background-color: rgba(233, 236, 239, 0.6);
+  height: 52px;
+  min-width: 84px;
+}
+
+.logo-button:hover .logo-square {
+  background-color: rgba(200, 200, 200, 0.8);
+  border-color: rgba(75, 85, 99, 0.4);
+}
+
+/* High Score Display */
+.high-score-display {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--main-gray);
+  text-align: center;
+}
+
+/* Account Dropdown */
+.account-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.account-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+}
+
+.account-button-pill {
+  background: radial-gradient(
+    ellipse,
+    rgba(193, 134, 252, 0.25) 0%,
+    rgba(193, 134, 252, 0.12) 70%,
+    transparent 100%
+  );
+  border: 1px solid rgba(121, 51, 209, 0.3);
+  padding: 10px 28px;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  min-width: 84px;
+  height: 52px;
+}
+
+.account-button:hover .account-button-pill {
+  background: radial-gradient(
+    ellipse,
+    rgba(121, 51, 209, 0.35) 0%,
+    rgba(121, 51, 209, 0.18) 70%,
+    transparent 100%
+  );
+  border-color: rgba(86, 54, 230, 0.5);
+}
+
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 10rem;
+  z-index: 50;
+  overflow: hidden;
+  border: 1px solid var(--nav-border);
+}
+
+.account-menu-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background-color: transparent;
+  color: var(--main-gray);
+  transition: background-color 0.2s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.account-menu-item:hover {
+  background-color: #f9fafb;
+}
+
+.logout-item {
+  color: var(--error-red);
+  border-top: 1px solid var(--nav-border);
+}
+
+.logout-item:hover {
+  background-color: #fef2f2;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--nav-background);
+  border-top: 1px solid var(--nav-border);
+  padding: 0.5rem 0;
+  z-index: 10;
+}
+
+.bottom-nav .nav-items {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.bottom-nav .high-score-display {
+  font-size: 0.9rem;
+  margin-left: 0;
+  font-weight: 700;
+}
+
+.bottom-nav .logo-button {
+  padding: 8px;
+}
+
+.bottom-nav .account-button {
+  padding: 8px;
+}
+
+/* Mobile Menu Positioning */
+.account-menu.mobile-menu {
+  bottom: 100%;
+  top: auto;
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .header-nav {
+    padding: 0 0.5rem;
+  }
+
+  .high-score-display {
+    font-size: 0.85rem;
+    margin-left: 1rem;
+  }
+
+  .bottom-nav .nav-items {
+    padding: 0 0.5rem;
+  }
 }
