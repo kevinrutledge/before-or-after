@@ -1,6 +1,7 @@
 import http from "http";
 import { URL } from "url";
 import { corsHandler } from "./_cors.js";
+import { parseMultipartData } from "../utils/multipartParser.js";
 import indexHandler from "./index.js";
 import cardsNextHandler from "./cards/next.js";
 import cardsGuessHandler from "./cards/guess.js";
@@ -10,6 +11,10 @@ import authForgotPasswordHandler from "./auth/forgot-password.js";
 import authVerifyCodeHandler from "./auth/verify-code.js";
 import authResetPasswordHandler from "./auth/reset-password.js";
 import adminCardsHandler from "./admin/cards.js";
+import { processImage, validateImageFile } from "../services/imageProcessor.js";
+import { uploadImagePair, deleteS3Image } from "../services/s3Service.js";
+import jwt from "jsonwebtoken";
+
 /**
  * Create mock request object with Express-like properties.
  */
@@ -55,6 +60,409 @@ const createMockRes = () => {
   return res;
 };
 
+/**
+ * Handle card deletion with S3 image cleanup.
+ */
+const handleCardDelete = async (req, res) => {
+  // Verify authentication
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    res.statusCode = 401;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Authentication required" }));
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp && decoded.exp < now) {
+      res.statusCode = 401;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: "Token expired" }));
+      return;
+    }
+
+    if (decoded.role !== "admin") {
+      res.statusCode = 403;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: "Admin access required" }));
+      return;
+    }
+  } catch {
+    res.statusCode = 401;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Invalid token" }));
+    return;
+  }
+
+  // Extract card ID from URL
+  const cardId = req.url.split("/").pop();
+  if (!cardId) {
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Card ID required" }));
+    return;
+  }
+
+  let client = null;
+
+  try {
+    // Get database connection
+    const { getCardsCollection } = await import("../models/Card.js");
+    const { client: dbClient, collection } = await getCardsCollection();
+    client = dbClient;
+
+    // Get card data before deletion for S3 cleanup
+    const { ObjectId } = await import("mongodb");
+    const card = await collection.findOne({ _id: new ObjectId(cardId) });
+
+    if (!card) {
+      res.statusCode = 404;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: "Card not found" }));
+      return;
+    }
+
+    // Delete card from database
+    const result = await collection.deleteOne({ _id: new ObjectId(cardId) });
+
+    if (result.deletedCount === 0) {
+      res.statusCode = 404;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: "Card not found" }));
+      return;
+    }
+
+    // Clean up S3 images after successful deletion
+    try {
+      if (card.imageUrl) {
+        await deleteS3Image(card.imageUrl);
+      }
+      if (card.thumbnailUrl) {
+        await deleteS3Image(card.thumbnailUrl);
+      }
+    } catch (cleanupError) {
+      console.error("Failed to cleanup S3 images:", cleanupError);
+      // Don't fail the request if S3 cleanup fails
+    }
+
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Card deleted successfully" }));
+  } catch (error) {
+    console.error("Card deletion error:", error);
+    res.statusCode = 500;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Failed to delete card" }));
+  } finally {
+    if (client) await client.close();
+  }
+};
+
+const handleCardUpdate = async (req, res, fileData, fields) => {
+  // Verify authentication
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    res.statusCode = 401;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Authentication required" }));
+    return;
+  }
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp && decoded.exp < now) {
+      res.statusCode = 401;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: "Token expired" }));
+      return;
+    }
+
+    if (decoded.role !== "admin") {
+      res.statusCode = 403;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: "Admin access required" }));
+      return;
+    }
+  } catch {
+    res.statusCode = 401;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Invalid token" }));
+    return;
+  }
+
+  // Extract card ID from URL
+  const cardId = req.url.split("/").pop();
+  if (!cardId) {
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Card ID required" }));
+    return;
+  }
+
+  // Validate required fields
+  const { title, year, month, category, sourceUrl, cropMode } = fields || {};
+  if (!title || !year || !month || !category || !sourceUrl) {
+    res.statusCode = 400;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Missing required fields" }));
+    return;
+  }
+
+  let updatedUrls = null;
+  let client = null;
+  let originalCard = null;
+
+  try {
+    // Get database connection
+    const { getCardsCollection } = await import("../models/Card.js");
+    const { client: dbClient, collection } = await getCardsCollection();
+    client = dbClient;
+
+    // Get original card for cleanup
+    const { ObjectId } = await import("mongodb");
+    originalCard = await collection.findOne({ _id: new ObjectId(cardId) });
+    if (!originalCard) {
+      res.statusCode = 404;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: "Card not found" }));
+      return;
+    }
+
+    // Process new image if provided
+    if (fileData && fileData.image) {
+      validateImageFile(fileData.image);
+      const { thumbnail, large } = await processImage(
+        fileData.image.buffer,
+        cropMode
+      );
+      updatedUrls = await uploadImagePair(thumbnail, large);
+    }
+
+    // Build update object
+    const updateData = {
+      title,
+      year: parseInt(year),
+      month: parseInt(month),
+      category,
+      sourceUrl,
+      updatedAt: new Date()
+    };
+
+    // Add image URLs if new image uploaded
+    if (updatedUrls) {
+      updateData.imageUrl = updatedUrls.imageUrl;
+      updateData.thumbnailUrl = updatedUrls.thumbnailUrl;
+    }
+
+    // Update card in database
+    const result = await collection.updateOne(
+      { _id: new ObjectId(cardId) },
+      { $set: updateData }
+    );
+
+    if (result.matchedCount === 0) {
+      // Cleanup new images if card update failed
+      if (updatedUrls) {
+        await deleteS3Image(updatedUrls.imageUrl);
+        await deleteS3Image(updatedUrls.thumbnailUrl);
+      }
+      res.statusCode = 404;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: "Card not found" }));
+      return;
+    }
+
+    // Cleanup old images if new ones uploaded
+    if (updatedUrls && originalCard) {
+      try {
+        if (originalCard.imageUrl) {
+          await deleteS3Image(originalCard.imageUrl);
+        }
+        if (originalCard.thumbnailUrl) {
+          await deleteS3Image(originalCard.thumbnailUrl);
+        }
+      } catch (cleanupError) {
+        console.error("Failed to cleanup old images:", cleanupError);
+      }
+    }
+
+    // Return updated card
+    const updatedCard = await collection.findOne({ _id: new ObjectId(cardId) });
+
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify(updatedCard));
+  } catch (error) {
+    console.error("Card update error:", error);
+
+    // Cleanup new images on failure
+    if (updatedUrls) {
+      try {
+        await deleteS3Image(updatedUrls.imageUrl);
+        await deleteS3Image(updatedUrls.thumbnailUrl);
+      } catch (cleanupError) {
+        console.error("Failed to cleanup uploaded images:", cleanupError);
+      }
+    }
+
+    if (error.message.includes("File too large")) {
+      res.statusCode = 400;
+      res.setHeader("Content-Type", "application/json");
+      res.end(
+        JSON.stringify({ message: "File too large. Maximum size is 10MB" })
+      );
+      return;
+    }
+
+    if (error.message.includes("Invalid file type")) {
+      res.statusCode = 400;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ message: error.message }));
+      return;
+    }
+
+    res.statusCode = 500;
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Failed to update card" }));
+  } finally {
+    if (client) await client.close();
+  }
+};
+
+const handleAtomicCardCreation = async (fileData, fields, headers) => {
+  // Verify authentication
+  const authHeader = headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ message: "Authentication required" })
+    };
+  }
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp && decoded.exp < now) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: "Token expired" })
+      };
+    }
+
+    if (decoded.role !== "admin") {
+      return {
+        statusCode: 403,
+        body: JSON.stringify({ message: "Admin access required" })
+      };
+    }
+  } catch {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ message: "Invalid token" })
+    };
+  }
+
+  // Validate required fields
+  const { title, year, month, category, sourceUrl, cropMode } = fields || {};
+  if (!title || !year || !month || !category || !sourceUrl) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Missing required fields" })
+    };
+  }
+
+  // Validate image file
+  if (!fileData || !fileData.image) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Image file required" })
+    };
+  }
+
+  let uploadedUrls = null;
+  let client = null;
+
+  try {
+    const file = fileData.image;
+
+    // Validate and process image with crop mode
+    validateImageFile(file);
+    const { thumbnail, large } = await processImage(file.buffer, cropMode);
+    uploadedUrls = await uploadImagePair(thumbnail, large);
+
+    // Create card record
+    const { getCardsCollection } = await import("../models/Card.js");
+    const { client: dbClient, collection } = await getCardsCollection();
+    client = dbClient;
+
+    const newCard = {
+      title,
+      year: parseInt(year),
+      month: parseInt(month),
+      imageUrl: uploadedUrls.imageUrl,
+      thumbnailUrl: uploadedUrls.thumbnailUrl,
+      sourceUrl,
+      category,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    const result = await collection.insertOne(newCard);
+
+    return {
+      statusCode: 201,
+      body: JSON.stringify({
+        ...newCard,
+        _id: result.insertedId
+      })
+    };
+  } catch (error) {
+    console.error("Atomic card creation error:", error);
+
+    // Cleanup uploaded images on failure
+    if (uploadedUrls) {
+      try {
+        await deleteS3Image(uploadedUrls.imageUrl);
+        await deleteS3Image(uploadedUrls.thumbnailUrl);
+      } catch (cleanupError) {
+        console.error("Failed to cleanup uploaded images:", cleanupError);
+      }
+    }
+
+    if (error.message.includes("File too large")) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          message: "File too large. Maximum size is 10MB"
+        })
+      };
+    }
+
+    if (error.message.includes("Invalid file type")) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: error.message })
+      };
+    }
+
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: "Failed to create card" })
+    };
+  } finally {
+    if (client) await client.close();
+  }
+};
+
 // Create HTTP server to simulate API endpoints
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
@@ -65,28 +473,59 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // Collect request body data
-  let body = "";
+  // Collect request body data as buffer for multipart support
+  const chunks = [];
   req.on("data", (chunk) => {
-    body += chunk.toString();
+    chunks.push(chunk);
   });
 
   req.on("end", async () => {
-    // Parse JSON body when present
-    if (body && req.headers["content-type"] === "application/json") {
+    const bodyBuffer = Buffer.concat(chunks);
+    const contentType = req.headers["content-type"] || "";
+    let parsedBody = null;
+    let fileData = null;
+
+    // Parse body based on content type
+    if (contentType.includes("multipart/form-data")) {
+      const parsed = parseMultipartData(bodyBuffer, contentType);
+      if (parsed) {
+        parsedBody = parsed.fields;
+        fileData = parsed.files;
+      }
+    } else if (contentType === "application/json" && bodyBuffer.length > 0) {
       try {
-        body = JSON.parse(body);
+        parsedBody = JSON.parse(bodyBuffer.toString());
       } catch {
-        body = {};
+        parsedBody = {};
       }
     }
 
-    // Create Express-compatible request and response objects
-    const mockReq = createMockReq(req.url, req.method, body, req.headers);
-    const mockRes = createMockRes();
-
     try {
-      // Route to the appropriate handler
+      let mockRes;
+
+      // Handle atomic card creation
+      if (path === "/api/admin/cards-with-image") {
+        const atomicResult = await handleAtomicCardCreation(
+          fileData,
+          parsedBody,
+          req.headers
+        );
+        res.statusCode = atomicResult.statusCode;
+        res.setHeader("Content-Type", "application/json");
+        res.end(atomicResult.body);
+        return;
+      }
+
+      // Create Express-compatible request and response objects for other endpoints
+      const mockReq = createMockReq(
+        req.url,
+        req.method,
+        parsedBody,
+        req.headers
+      );
+      mockRes = createMockRes();
+
+      // Route to appropriate handler
       if (path === "/") {
         await indexHandler(mockReq, mockRes);
       } else if (path === "/api/cards/next") {
@@ -103,6 +542,15 @@ const server = http.createServer(async (req, res) => {
         await authVerifyCodeHandler(mockReq, mockRes);
       } else if (path === "/api/auth/reset-password") {
         await authResetPasswordHandler(mockReq, mockRes);
+      } else if (path.startsWith("/api/admin/cards/") && req.method === "PUT") {
+        await handleCardUpdate(req, res, fileData, parsedBody);
+        return;
+      } else if (
+        path.startsWith("/api/admin/cards/") &&
+        req.method === "DELETE"
+      ) {
+        await handleCardDelete(req, res);
+        return;
       } else if (path === "/api/admin/cards") {
         await adminCardsHandler(mockReq, mockRes);
       } else {

@@ -3,6 +3,10 @@
  */
 const API_URL = import.meta.env.VITE_API_URL;
 
+console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
+console.log("PROD:", import.meta.env.PROD);
+console.log("API_URL constant:", API_URL);
+
 /**
  * Make a request to the API.
  */
@@ -12,7 +16,7 @@ export async function apiRequest(endpoint, options = {}) {
     ? endpoint
     : `/${endpoint}`;
 
-  // Check if we're in production (using the Vite detection method)
+  // Check if we're in production
   const isProduction = import.meta.env.PROD;
 
   const url =
@@ -22,10 +26,16 @@ export async function apiRequest(endpoint, options = {}) {
 
   console.log(`Making API request to: ${url}`);
 
-  const headers = {
-    "Content-Type": "application/json",
-    ...options.headers
-  };
+  // Only set Content-Type for non-FormData requests
+  const headers = {};
+
+  // Check if body is FormData - if so, let browser set Content-Type
+  if (options.body && !(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  // Add any additional headers
+  Object.assign(headers, options.headers);
 
   const config = {
     ...options,

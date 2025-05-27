@@ -56,8 +56,12 @@
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.800.0",
+    "@tanstack/react-query": "^5.77.1",
     "bcryptjs": "^3.0.2",
+    "multer": "^2.0.0",
+    "react-intersection-observer": "^9.16.0",
     "react-router-dom": "^7.5.3",
+    "sharp": "^0.34.2",
     "styled-components": "^6.1.18"
   },
   "overrides": {
