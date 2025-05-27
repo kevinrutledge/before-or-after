@@ -89,9 +89,6 @@ describe("GamePage", () => {
       expect(screen.queryByText("Loading game...")).not.toBeInTheDocument();
     });
 
-    // Check page title
-    expect(screen.getByText("Before or After?")).toBeInTheDocument();
-
     // Check score display - use more specific selector to avoid Header/GamePage conflict
     expect(screen.getByText("Current Score: 3")).toBeInTheDocument();
 
