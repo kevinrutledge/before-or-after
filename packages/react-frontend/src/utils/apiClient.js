@@ -3,10 +3,6 @@
  */
 const API_URL = import.meta.env.VITE_API_URL;
 
-console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
-console.log("PROD:", import.meta.env.PROD);
-console.log("API_URL constant:", API_URL);
-
 /**
  * Make a request to the API.
  */
