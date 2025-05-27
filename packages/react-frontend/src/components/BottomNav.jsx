@@ -1,67 +1,101 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../context/GameContext";
 import { useAuth } from "../context/AuthContext";
 
 function BottomNav() {
-  const { score, highscore } = useGame();
-  const { isAuthenticated, logout } = useAuth();
+  const { highscore } = useGame();
+  const { isAuthenticated, user, logout } = useAuth();
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
   const navigate = useNavigate();
 
-  // Handle navigation to login page
-  const handleSignIn = () => {
+  const toggleAccountMenu = () => {
+    setShowAccountMenu(!showAccountMenu);
+  };
+
+  const signOut = () => {
+    logout();
+    setShowAccountMenu(false);
+    navigate("/");
+  };
+
+  const signIn = () => {
+    setShowAccountMenu(false);
     navigate("/login");
   };
 
-  // Handle navigation to signup page
-  const handleSignUp = () => {
+  const signUp = () => {
+    setShowAccountMenu(false);
     navigate("/signup");
   };
 
-  // Handle logout
-  const handleLogout = () => {
-    logout();
-    navigate("/");
+  const openDashboard = () => {
+    setShowAccountMenu(false);
+    navigate("/admin");
   };
+
+  const goHome = () => navigate("/");
 
   return (
     <nav className="mobile-only bottom-nav">
       <div className="container">
         <div className="nav-items">
-          <button
-            className="back-home-button"
-            onClick={() => navigate("/")}
-            style={{ marginTop: "20px" }}>
-            Back to Home
+          <button className="logo-button" onClick={goHome}>
+            <div className="logo-square">
+              <img
+                src="/assets/logo.svg"
+                alt="Before or After Logo"
+                width="40"
+                height="40"
+              />
+            </div>
           </button>
 
-          {/* Left: High Score */}
-          <div className="high-score">High: {highscore}</div>
+          <div className="high-score-display">High Score: {highscore}</div>
 
-          {/* Center: Current Score */}
-          <div className="current-score">Score: {score}</div>
-
-          {/* Right: Auth Controls */}
-          {isAuthenticated ? (
+          <div className="account-dropdown">
             <button
-              className="auth-button logout-button"
-              onClick={handleLogout}>
-              Logout
+              className="account-button"
+              onClick={toggleAccountMenu}
+              aria-expanded={showAccountMenu}
+              aria-haspopup="true">
+              <div className="account-button-pill">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="#4B5563">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
+              </div>
             </button>
-          ) : (
-            <div className="auth-buttons">
-              <button
-                className="auth-button signin-button"
-                onClick={handleSignIn}>
-                Sign In
-              </button>
-              <button
-                className="auth-button signup-button"
-                onClick={handleSignUp}
-                style={{ color: "black" }}>
-                Sign Up
-              </button>
-            </div>
-          )}
+
+            {showAccountMenu && (
+              <div className="account-menu mobile-menu">
+                {isAuthenticated ? (
+                  <>
+                    {user?.role === "admin" && (
+                      <button
+                        className="account-menu-item"
+                        onClick={openDashboard}>
+                        Dashboard
+                      </button>
+                    )}
+                    <button
+                      className="account-menu-item logout-item"
+                      onClick={signOut}>
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="account-menu-item" onClick={signIn}>
+                      Sign In
+                    </button>
+                    <button className="account-menu-item" onClick={signUp}>
+                      Sign Up
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>
