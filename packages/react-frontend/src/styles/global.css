@@ -83,11 +83,10 @@ body {
   }
 }
 
-
 .result-message.correct {
   background-color: #2ecc40;
   opacity: 0.8;
-  color: white
+  color: white;
 }
 
 .result-message.incorrect {
@@ -95,4 +94,3 @@ body {
   opacity: 0.8;
   color: white;
 }
-
