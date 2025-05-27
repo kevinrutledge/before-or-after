@@ -27,6 +27,7 @@ Object.defineProperty(window, "getComputedStyle", {
     display: "block",
     margin: "0",
     padding: "0",
-    maxWidth: "1200px"
+    maxWidth: "1200px",
+    getPropertyValue: () => ""
   })
 });

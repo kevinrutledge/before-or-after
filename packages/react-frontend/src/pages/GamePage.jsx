@@ -61,14 +61,6 @@ function GamePage() {
       // Use compareCards utility for core logic
       const isCorrect = compareCards(referenceCard, currentCard, guess);
 
-      console.log({
-        previousYear: referenceCard?.year,
-        previousMonth: referenceCard?.month,
-        currentYear: currentCard?.year,
-        currentMonth: currentCard?.month,
-        guess
-      });
-
       await apiRequest("/api/cards/guess", {
         method: "POST",
         body: JSON.stringify({

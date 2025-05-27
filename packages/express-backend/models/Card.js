@@ -2,11 +2,10 @@ import { MongoClient } from "mongodb";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from "url";
 
 let dirName;
 try {
-  dirName = path.dirname(fileURLToPath(import.meta.url));
+  dirName = __dirname || process.cwd();
 } catch {
   dirName = process.cwd();
 }
@@ -21,37 +20,99 @@ export const cardSchema = {
   year: { type: Number, required: true },
   month: { type: Number, required: true, min: 1, max: 12 },
   imageUrl: { type: String, required: true },
+  thumbnailUrl: { type: String, required: false },
   sourceUrl: { type: String, required: true },
   category: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 };
 
+// Connection pool management
+let sharedClient = null;
+let sharedMemoryServer = null;
+let currentUri = null;
+
 /**
- * Get database connection and cards collection.
+ * Get database connection and cards collection with connection reuse.
  */
 export async function getCardsCollection() {
   let uri = process.env.MONGO_URI;
-  let memoryServer;
+  let memoryServer = null;
 
   // If MONGO_URI is not set, create an in-memory MongoDB server
   if (!uri) {
-    memoryServer = await MongoMemoryServer.create();
-    uri = memoryServer.getUri();
-    console.log("Using MongoDB Memory Server:", uri);
+    if (!sharedMemoryServer) {
+      sharedMemoryServer = await MongoMemoryServer.create();
+    }
+    uri = sharedMemoryServer.getUri();
+    memoryServer = sharedMemoryServer;
   }
 
-  const client = new MongoClient(uri);
-  await client.connect();
+  // Reuse existing connection if URI matches and client is connected
+  if (
+    sharedClient &&
+    currentUri === uri &&
+    sharedClient.topology?.s?.state === "connected"
+  ) {
+    const db = sharedClient.db();
+    const collection = db.collection("cards");
 
-  const db = client.db();
+    // Return wrapper that doesn't close shared connection
+    return {
+      client: {
+        close: async () => {
+          // Mock close - don't close shared connection
+        },
+        topology: sharedClient.topology
+      },
+      collection,
+      memoryServer
+    };
+  }
+
+  // Close existing connection if URI changed
+  if (sharedClient && currentUri !== uri) {
+    await sharedClient.close();
+    sharedClient = null;
+  }
+
+  sharedClient = new MongoClient(uri);
+  currentUri = uri;
+
+  await sharedClient.connect();
+
+  const db = sharedClient.db();
   const collection = db.collection("cards");
 
   // Create indexes for query performance
   await ensureIndexes(collection);
 
-  // Return the memory server so it can be closed later
-  return { client, collection, memoryServer };
+  // Return wrapper that doesn't close shared connection
+  return {
+    client: {
+      close: async () => {
+        // Mock close - don't close shared connection
+      },
+      topology: sharedClient.topology
+    },
+    collection,
+    memoryServer
+  };
+}
+
+/**
+ * Explicitly close shared connection (for test cleanup).
+ */
+export async function closeSharedConnection() {
+  if (sharedClient) {
+    await sharedClient.close();
+    sharedClient = null;
+    currentUri = null;
+  }
+  if (sharedMemoryServer) {
+    await sharedMemoryServer.stop();
+    sharedMemoryServer = null;
+  }
 }
 
 /**
