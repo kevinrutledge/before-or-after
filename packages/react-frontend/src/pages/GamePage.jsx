@@ -8,6 +8,7 @@ import useIsMobile from "../hooks/useIsMobile";
 import ResultOverlay from "../components/ResultOverlay";
 import { compareCards } from "../utils/gameUtils";
 import Card from "../components/Card";
+import Background from "../components/Background";
 
 function GamePage() {
   const isMobile = useIsMobile();
@@ -127,6 +128,7 @@ function GamePage() {
   if (error) {
     return (
       <Layout>
+        <Background />
         <PageContainer>
           <div className="error-message">{error}</div>
           <button className="back-home-button" onClick={() => navigate("/")}>
@@ -139,9 +141,9 @@ function GamePage() {
 
   return (
     <Layout>
+      <Background />
       <PageContainer>
         <div className="game-page">
-          <h1 className="game-title">Before or After?</h1>
           <div className="score-display">
             <p>Current Score: {score}</p>
           </div>
@@ -156,7 +158,10 @@ function GamePage() {
               year={currentCard?.year}
               month={currentCard?.month}
               isReference={false}>
-              <div className="guess-buttons">
+              <div className="guess-sentence">
+                <span className="card-sentence">
+                  <strong>{currentCard?.title}</strong> is
+                </span>
                 <button
                   className="before-button"
                   onClick={() => handleGuess("before")}
@@ -169,6 +174,9 @@ function GamePage() {
                   disabled={isLoading}>
                   After
                 </button>
+                <span className="card-sentence">
+                  <strong>{referenceCard?.title}</strong>
+                </span>
               </div>
             </Card>
 
