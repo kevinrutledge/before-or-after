@@ -7,6 +7,7 @@ import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import ResultOverlay from "../components/ResultOverlay";
 import Card from "../components/Card";
+import Background from "../components/Background";
 
 function GamePage() {
   const isMobile = useIsMobile();
@@ -128,6 +129,7 @@ function GamePage() {
   if (error) {
     return (
       <Layout>
+        <Background />
         <PageContainer>
           <div className="error-message">{error}</div>
           <button className="back-home-button" onClick={() => navigate("/")}>
@@ -140,6 +142,7 @@ function GamePage() {
 
   return (
     <Layout>
+      <Background />
       <PageContainer>
         <div className="game-page">
           <div className="score-display">
