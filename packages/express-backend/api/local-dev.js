@@ -5,6 +5,7 @@ import { parseMultipartData } from "../utils/multipartParser.js";
 import indexHandler from "./index.js";
 import cardsNextHandler from "./cards/next.js";
 import cardsGuessHandler from "./cards/guess.js";
+import cardsAllHandler from "./cards/all.js";
 import authLoginHandler from "./auth/login.js";
 import authSignupHandler from "./auth/signup.js";
 import authForgotPasswordHandler from "./auth/forgot-password.js";
@@ -532,6 +533,8 @@ const server = http.createServer(async (req, res) => {
         await cardsNextHandler(mockReq, mockRes);
       } else if (path === "/api/cards/guess") {
         await cardsGuessHandler(mockReq, mockRes);
+      } else if (path === "/api/cards/all") {
+        await cardsAllHandler(mockReq, mockRes);
       } else if (path === "/api/auth/login") {
         await authLoginHandler(mockReq, mockRes);
       } else if (path === "/api/auth/signup") {
