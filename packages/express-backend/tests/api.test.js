@@ -7,6 +7,7 @@ const {
 } = require("@jest/globals");
 const request = require("supertest");
 const express = require("express");
+const rateLimit = require("express-rate-limit");
 const { MongoMemoryServer } = require("mongodb-memory-server");
 const { MongoClient } = require("mongodb");
 
@@ -30,8 +31,17 @@ describe("GET /api/cards/all", () => {
     app = express();
     app.use(express.json());
 
-    // Define test endpoint that mimics cards/all.js behavior
-    app.get("/api/cards/all", async (req, res) => {
+    // Configure rate limiter for test endpoint
+    const testRateLimit = rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      max: 50, // Match production limits
+      standardHeaders: true,
+      legacyHeaders: false,
+      message: "Too many card requests, please try again later"
+    });
+
+    // Define test endpoint that mimics cards/all.js behavior with rate limiting
+    app.get("/api/cards/all", testRateLimit, async (req, res) => {
       try {
         const db = client.db();
         const collection = db.collection("cards");
@@ -123,7 +133,14 @@ describe("GET /api/cards/all", () => {
     const errorApp = express();
     errorApp.use(express.json());
 
-    errorApp.get("/api/cards/all", async (req, res) => {
+    const testRateLimit = rateLimit({
+      windowMs: 15 * 60 * 1000,
+      max: 50,
+      standardHeaders: true,
+      legacyHeaders: false
+    });
+
+    errorApp.get("/api/cards/all", testRateLimit, async (req, res) => {
       try {
         // Simulate database error without actually breaking connection
         throw new Error("Database connection failed");
