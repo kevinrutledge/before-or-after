@@ -41,7 +41,6 @@ describe("Random Card Selection", () => {
     }));
 
     await collection.insertMany(sampleCards);
-    console.log(`Inserted ${sampleCards.length} test cards directly`);
 
     // Restore original URI if it was set
     if (originalUri) {
