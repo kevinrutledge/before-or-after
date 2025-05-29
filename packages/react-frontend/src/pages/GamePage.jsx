@@ -53,6 +53,11 @@ function GamePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    document.body.classList.add("game-page");
+    return () => document.body.classList.remove("game-page");
+  }, []);
+
   // Handle guess
   const handleGuess = async (guess) => {
     if (!referenceCard || !currentCard) return;
