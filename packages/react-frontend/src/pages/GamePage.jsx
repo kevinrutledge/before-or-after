@@ -7,6 +7,7 @@ import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import ResultOverlay from "../components/ResultOverlay";
 import { compareCards } from "../utils/gameUtils";
+import { shuffleDeck, drawCard } from "../utils/deckUtils";
 import Card from "../components/Card";
 import Background from "../components/Background";
 
@@ -17,7 +18,9 @@ function GamePage() {
 
   const [referenceCard, setReferenceCard] = useState(null);
   const [currentCard, setCurrentCard] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [deck, setDeck] = useState([]);
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   // Overlay and animation state
@@ -27,45 +30,55 @@ function GamePage() {
     newTitle: "",
     relation: ""
   });
-  const [, /*cardAnim*/ setCardAnim] = useState(""); // '', 'card-exit-active', etc.
+  const [, setCardAnim] = useState("");
 
-  // Fetch initial card on component mount
+  // Initialize deck and first two cards
   useEffect(() => {
-    const fetchInitialCard = async () => {
+    const initializeDeck = async () => {
       try {
-        setIsLoading(true);
-        const card = await apiRequest("/api/cards/next");
-        setReferenceCard(card);
+        setIsInitializing(true);
 
-        // Get a second card
-        const nextCard = await apiRequest("/api/cards/next");
-        setCurrentCard(nextCard);
+        // Fetch all cards and shuffle into deck
+        const allCards = await apiRequest("/api/cards/all");
+        const shuffledDeck = shuffleDeck(allCards);
 
-        setIsLoading(false);
+        // Draw first two cards from shuffled deck
+        const firstCard = drawCard(shuffledDeck);
+        const secondCard = drawCard(shuffledDeck);
+
+        if (!firstCard || !secondCard) {
+          throw new Error("Insufficient cards in database");
+        }
+
+        setReferenceCard(firstCard);
+        setCurrentCard(secondCard);
+        setDeck(shuffledDeck);
+        setIsInitializing(false);
       } catch {
         setError("Failed to load cards");
-        setIsLoading(false);
+        setIsInitializing(false);
       }
     };
 
-    fetchInitialCard();
+    initializeDeck();
     resetScore();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // Empty dependency array - only run once on mount
 
+  // Add body class for overflow control
   useEffect(() => {
     document.body.classList.add("game-page");
     return () => document.body.classList.remove("game-page");
   }, []);
 
-  // Handle guess
+  // Handle guess with deck-based card serving
   const handleGuess = async (guess) => {
     if (!referenceCard || !currentCard) return;
 
     try {
       setIsLoading(true);
 
-      // Use compareCards utility for core logic
+      // Process guess using existing logic
       const isCorrect = compareCards(referenceCard, currentCard, guess);
 
       await apiRequest("/api/cards/guess", {
@@ -79,7 +92,7 @@ function GamePage() {
         })
       });
 
-      // Show overlay with result
+      // Show result overlay
       setOverlayData({
         oldTitle: referenceCard.title,
         newTitle: currentCard.title,
@@ -94,24 +107,40 @@ function GamePage() {
       }, 500);
 
       if (isCorrect) {
-        // Update score and continue after overlay
+        // Continue game with next card from deck
         setTimeout(async () => {
           incrementScore();
+
+          // Current card becomes new reference card
           setReferenceCard(currentCard);
-          // Fetch a new card for the next round
-          const nextCard = await apiRequest("/api/cards/next");
-          setCurrentCard(nextCard);
+
+          // Draw next card from deck for current position
+          if (deck.length > 0) {
+            const nextCard = deck[deck.length - 1];
+            const newDeck = deck.slice(0, -1);
+            setCurrentCard(nextCard);
+            setDeck(newDeck);
+          } else {
+            // Reshuffle deck when exhausted
+            const allCards = await apiRequest("/api/cards/all");
+            const reshuffledDeck = shuffleDeck(allCards);
+            const newCard = reshuffledDeck[reshuffledDeck.length - 1];
+            const newDeck = reshuffledDeck.slice(0, -1);
+            setCurrentCard(newCard);
+            setDeck(newDeck);
+          }
+
           setCardAnim("");
+          setIsLoading(false);
         }, 1500);
       } else {
-        // Game over after overlay
+        // Game over
         setTimeout(() => {
           navigate("/loss");
         }, 1500);
       }
-
-      setIsLoading(false);
-    } catch {
+    } catch (error) {
+      console.error("Error in handleGuess:", error);
       setError("Failed to process guess");
       setIsLoading(false);
     }
@@ -121,7 +150,8 @@ function GamePage() {
     setShowOverlay(false);
   };
 
-  if (isLoading && !referenceCard) {
+  // Show loading during deck initialization
+  if (isInitializing) {
     return (
       <Layout>
         <PageContainer>
@@ -137,9 +167,6 @@ function GamePage() {
         <Background />
         <PageContainer>
           <div className="error-message">{error}</div>
-          <button className="back-home-button" onClick={() => navigate("/")}>
-            Back to Home
-          </button>
         </PageContainer>
       </Layout>
     );
@@ -156,7 +183,7 @@ function GamePage() {
 
           <div
             className={`cards-container ${isMobile ? "stacked" : "side-by-side"}`}>
-            {/* Current Card (guess card) */}
+            {/* Current Card */}
             <Card
               className="current-card"
               title={currentCard?.title}
@@ -171,13 +198,13 @@ function GamePage() {
                 <button
                   className="before-button"
                   onClick={() => handleGuess("before")}
-                  disabled={isLoading}>
+                  disabled={isInitializing || isLoading}>
                   Before
                 </button>
                 <button
                   className="after-button"
                   onClick={() => handleGuess("after")}
-                  disabled={isLoading}>
+                  disabled={isInitializing || isLoading}>
                   After
                 </button>
                 <span className="card-sentence">
@@ -197,6 +224,7 @@ function GamePage() {
             />
           </div>
         </div>
+
         <ResultOverlay
           visible={showOverlay}
           oldTitle={overlayData.oldTitle}
