@@ -6,12 +6,14 @@ import indexHandler from "./index.js";
 import cardsNextHandler from "./cards/next.js";
 import cardsGuessHandler from "./cards/guess.js";
 import cardsAllHandler from "./cards/all.js";
+import lossGifsCurrentHandler from "./loss-gifs/current.js";
 import authLoginHandler from "./auth/login.js";
 import authSignupHandler from "./auth/signup.js";
 import authForgotPasswordHandler from "./auth/forgot-password.js";
 import authVerifyCodeHandler from "./auth/verify-code.js";
 import authResetPasswordHandler from "./auth/reset-password.js";
 import adminCardsHandler from "./admin/cards.js";
+import adminLossGifsHandler from "./admin/loss-gifs.js";
 import { processImage, validateImageFile } from "../services/imageProcessor.js";
 import { uploadImagePair, deleteS3Image } from "../services/s3Service.js";
 import jwt from "jsonwebtoken";
@@ -535,6 +537,8 @@ const server = http.createServer(async (req, res) => {
         await cardsGuessHandler(mockReq, mockRes);
       } else if (path === "/api/cards/all") {
         await cardsAllHandler(mockReq, mockRes);
+      } else if (path === "/api/loss-gifs/current") {
+        await lossGifsCurrentHandler(mockReq, mockRes);
       } else if (path === "/api/auth/login") {
         await authLoginHandler(mockReq, mockRes);
       } else if (path === "/api/auth/signup") {
@@ -556,6 +560,18 @@ const server = http.createServer(async (req, res) => {
         return;
       } else if (path === "/api/admin/cards") {
         await adminCardsHandler(mockReq, mockRes);
+      } else if (
+        path.startsWith("/api/admin/loss-gifs/") &&
+        req.method === "PUT"
+      ) {
+        await adminLossGifsHandler(mockReq, mockRes);
+      } else if (
+        path.startsWith("/api/admin/loss-gifs/") &&
+        req.method === "DELETE"
+      ) {
+        await adminLossGifsHandler(mockReq, mockRes);
+      } else if (path === "/api/admin/loss-gifs") {
+        await adminLossGifsHandler(mockReq, mockRes);
       } else {
         mockRes.status(404).send("Not Found");
       }
