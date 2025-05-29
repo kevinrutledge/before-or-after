@@ -8,7 +8,6 @@ import {
   isGuestMode as checkGuestMode,
   clearGuestMode
 } from "../utils/authUtils";
-import { useGame } from "./GameContext";
 
 // Create auth context
 const AuthContext = createContext();
@@ -18,8 +17,6 @@ export function AuthProvider({ children }) {
   const [isGuest, setIsGuest] = useState(checkGuestMode());
   const [user, setUser] = useState(getCurrentUser());
   const [isLoading, setIsLoading] = useState(true);
-
-  const { migrateGuestScores } = useGame();
 
   // Check auth status on mount and when localStorage changes
   useEffect(() => {
@@ -48,7 +45,6 @@ export function AuthProvider({ children }) {
     setIsGuest(false);
     clearGuestMode(); // Clear guest mode when logging in
     setUser(getCurrentUser());
-    migrateGuestScores();
   };
 
   // Logout function
