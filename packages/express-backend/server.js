@@ -450,6 +450,18 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Health endpoint for keep-alive
+  if (req.url === "/health" && req.method === "GET") {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        status: "ok",
+        timestamp: new Date().toISOString()
+      })
+    );
+    return;
+  }
+
   // Collect request body data as buffer for multipart support
   const chunks = [];
   req.on("data", (chunk) => {
@@ -578,5 +590,6 @@ const server = http.createServer(async (req, res) => {
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`\n  ➜  API Server: http://localhost:${PORT}/`);
+  console.log(`  ➜  Backend:    Ready on port ${PORT}`);
 });

@@ -6,12 +6,15 @@ import {
 } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { authRequest } from "../utils/apiClient";
+import { useLossGifs } from "../hooks/useLossGifs";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import Modal from "../components/Modal";
 import AdminCardForm from "../components/AdminCardForm";
 import EditCardForm from "../components/EditCardForm";
 import AdminCard from "../components/AdminCard";
+import LossGifCard from "../components/LossGifCard";
+import LossGifForm from "../components/LossGifForm";
 
 // Fetch cards with pagination
 const fetchAdminCards = async ({ pageParam = null }) => {
@@ -36,6 +39,7 @@ function AdminDashboard() {
   const [deleteDialog, setDeleteDialog] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editCard, setEditCard] = useState(null);
+  const [editLossGif, setEditLossGif] = useState(null);
   const queryClient = useQueryClient();
 
   // Infinite query for cards
@@ -54,6 +58,13 @@ function AdminDashboard() {
     staleTime: 60000,
     gcTime: 300000
   });
+
+  // Loss GIFs query
+  const {
+    data: lossGifs,
+    isLoading: lossGifsLoading,
+    error: lossGifsError
+  } = useLossGifs();
 
   // Delete mutation
   const deleteMutation = useMutation({
@@ -85,15 +96,21 @@ function AdminDashboard() {
     setShowAddModal(true);
   };
 
-  // Handle close modal
+  // Handle close modals
   const handleCloseModal = () => {
     setShowAddModal(false);
     setEditCard(null);
+    setEditLossGif(null);
   };
 
   // Handle edit card
   const handleEditCard = (card) => {
     setEditCard(card);
+  };
+
+  // Handle edit loss GIF
+  const handleEditLossGif = (lossGif) => {
+    setEditLossGif(lossGif);
   };
 
   // Handle delete confirmation
@@ -127,56 +144,100 @@ function AdminDashboard() {
       <PageContainer>
         <div className="admin-dashboard">
           <header className="admin-header">
-            <h1>Card Management</h1>
+            <h1>Admin Dashboard</h1>
           </header>
 
-          {/* Loading skeleton for initial load */}
-          {isLoading ? (
-            <div className="admin-cards-grid">
-              {Array(8)
-                .fill(0)
-                .map((_, i) => (
-                  <div key={i} className="admin-card-skeleton">
-                    <div className="skeleton-title"></div>
-                    <div className="skeleton-image"></div>
-                    <div className="skeleton-info"></div>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <div className="admin-cards-grid">
-              {/* Add new card button */}
-              <div className="admin-add-card">
-                <button
-                  className="admin-add-card-button"
-                  onClick={handleAddCard}>
-                  <span className="admin-plus-icon">+</span>
-                  <span>Add New Card</span>
-                </button>
+          {/* Loss GIF Management Section */}
+          <section style={{ marginBottom: "3rem" }}>
+            <h2 style={{ marginBottom: "2rem", color: "var(--text-color)" }}>
+              Loss GIF Management
+            </h2>
+
+            {lossGifsError && (
+              <div className="admin-error">
+                <p>Failed to load loss GIFs: {lossGifsError.message}</p>
               </div>
+            )}
 
-              {/* Existing cards */}
-              {allCards.map((card, index) => (
-                <AdminCard
-                  key={card._id}
-                  card={card}
-                  onEdit={handleEditCard}
-                  onDelete={confirmDelete}
-                  ref={index === allCards.length - 1 ? ref : null}
-                />
-              ))}
-            </div>
-          )}
+            {lossGifsLoading ? (
+              <div className="admin-cards-grid">
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div key={i} className="admin-card-skeleton">
+                      <div className="skeleton-title"></div>
+                      <div className="skeleton-image"></div>
+                      <div className="skeleton-info"></div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="admin-cards-grid">
+                {lossGifs?.map((lossGif) => (
+                  <LossGifCard
+                    key={lossGif._id}
+                    lossGif={lossGif}
+                    onEdit={handleEditLossGif}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
 
-          {/* Loading more indicator */}
-          {isFetchingNextPage && (
-            <div className="admin-loading-more">Loading more cards...</div>
-          )}
+          {/* Card Management Section */}
+          <section>
+            <h2 style={{ marginBottom: "2rem", color: "var(--text-color)" }}>
+              Card Management
+            </h2>
 
-          {/* No more cards message */}
-          {!hasNextPage && allCards.length > 0 && (
-            <div className="admin-loading-more">No more cards to load</div>
-          )}
+            {/* Loading skeleton for initial load */}
+            {isLoading ? (
+              <div className="admin-cards-grid">
+                {Array(8)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div key={i} className="admin-card-skeleton">
+                      <div className="skeleton-title"></div>
+                      <div className="skeleton-image"></div>
+                      <div className="skeleton-info"></div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="admin-cards-grid">
+                {/* Add new card button */}
+                <div className="admin-add-card">
+                  <button
+                    className="admin-add-card-button"
+                    onClick={handleAddCard}>
+                    <span className="admin-plus-icon">+</span>
+                    <span>Add New Card</span>
+                  </button>
+                </div>
+
+                {/* Existing cards */}
+                {allCards.map((card, index) => (
+                  <AdminCard
+                    key={card._id}
+                    card={card}
+                    onEdit={handleEditCard}
+                    onDelete={confirmDelete}
+                    ref={index === allCards.length - 1 ? ref : null}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Loading more indicator */}
+            {isFetchingNextPage && (
+              <div className="admin-loading-more">Loading more cards...</div>
+            )}
+
+            {/* No more cards message */}
+            {!hasNextPage && allCards.length > 0 && (
+              <div className="admin-loading-more">No more cards to load</div>
+            )}
+          </section>
 
           {/* Add card modal */}
           <Modal isOpen={showAddModal} onClose={handleCloseModal}>
@@ -187,6 +248,13 @@ function AdminDashboard() {
           <Modal isOpen={!!editCard} onClose={handleCloseModal}>
             {editCard && (
               <EditCardForm card={editCard} onClose={handleCloseModal} />
+            )}
+          </Modal>
+
+          {/* Edit loss GIF modal */}
+          <Modal isOpen={!!editLossGif} onClose={handleCloseModal}>
+            {editLossGif && (
+              <LossGifForm lossGif={editLossGif} onClose={handleCloseModal} />
             )}
           </Modal>
 
