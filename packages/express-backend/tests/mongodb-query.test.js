@@ -6,16 +6,12 @@ const {
   afterAll
 } = require("@jest/globals");
 const { getCardsCollection } = require("./mocks/Card.js");
-const { seedDatabase } = require("./mocks/seed.js");
 
 describe("MongoDB Query Performance", () => {
   let client;
   let collection;
 
   beforeAll(async () => {
-    // Seed the database with test data
-    await seedDatabase();
-
     // Get collection
     const result = await getCardsCollection();
     client = result.client;
