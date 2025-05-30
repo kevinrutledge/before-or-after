@@ -2,14 +2,14 @@
   "name": "express-backend",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "jest --config=jest.config.cjs",
     "test:watch": "jest --watch --config=jest.config.cjs",
     "test:coverage": "jest --coverage --config=jest.config.cjs",
-    "dev": "nodemon --experimental-json-modules api/local-dev.js",
+    "dev": "nodemon --experimental-json-modules server.js",
     "build": "mkdir -p public && echo \"Before or After API\" > public/index.html",
-    "start": "node --experimental-json-modules api/local-dev.js",
+    "start": "node --experimental-json-modules server.js",
     "test-db": "jest --config=jest.config.cjs tests/mongodb-*.test.js",
     "seed": "node scripts/seed.js"
   },
