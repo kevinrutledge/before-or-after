@@ -107,7 +107,13 @@ function AdminDashboard() {
     if (inView && hasNextPage && !isFetchingNextPage && !debouncedSearchQuery) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage, debouncedSearchQuery]);
+  }, [
+    inView,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    debouncedSearchQuery
+  ]);
 
   // Get all loaded cards
   const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
@@ -279,7 +285,9 @@ function AdminDashboard() {
                     onEdit={handleEditCard}
                     onDelete={confirmDelete}
                     ref={
-                      !debouncedSearchQuery && index === allCards.length - 1 ? ref : null
+                      !debouncedSearchQuery && index === allCards.length - 1
+                        ? ref
+                        : null
                     }
                   />
                 ))}
