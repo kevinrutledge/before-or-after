@@ -20,7 +20,9 @@ export function corsHandler(req, res) {
 
   // Handle preflight OPTIONS requests
   if (req.method === "OPTIONS") {
-    res.status(204).end(); // Return empty response
+    // Use raw Node.js response methods instead of Express methods
+    res.statusCode = 204;
+    res.end(); // Return empty response
     return true; // Signal request completion
   }
 
