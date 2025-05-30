@@ -1160,35 +1160,6 @@ body.game-page {
   border: none;
   outline: none;
   font-size: 1rem;
-  background: transparent;
-  width: 100%;
-  padding: 0;
-  color: var(--text-color);
-}
-
-.admin-search-input-cards::placeholder {
-  color: #9ca3af;
-}
-
-.admin-search-clear-cards {
-  background: none;
-  border: none;
-  color: #6b7280;
-  font-size: 1.5rem;
-  cursor: pointer;
-  margin-left: 0.75rem;
-  padding: 0;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: color 0.2s;
-}
-
-.admin-search-clear-cards:hover {
-  color: var(--before-red);
 }
 
 /* Admin Cards Flexbox Layout */
