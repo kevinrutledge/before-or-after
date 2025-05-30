@@ -1061,20 +1061,134 @@ body.game-page {
   min-height: 100vh;
 }
 
-.admin-header {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.admin-header h1 {
-  font-size: 2rem;
-  color: var(--text-color);
-  margin-bottom: 0.5rem;
-}
-
 .admin-header p {
   color: var(--secondary-color);
   font-size: 1rem;
+}
+
+/* Admin Dashboard Header Flex Layout */
+.admin-header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.admin-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color, #1e293b);
+  margin: 0;
+}
+
+.admin-search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.25rem 0.75rem;
+  min-width: 260px;
+  max-width: 340px;
+  width: 100%;
+  position: relative;
+}
+
+.admin-search-icon {
+  color: #6b7280;
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.admin-search-input {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: transparent;
+  width: 100%;
+  padding: 0.5rem 0;
+}
+
+.admin-search-clear {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.3rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  padding: 0;
+}
+
+/* Card Management Search Styling */
+.admin-header h1 {
+  color: var(--text-color);
+}
+
+.admin-card-management-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.admin-card-search-container {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-search-bar-cards {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  min-width: 300px;
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 1.5rem;
+}
+
+.admin-search-input-cards {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: transparent;
+  width: 100%;
+  padding: 0;
+  color: var(--text-color);
+}
+
+.admin-search-input-cards::placeholder {
+  color: #9ca3af;
+}
+
+.admin-search-clear-cards {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin-left: 0.75rem;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.admin-search-clear-cards:hover {
+  color: var(--before-red);
 }
 
 /* Admin Cards Flexbox Layout */
