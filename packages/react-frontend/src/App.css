@@ -1061,20 +1061,63 @@ body.game-page {
   min-height: 100vh;
 }
 
-.admin-header {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.admin-header h1 {
-  font-size: 2rem;
-  color: var(--text-color);
-  margin-bottom: 0.5rem;
-}
-
 .admin-header p {
   color: var(--secondary-color);
   font-size: 1rem;
+}
+
+/* Admin Dashboard Header Flex Layout */
+.admin-header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.admin-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color, #1e293b);
+  margin: 0;
+}
+
+.admin-search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  padding: 0.25rem 0.75rem;
+  min-width: 260px;
+  max-width: 340px;
+  width: 100%;
+  position: relative;
+}
+
+.admin-search-icon {
+  color: #888;
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.admin-search-input {
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: transparent;
+  width: 100%;
+  padding: 0.5rem 0;
+}
+
+.admin-search-clear {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.3rem;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  padding: 0;
 }
 
 /* Admin Cards Flexbox Layout */

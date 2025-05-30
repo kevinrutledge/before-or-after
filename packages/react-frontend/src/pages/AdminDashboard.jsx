@@ -36,6 +36,7 @@ function AdminDashboard() {
   const [deleteDialog, setDeleteDialog] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editCard, setEditCard] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const queryClient = useQueryClient();
 
   // Infinite query for cards
@@ -80,6 +81,17 @@ function AdminDashboard() {
   // Get all loaded cards
   const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
 
+  // Filter logic
+  const filteredCards = allCards.filter((card) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.trim().toLowerCase();
+    return (
+      (card.title && card.title.toLowerCase().includes(query)) ||
+      (card.category && card.category.toLowerCase().includes(query)) ||
+      (card.year && String(card.year).includes(query))
+    );
+  });
+
   // Handle add card button
   const handleAddCard = () => {
     setShowAddModal(true);
@@ -108,6 +120,9 @@ function AdminDashboard() {
     }
   };
 
+  // Clear search
+  const handleClearSearch = () => setSearchQuery("");
+
   // Error state
   if (error && allCards.length === 0) {
     return (
@@ -126,8 +141,26 @@ function AdminDashboard() {
     <Layout>
       <PageContainer>
         <div className="admin-dashboard">
-          <header className="admin-header">
-            <h1>Card Management</h1>
+          {/* Modified header: flex row, title left, search right */}
+          <header className="admin-header-flex">
+            <h1 className="admin-title">Card Management</h1>
+            <div className="admin-search-bar">
+              <input
+                type="text"
+                placeholder="Search by title, category, or year"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="admin-search-input"
+              />
+              {searchQuery && (
+                <button
+                  className="admin-search-clear"
+                  onClick={handleClearSearch}
+                  aria-label="Clear search">
+                  ×
+                </button>
+              )}
+            </div>
           </header>
 
           {/* Loading skeleton for initial load */}
@@ -155,14 +188,14 @@ function AdminDashboard() {
                 </button>
               </div>
 
-              {/* Existing cards */}
-              {allCards.map((card, index) => (
+              {/* Show filtered cards */}
+              {filteredCards.map((card, index) => (
                 <AdminCard
                   key={card._id}
                   card={card}
                   onEdit={handleEditCard}
                   onDelete={confirmDelete}
-                  ref={index === allCards.length - 1 ? ref : null}
+                  ref={index === filteredCards.length - 1 ? ref : null}
                 />
               ))}
             </div>
@@ -174,7 +207,7 @@ function AdminDashboard() {
           )}
 
           {/* No more cards message */}
-          {!hasNextPage && allCards.length > 0 && (
+          {!hasNextPage && filteredCards.length > 0 && (
             <div className="admin-loading-more">No more cards to load</div>
           )}
 
