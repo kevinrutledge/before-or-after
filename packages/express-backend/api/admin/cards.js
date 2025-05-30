@@ -33,11 +33,23 @@ export default async function handler(req, res) {
     client = dbClient;
 
     if (req.method === "GET") {
-      const { limit = 20, cursor } = req.query;
+      const { limit = 20, cursor, search } = req.query;
+
+      // Build MongoDB query with optional search
       const query = {};
 
       if (cursor) {
         query._id = { $gt: new ObjectId(cursor) };
+      }
+
+      // Add search filter when search parameter provided
+      if (search && search.trim()) {
+        const searchTerm = search.trim();
+        query.$or = [
+          { title: { $regex: searchTerm, $options: "i" } },
+          { category: { $regex: searchTerm, $options: "i" } },
+          { year: parseInt(searchTerm) || 0 }
+        ];
       }
 
       const cards = await collection

@@ -16,10 +16,18 @@ import AdminCard from "../components/AdminCard";
 import LossGifCard from "../components/LossGifCard";
 import LossGifForm from "../components/LossGifForm";
 
-// Fetch cards with pagination
-const fetchAdminCards = async ({ pageParam = null }) => {
-  const params = pageParam ? `?cursor=${pageParam}&limit=20` : "?limit=20";
-  const response = await authRequest(`/api/admin/cards${params}`);
+/**
+ * Fetch cards with pagination and optional search filtering.
+ */
+const fetchAdminCards = async ({ pageParam = null, queryKey }) => {
+  const [, searchQuery] = queryKey;
+  const params = new URLSearchParams();
+
+  if (pageParam) params.append("cursor", pageParam);
+  params.append("limit", "20");
+  if (searchQuery) params.append("search", searchQuery);
+
+  const response = await authRequest(`/api/admin/cards?${params}`);
   return {
     cards: response.cards || response,
     nextCursor:
@@ -28,7 +36,9 @@ const fetchAdminCards = async ({ pageParam = null }) => {
   };
 };
 
-// Delete card
+/**
+ * Delete card by ID.
+ */
 const deleteCard = async (cardId) => {
   return await authRequest(`/api/admin/cards/${cardId}`, {
     method: "DELETE"
@@ -40,9 +50,20 @@ function AdminDashboard() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editCard, setEditCard] = useState(null);
   const [editLossGif, setEditLossGif] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const queryClient = useQueryClient();
 
-  // Infinite query for cards
+  // Debounce search query with 400ms delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Infinite query for cards with debounced search
   const {
     data,
     fetchNextPage,
@@ -51,7 +72,7 @@ function AdminDashboard() {
     isLoading,
     error
   } = useInfiniteQuery({
-    queryKey: ["admin-cards"],
+    queryKey: ["admin-cards", debouncedSearchQuery],
     queryFn: fetchAdminCards,
     initialPageParam: null,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -81,12 +102,18 @@ function AdminDashboard() {
   // Intersection observer for infinite scroll
   const { ref, inView } = useInView();
 
-  // Auto-load more when scrolling
+  // Auto-load more when scrolling and not searching
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+    if (inView && hasNextPage && !isFetchingNextPage && !debouncedSearchQuery) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [
+    inView,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    debouncedSearchQuery
+  ]);
 
   // Get all loaded cards
   const allCards = data?.pages.flatMap((page) => page.cards) ?? [];
@@ -124,6 +151,9 @@ function AdminDashboard() {
       deleteMutation.mutate(deleteDialog._id);
     }
   };
+
+  // Clear search
+  const handleClearSearch = () => setSearchQuery("");
 
   // Error state
   if (error && allCards.length === 0) {
@@ -186,9 +216,41 @@ function AdminDashboard() {
 
           {/* Card Management Section */}
           <section>
-            <h2 style={{ marginBottom: "2rem", color: "var(--text-color)" }}>
-              Card Management
-            </h2>
+            <div className="admin-card-management-header">
+              <h2 style={{ color: "var(--text-color)", margin: 0 }}>
+                Card Management
+              </h2>
+
+              {/* Search bar positioned on same line */}
+              <div className="admin-card-search-container">
+                <div className="admin-search-bar-cards">
+                  <svg
+                    className="admin-search-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search by title, category, or year"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="admin-search-input-cards"
+                  />
+                  {searchQuery && (
+                    <button
+                      className="admin-search-clear-cards"
+                      onClick={handleClearSearch}
+                      aria-label="Clear search">
+                      ×
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
 
             {/* Loading skeleton for initial load */}
             {isLoading ? (
@@ -215,27 +277,40 @@ function AdminDashboard() {
                   </button>
                 </div>
 
-                {/* Existing cards */}
+                {/* Display cards */}
                 {allCards.map((card, index) => (
                   <AdminCard
                     key={card._id}
                     card={card}
                     onEdit={handleEditCard}
                     onDelete={confirmDelete}
-                    ref={index === allCards.length - 1 ? ref : null}
+                    ref={
+                      !debouncedSearchQuery && index === allCards.length - 1
+                        ? ref
+                        : null
+                    }
                   />
                 ))}
               </div>
             )}
 
-            {/* Loading more indicator */}
-            {isFetchingNextPage && (
+            {/* Loading more indicator - only show when not searching */}
+            {isFetchingNextPage && !debouncedSearchQuery && (
               <div className="admin-loading-more">Loading more cards...</div>
             )}
 
-            {/* No more cards message */}
-            {!hasNextPage && allCards.length > 0 && (
+            {/* No more cards message - only show when not searching */}
+            {!hasNextPage && allCards.length > 0 && !debouncedSearchQuery && (
               <div className="admin-loading-more">No more cards to load</div>
+            )}
+
+            {/* Search results info */}
+            {debouncedSearchQuery && (
+              <div className="admin-loading-more">
+                {allCards.length === 0
+                  ? "No cards found matching your search"
+                  : `Found ${allCards.length} card${allCards.length === 1 ? "" : "s"}`}
+              </div>
             )}
           </section>
 
