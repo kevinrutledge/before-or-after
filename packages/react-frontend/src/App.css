@@ -2235,3 +2235,28 @@ body.game-page {
     padding: 0 0.5rem;
   }
 }
+
+/* Mobile Responsive Admin Dashboard Adjustments */
+@media (max-width: 639px) {
+  .admin-card-management-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .admin-search-bar-cards {
+    min-width: 100%;
+    max-width: 100%;
+    margin-top: 0;
+  }
+
+  .modal-overlay {
+    padding: 0.5rem;
+  }
+
+  .admin-card-form {
+    padding: 1.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
