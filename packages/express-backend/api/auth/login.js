@@ -11,14 +11,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { email, password } = req.body;
+  const { emailOrUsername, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password required" });
+  if (!emailOrUsername || !password) {
+    return res
+      .status(400)
+      .json({ message: "Email/username and password required" });
   }
 
   try {
-    const result = await validateUser(email, password);
+    const result = await validateUser(emailOrUsername, password);
 
     if (!result.success) {
       return res.status(401).json({ message: result.message });
@@ -27,6 +29,7 @@ export default async function handler(req, res) {
     const token = jwt.sign(
       {
         email: result.user.email,
+        username: result.user.username,
         role: result.user.role,
         id: result.user._id.toString()
       },
@@ -38,6 +41,7 @@ export default async function handler(req, res) {
       token,
       user: {
         email: result.user.email,
+        username: result.user.username,
         role: result.user.role
       }
     });
