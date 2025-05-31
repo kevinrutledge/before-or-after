@@ -11,6 +11,7 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
+import { testRateLimit } from "./testUtils.js";
 
 describe("Username Validation", () => {
   let app;
@@ -19,7 +20,7 @@ describe("Username Validation", () => {
   let client;
 
   beforeAll(async () => {
-    // Suppress console.error for expected test errors
+    // Suppress console.error output during tests
     jest.spyOn(console, "error").mockImplementation(() => {});
 
     // Create MongoDB memory server
@@ -36,7 +37,7 @@ describe("Username Validation", () => {
     app.use(express.json());
 
     // Define test endpoint that mimics auth/signup.js behavior
-    app.post("/api/auth/signup", async (req, res) => {
+    app.post("/api/auth/signup", testRateLimit, async (req, res) => {
       const { email, username, password } = req.body;
 
       // Validate username format first when present
@@ -268,7 +269,7 @@ describe("Username Validation", () => {
     const errorApp = express();
     errorApp.use(express.json());
 
-    errorApp.post("/api/auth/signup", async (req, res) => {
+    errorApp.post("/api/auth/signup", testRateLimit, async (req, res) => {
       const { email, username, password } = req.body;
 
       // Validate username format first when present

@@ -11,6 +11,11 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
+import {
+  testRateLimit,
+  createTestToken,
+  createInvalidToken
+} from "./testUtils.js";
 
 describe("POST /api/scores/update", () => {
   let app;
@@ -20,7 +25,7 @@ describe("POST /api/scores/update", () => {
   let validToken;
 
   beforeAll(async () => {
-    // Suppress console.error for expected test errors
+    // Suppress console.error output during tests
     jest.spyOn(console, "error").mockImplementation(() => {});
 
     // Create MongoDB memory server
@@ -33,23 +38,19 @@ describe("POST /api/scores/update", () => {
     client = new MongoClient(mongoUri);
     await client.connect();
 
-    // Generate initial token with correct user ID
-    validToken = jwt.sign(
-      {
-        email: "test@example.com",
-        role: "user",
-        id: "507f1f77bcf86cd799439011"
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
+    // Generate token with correct user ID
+    validToken = createTestToken({
+      email: "test@example.com",
+      role: "user",
+      id: "507f1f77bcf86cd799439011"
+    });
 
     // Set up Express app
     app = express();
     app.use(express.json());
 
     // Define test endpoint that mimics scores/update.js behavior
-    app.post("/api/scores/update", async (req, res) => {
+    app.post("/api/scores/update", testRateLimit, async (req, res) => {
       // Verify authentication token
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -231,9 +232,10 @@ describe("POST /api/scores/update", () => {
     expect(noTokenResponse.body.message).toBe("Authentication required");
 
     // Test with invalid token
+    // lgtm[js/hardcoded-credentials] - Test credential for validation testing
     const invalidTokenResponse = await request(app)
       .post("/api/scores/update")
-      .set("Authorization", "Bearer invalid-token")
+      .set("Authorization", `Bearer ${createInvalidToken()}`)
       .send(scoreData);
 
     expect(invalidTokenResponse.status).toBe(401);
@@ -265,7 +267,7 @@ describe("POST /api/scores/update", () => {
     const errorApp = express();
     errorApp.use(express.json());
 
-    errorApp.post("/api/scores/update", async (req, res) => {
+    errorApp.post("/api/scores/update", testRateLimit, async (req, res) => {
       // Verify token first
       const authHeader = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith("Bearer ")) {

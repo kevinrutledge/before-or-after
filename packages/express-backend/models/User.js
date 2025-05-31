@@ -127,12 +127,18 @@ export async function validateUser(emailOrUsername, password) {
   try {
     // Determine whether input is email or username
     const isEmail = emailOrUsername.includes("@");
+
+    // Use exact string matching with case-insensitive collation for username
     const query = isEmail
       ? { email: emailOrUsername }
-      : { username: { $regex: new RegExp(`^${emailOrUsername}$`, "i") } };
+      : { username: emailOrUsername };
 
-    // Find user by email or username
-    const user = await collection.findOne(query);
+    // Find user by email or exact username match (case-insensitive via collation)
+    const user = isEmail
+      ? await collection.findOne(query)
+      : await collection.findOne(query, {
+          collation: { locale: "en", strength: 2 }
+        });
 
     if (!user) {
       return { success: false, message: "Invalid credentials" };

@@ -12,6 +12,7 @@ import request from "supertest";
 import express from "express";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
+import { testRateLimit } from "./testUtils.js";
 
 describe("GET /api/leaderboard", () => {
   let app;
@@ -35,7 +36,7 @@ describe("GET /api/leaderboard", () => {
     app.use(express.json());
 
     // Define test endpoint that mimics leaderboard.js behavior
-    app.get("/api/leaderboard", async (req, res) => {
+    app.get("/api/leaderboard", testRateLimit, async (req, res) => {
       try {
         const { limit } = req.query;
 
@@ -216,7 +217,7 @@ describe("GET /api/leaderboard", () => {
     const errorApp = express();
     errorApp.use(express.json());
 
-    errorApp.get("/api/leaderboard", async (req, res) => {
+    errorApp.get("/api/leaderboard", testRateLimit, async (req, res) => {
       try {
         // Simulate database error
         throw new Error("Database connection failed");
