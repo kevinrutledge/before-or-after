@@ -5,6 +5,7 @@ import { apiRequest } from "../utils/apiClient";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import { useGame } from "../context/GameContext";
+import Background from "../components/Background";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
@@ -52,6 +53,7 @@ function LoginPage() {
 
   return (
     <Layout>
+      <Background />
       <PageContainer>
         <div className="login-page">
           <h1 className="login-title">Sign In</h1>

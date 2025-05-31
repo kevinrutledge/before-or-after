@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../utils/apiClient";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
+import Background from "../components/Background";
 
 function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -255,6 +256,7 @@ function ForgotPasswordPage() {
 
   return (
     <Layout>
+      <Background />
       <PageContainer>
         <div className="login-page">
           <h1 className="login-title">Reset Password</h1>
