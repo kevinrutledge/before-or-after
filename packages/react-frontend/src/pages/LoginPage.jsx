@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { apiRequest } from "../utils/apiClient";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
-import { useGame } from "../context/GameContext";
 import Background from "../components/Background";
 
 function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -16,7 +15,6 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
-  const { migrateGuestScores } = useGame();
   const message = location.state?.message;
 
   // Toggle password visibility
@@ -30,8 +28,8 @@ function LoginPage() {
     setError("");
 
     // Validate form
-    if (!email || !password) {
-      setError("Email and password are required");
+    if (!emailOrUsername || !password) {
+      setError("Email/username and password are required");
       return;
     }
 
@@ -40,14 +38,15 @@ function LoginPage() {
     try {
       const data = await apiRequest("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ emailOrUsername, password })
       });
 
       login(data.token);
-      migrateGuestScores();
       navigate("/");
     } catch {
-      setError("Invalid email or password");
+      setError("Invalid email/username or password");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,14 +62,14 @@ function LoginPage() {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="emailOrUsername">Email or Username</label>
               <input
-                type="email"
-                id="email"
+                type="text"
+                id="emailOrUsername"
                 className="form-control"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                value={emailOrUsername}
+                onChange={(e) => setEmailOrUsername(e.target.value)}
+                placeholder="Enter your email or username"
                 required
               />
             </div>

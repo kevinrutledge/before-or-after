@@ -13,14 +13,15 @@ try {
 dotenv.config({ path: path.join(dirName, "../.env") });
 
 const email = process.env.ADMIN_EMAIL;
+const username = process.env.ADMIN_USERNAME;
 const password = process.env.ADMIN_PASSWORD;
 
-if (!email || !password) {
+if (!email || !username || !password) {
   console.error(
-    "ADMIN_EMAIL and ADMIN_PASSWORD environment variables required"
+    "ADMIN_EMAIL, ADMIN_USERNAME, and ADMIN_PASSWORD environment variables required"
   );
   process.exit(1);
 }
 
-const result = await createUser(email, password, "admin");
+const result = await createUser(email, username, password, "admin");
 console.log(result.success ? "Admin created" : result.message);

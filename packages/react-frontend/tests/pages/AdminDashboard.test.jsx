@@ -18,18 +18,15 @@ jest.mock("../../src/hooks/useLossGifs", () => ({
   useUpdateLossGif: jest.fn()
 }));
 
+// Mock auth hook
+jest.mock("../../src/hooks/useAuth", () => ({
+  useAuth: () => jest.requireActual("../mocks/AuthContext").useAuth()
+}));
+
 // Mock intersection observer
 jest.mock("react-intersection-observer", () => ({
   useInView: () => ({ ref: jest.fn(), inView: false })
 }));
-
-// Mock auth context
-jest.mock("../../src/context/AuthContext", () => {
-  const mockModule = jest.requireActual("../mocks/AuthContext");
-  return {
-    useAuth: mockModule.useAuth
-  };
-});
 
 import { authRequest } from "../../src/utils/apiClient";
 import { useLossGifs, useUpdateLossGif } from "../../src/hooks/useLossGifs";

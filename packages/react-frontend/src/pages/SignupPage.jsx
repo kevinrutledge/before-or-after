@@ -7,6 +7,7 @@ import Background from "../components/Background";
 
 function SignupPage() {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,9 +25,9 @@ function SignupPage() {
     e.preventDefault();
     setError("");
 
-    // Validate form
-    if (!email || !password) {
-      setError("Email and password are required");
+    // Validate required fields
+    if (!email || !username || !password) {
+      setError("Email, username, and password are required");
       return;
     }
 
@@ -40,12 +41,26 @@ function SignupPage() {
       return;
     }
 
+    // Validate username format on frontend
+    if (username.length < 3 || username.length > 20) {
+      setError("Username must be 3-20 characters");
+      return;
+    }
+
+    const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+    if (!usernameRegex.test(username)) {
+      setError(
+        "Username can only contain letters, numbers, underscore, and dash"
+      );
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       await apiRequest("/api/auth/signup", {
         method: "POST",
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, username, password })
       });
 
       navigate("/login", {
@@ -77,6 +92,22 @@ function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="username">Username</label>
+              <input
+                type="text"
+                id="username"
+                className="form-control"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Choose a username (3-20 characters)"
+                minLength="3"
+                maxLength="20"
+                pattern="[a-zA-Z0-9_-]+"
                 required
               />
             </div>

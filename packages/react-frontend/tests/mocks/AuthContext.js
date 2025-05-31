@@ -15,12 +15,16 @@ const defaultValue = {
   logout: () => {}
 };
 
-// Mock auth provider component
+/**
+ * Mock auth provider component.
+ */
 export function MockAuthProvider({ children, value = defaultValue }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// Mock useAuth hook
+/**
+ * Mock useAuth hook that matches real implementation.
+ */
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
@@ -28,9 +32,3 @@ export function useAuth() {
   }
   return context;
 }
-
-// Export as default and named export for Jest mocking
-export default {
-  useAuth,
-  MockAuthProvider
-};
