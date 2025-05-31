@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGame } from "../context/GameContext";
-import { useAuth } from "../context/AuthContext";
+import { useGame } from "../hooks/useGame";
+import { useAuth } from "../hooks/useAuth";
 
 function BottomNav() {
   const { highscore } = useGame();
@@ -36,6 +36,8 @@ function BottomNav() {
 
   const goHome = () => navigate("/");
 
+  const goToLeaderboard = () => navigate("/leaderboard");
+
   return (
     <nav className="mobile-only bottom-nav">
       <div className="container">
@@ -51,7 +53,12 @@ function BottomNav() {
             </div>
           </button>
 
-          <div className="high-score-display">High Score: {highscore}</div>
+          <button
+            className="high-score-display"
+            onClick={goToLeaderboard}
+            style={{ cursor: "pointer", background: "none", border: "none" }}>
+            High Score: {highscore}
+          </button>
 
           <div className="account-dropdown">
             <button

@@ -1,37 +1,29 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 
 /**
- * Protected route component with role-based access and guest mode fallback.
+ * Protected route component with role-based access control.
  *
  * @param {Object} props Component props
- * @param {React.Component} props.component Component to render if authorized
+ * @param {React.Component} props.component Component to render when authorized
  * @param {string} [props.requiredRole] Optional role requirement ("user" or "admin")
  * @param {string} [props.redirectTo="/login"] Redirect path for unauthorized users
- * @param {boolean} [props.allowGuest=false] Whether to allow guest access
  */
 function ProtectedRoute({
   component: Component,
   requiredRole,
   redirectTo = "/login",
-  allowGuest = false,
   ...rest
 }) {
-  const { isAuthenticated, isGuest, user, isLoading } = useAuth();
+  const { isAuthenticated, user, isLoading } = useAuth();
 
-  // If still loading auth state, show loading indicator
+  // Show loading indicator while auth state loads
   if (isLoading) {
     return <div className="loading">Loading...</div>;
   }
 
-  // Check if user is authenticated
+  // Redirect unauthenticated users to login
   if (!isAuthenticated) {
-    // If guest mode is allowed and user is in guest mode, render the component
-    if (allowGuest && isGuest) {
-      return <Component {...rest} />;
-    }
-
-    // Otherwise redirect to login with return path
     return (
       <Navigate
         to={redirectTo}
@@ -41,13 +33,12 @@ function ProtectedRoute({
     );
   }
 
-  // If role is required, check if user has that role
+  // Check role requirement when specified
   if (requiredRole && user?.role !== requiredRole) {
-    // Redirect users without required role
     return <Navigate to="/" replace />;
   }
 
-  // User is authenticated and has required role (if specified)
+  // Render component when authenticated and authorized
   return <Component {...rest} />;
 }
 
