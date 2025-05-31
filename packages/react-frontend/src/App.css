@@ -2260,3 +2260,99 @@ body.game-page {
     overflow-y: auto;
   }
 }
+
+/* Leaderboard Page Styles */
+.leaderboard-page {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.leaderboard-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.empty-leaderboard {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--secondary-color);
+  font-size: 1.1rem;
+}
+
+.leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.leaderboard-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid #e5e7eb;
+}
+
+.leaderboard-entry .rank {
+  font-weight: bold;
+  color: var(--before-purple);
+  min-width: 2.5rem;
+  font-size: 1.1rem;
+}
+
+.leaderboard-entry .username {
+  flex: 1;
+  margin-left: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.leaderboard-entry .score {
+  font-weight: bold;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+/* Top 3 special styling */
+.leaderboard-entry:nth-child(1) {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  border-color: #d4af37;
+}
+
+.leaderboard-entry:nth-child(2) {
+  background: linear-gradient(135deg, #c0c0c0 0%, #e5e5e5 100%);
+  border-color: #999999;
+}
+
+.leaderboard-entry:nth-child(3) {
+  background: linear-gradient(135deg, #cd7f32 0%, #daa520 100%);
+  border-color: #b8860b;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .leaderboard-title {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .leaderboard-entry {
+    padding: 0.75rem 1rem;
+  }
+  
+  .leaderboard-entry .username {
+    margin-left: 0.75rem;
+    font-size: 0.95rem;
+  }
+  
+  .leaderboard-entry .score {
+    font-size: 1.1rem;
+  }
+}
