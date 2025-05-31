@@ -7,6 +7,7 @@
     "test": "jest --config=jest.config.cjs",
     "test:watch": "jest --watch --config=jest.config.cjs",
     "test:coverage": "jest --coverage --config=jest.config.cjs",
+    "test:file": "jest --config=jest.config.cjs",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
