@@ -4,7 +4,6 @@ import { useAuth } from "../hooks/useAuth";
 import { apiRequest } from "../utils/apiClient";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
-import { useGame } from "../hooks/useGame";
 import Background from "../components/Background";
 
 function LoginPage() {
@@ -16,7 +15,6 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
-  const { migrateGuestScores } = useGame();
   const message = location.state?.message;
 
   // Toggle password visibility
@@ -44,7 +42,6 @@ function LoginPage() {
       });
 
       login(data.token);
-      migrateGuestScores();
       navigate("/");
     } catch {
       setError("Invalid email/username or password");

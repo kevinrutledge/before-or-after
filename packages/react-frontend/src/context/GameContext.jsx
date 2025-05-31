@@ -7,40 +7,29 @@ export { GameContext };
 
 export function GameProvider({ children }) {
   const { isAuthenticated, user } = useAuth();
-
   const [score, setScore] = useState(0);
   const [highscore, setHighscore] = useState(0);
-  const [gameStatus, setGameStatus] = useState("not-started");
 
-  // Load scores from user authentication data when auth state changes
+  // Load scores from authenticated user
   useEffect(() => {
-    const loadScores = () => {
-      if (isAuthenticated && user) {
-        // Load scores from authenticated user data
-        setScore(user.currentScore || 0);
-        setHighscore(user.highScore || 0);
-      } else {
-        // Unauthenticated users start with zero scores
-        setScore(0);
-        setHighscore(0);
-      }
-    };
-
-    loadScores();
+    if (isAuthenticated && user) {
+      setScore(user.currentScore || 0);
+      setHighscore(user.highScore || 0);
+    } else {
+      setScore(0);
+      setHighscore(0);
+    }
   }, [isAuthenticated, user]);
 
-  // Increment score and update highscore when needed
+  // Increment score and update highscore
   const incrementScore = async () => {
     const newScore = score + 1;
     const newHighScore = Math.max(newScore, highscore);
 
-    // Update local state immediately for responsive UI
     setScore(newScore);
-    if (newScore > highscore) {
-      setHighscore(newHighScore);
-    }
+    setHighscore(newHighScore);
 
-    // Persist to database when authenticated
+    // Save to database if authenticated
     if (isAuthenticated) {
       try {
         await authRequest("/api/scores/update", {
@@ -52,23 +41,22 @@ export function GameProvider({ children }) {
         });
       } catch (error) {
         console.error("Failed to update scores:", error);
-        // Note: UI remains responsive even when API fails
       }
     }
   };
 
-  // Reset score to zero
+  // Reset current score to zero
   const resetScore = async () => {
     setScore(0);
 
-    // Persist reset to database when authenticated
+    // Save reset to database if authenticated
     if (isAuthenticated) {
       try {
         await authRequest("/api/scores/update", {
           method: "POST",
           body: JSON.stringify({
             currentScore: 0,
-            highScore: highscore // Keep existing high score
+            highScore: highscore
           })
         });
       } catch (error) {
@@ -81,11 +69,7 @@ export function GameProvider({ children }) {
     <GameContext.Provider
       value={{
         score,
-        setScore,
         highscore,
-        setHighscore,
-        gameStatus,
-        setGameStatus,
         incrementScore,
         resetScore
       }}>

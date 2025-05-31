@@ -17,23 +17,14 @@ jest.mock("../../src/hooks/useAuth", () => ({
 }));
 
 function TestComponent() {
-  const {
-    score,
-    highscore,
-    gameStatus,
-    incrementScore,
-    resetScore,
-    setGameStatus
-  } = useGame();
+  const { score, highscore, incrementScore, resetScore } = useGame();
 
   return (
     <div>
       <span data-testid="score">{score}</span>
       <span data-testid="highscore">{highscore}</span>
-      <span data-testid="gameStatus">{gameStatus}</span>
       <button onClick={incrementScore}>Increment</button>
       <button onClick={resetScore}>Reset</button>
-      <button onClick={() => setGameStatus("playing")}>Play</button>
     </div>
   );
 }
@@ -43,7 +34,7 @@ beforeEach(() => {
 });
 
 describe("GameContext", () => {
-  test("initializes with default score and gameStatus", () => {
+  test("initializes with default scores for unauthenticated user", () => {
     render(
       <MockAuthProvider value={{ isAuthenticated: false, user: null }}>
         <GameProvider>
@@ -54,10 +45,9 @@ describe("GameContext", () => {
 
     expect(screen.getByTestId("score")).toHaveTextContent("0");
     expect(screen.getByTestId("highscore")).toHaveTextContent("0");
-    expect(screen.getByTestId("gameStatus")).toHaveTextContent("not-started");
   });
 
-  test("increments score correctly", () => {
+  test("increments score and updates highscore", () => {
     render(
       <MockAuthProvider value={{ isAuthenticated: false, user: null }}>
         <GameProvider>
@@ -66,19 +56,17 @@ describe("GameContext", () => {
       </MockAuthProvider>
     );
 
-    const score = screen.getByTestId("score");
-    const highscore = screen.getByTestId("highscore");
     const incrementBtn = screen.getByText("Increment");
 
     act(() => {
       incrementBtn.click();
     });
 
-    expect(score).toHaveTextContent("1");
-    expect(highscore).toHaveTextContent("1");
+    expect(screen.getByTestId("score")).toHaveTextContent("1");
+    expect(screen.getByTestId("highscore")).toHaveTextContent("1");
   });
 
-  test("resets score correctly", () => {
+  test("resets current score but keeps highscore", () => {
     render(
       <MockAuthProvider value={{ isAuthenticated: false, user: null }}>
         <GameProvider>
@@ -87,7 +75,6 @@ describe("GameContext", () => {
       </MockAuthProvider>
     );
 
-    const score = screen.getByTestId("score");
     const incrementBtn = screen.getByText("Increment");
     const resetBtn = screen.getByText("Reset");
 
@@ -96,29 +83,11 @@ describe("GameContext", () => {
       resetBtn.click();
     });
 
-    expect(score).toHaveTextContent("0");
+    expect(screen.getByTestId("score")).toHaveTextContent("0");
+    expect(screen.getByTestId("highscore")).toHaveTextContent("1");
   });
 
-  test("sets gameStatus correctly", () => {
-    render(
-      <MockAuthProvider value={{ isAuthenticated: false, user: null }}>
-        <GameProvider>
-          <TestComponent />
-        </GameProvider>
-      </MockAuthProvider>
-    );
-
-    const status = screen.getByTestId("gameStatus");
-    const playBtn = screen.getByText("Play");
-
-    act(() => {
-      playBtn.click();
-    });
-
-    expect(status).toHaveTextContent("playing");
-  });
-
-  test("loads scores from authenticated user data", () => {
+  test("loads scores from authenticated user", () => {
     const mockUser = {
       email: "test@example.com",
       currentScore: 3,
