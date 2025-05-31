@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../utils/apiClient";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
+import Background from "../components/Background";
+
 
 function SignupPage() {
   const [email, setEmail] = useState("");
@@ -59,6 +61,7 @@ function SignupPage() {
 
   return (
     <Layout>
+      <Background />
       <PageContainer>
         <div className="login-page">
           <h1 className="login-title">Create Account</h1>

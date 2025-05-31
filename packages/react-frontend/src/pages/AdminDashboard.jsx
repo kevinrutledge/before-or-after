@@ -15,6 +15,7 @@ import EditCardForm from "../components/EditCardForm";
 import AdminCard from "../components/AdminCard";
 import LossGifCard from "../components/LossGifCard";
 import LossGifForm from "../components/LossGifForm";
+import Background from "../components/Background";
 
 /**
  * Fetch cards with pagination and optional search filtering.
@@ -171,6 +172,7 @@ function AdminDashboard() {
 
   return (
     <Layout>
+      <Background />
       <PageContainer>
         <div className="admin-dashboard">
           <header className="admin-header">
