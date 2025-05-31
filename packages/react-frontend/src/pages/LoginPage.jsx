@@ -7,7 +7,6 @@ import PageContainer from "../components/PageContainer";
 import { useGame } from "../context/GameContext";
 import Background from "../components/Background";
 
-
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

@@ -5,7 +5,6 @@ import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import Background from "../components/Background";
 
-
 function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
