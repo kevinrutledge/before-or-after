@@ -7,7 +7,7 @@ import { authRequest } from "../../src/utils/apiClient";
 
 // Mock API client
 jest.mock("../../src/utils/apiClient", () => ({
-  authRequest: jest.fn()
+  authRequest: jest.fn().mockResolvedValue([])
 }));
 
 describe("useLossGifs hook", () => {

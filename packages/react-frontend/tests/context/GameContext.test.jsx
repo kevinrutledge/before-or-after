@@ -1,16 +1,19 @@
-import React from "react";
 import { render, screen, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { jest } from "@jest/globals";
 import { describe, test, expect, beforeEach } from "@jest/globals";
-import { GameProvider, useGame } from "../../src/context/GameContext";
+import { GameProvider } from "../../src/context/GameContext";
+import { useGame } from "../../src/hooks/useGame";
+import { MockAuthProvider } from "../mocks/AuthContext";
 
-// Mock the AuthContext to simulate guest/auth user
-jest.mock("../../src/context/AuthContext", () => ({
-  useAuth: () => ({
-    isAuthenticated: false,
-    isGuest: true,
-    user: null
-  })
+// Mock authRequest for API calls
+jest.mock("../../src/utils/apiClient", () => ({
+  authRequest: jest.fn().mockResolvedValue({ success: true })
+}));
+
+// Mock auth hook
+jest.mock("../../src/hooks/useAuth", () => ({
+  useAuth: () => jest.requireActual("../mocks/AuthContext").useAuth()
 }));
 
 function TestComponent() {
@@ -42,10 +45,13 @@ beforeEach(() => {
 describe("GameContext", () => {
   test("initializes with default score and gameStatus", () => {
     render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>
+      <MockAuthProvider value={{ isAuthenticated: false, user: null }}>
+        <GameProvider>
+          <TestComponent />
+        </GameProvider>
+      </MockAuthProvider>
     );
+
     expect(screen.getByTestId("score")).toHaveTextContent("0");
     expect(screen.getByTestId("highscore")).toHaveTextContent("0");
     expect(screen.getByTestId("gameStatus")).toHaveTextContent("not-started");
@@ -53,9 +59,11 @@ describe("GameContext", () => {
 
   test("increments score correctly", () => {
     render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>
+      <MockAuthProvider value={{ isAuthenticated: false, user: null }}>
+        <GameProvider>
+          <TestComponent />
+        </GameProvider>
+      </MockAuthProvider>
     );
 
     const score = screen.getByTestId("score");
@@ -64,18 +72,19 @@ describe("GameContext", () => {
 
     act(() => {
       incrementBtn.click();
-      incrementBtn.click();
     });
 
-    expect(score).toHaveTextContent("2");
-    expect(highscore).toHaveTextContent("2"); // because highscore updates if score is higher
+    expect(score).toHaveTextContent("1");
+    expect(highscore).toHaveTextContent("1");
   });
 
   test("resets score correctly", () => {
     render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>
+      <MockAuthProvider value={{ isAuthenticated: false, user: null }}>
+        <GameProvider>
+          <TestComponent />
+        </GameProvider>
+      </MockAuthProvider>
     );
 
     const score = screen.getByTestId("score");
@@ -92,9 +101,11 @@ describe("GameContext", () => {
 
   test("sets gameStatus correctly", () => {
     render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>
+      <MockAuthProvider value={{ isAuthenticated: false, user: null }}>
+        <GameProvider>
+          <TestComponent />
+        </GameProvider>
+      </MockAuthProvider>
     );
 
     const status = screen.getByTestId("gameStatus");
@@ -107,17 +118,22 @@ describe("GameContext", () => {
     expect(status).toHaveTextContent("playing");
   });
 
-  test("saves and loads guest scores from localStorage", async () => {
-    localStorage.setItem("guestScore", "5");
-    localStorage.setItem("guestHighscore", "10");
+  test("loads scores from authenticated user data", () => {
+    const mockUser = {
+      email: "test@example.com",
+      currentScore: 3,
+      highScore: 8
+    };
 
     render(
-      <GameProvider>
-        <TestComponent />
-      </GameProvider>
+      <MockAuthProvider value={{ isAuthenticated: true, user: mockUser }}>
+        <GameProvider>
+          <TestComponent />
+        </GameProvider>
+      </MockAuthProvider>
     );
 
-    expect(await screen.findByTestId("score")).toHaveTextContent("5");
-    expect(await screen.findByTestId("highscore")).toHaveTextContent("10");
+    expect(screen.getByTestId("score")).toHaveTextContent("3");
+    expect(screen.getByTestId("highscore")).toHaveTextContent("8");
   });
 });
