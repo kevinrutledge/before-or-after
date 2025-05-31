@@ -1,6 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 
 // Singleton MongoDB instance for tests
 let mongoServer;
@@ -44,34 +45,12 @@ export async function clearDatabase() {
   }
 }
 
-// Apply basic rate limiting for test endpoints
-export const testRateLimit = (req, res, next) => {
-  const requestCounts = new Map();
-  const windowMs = 60000; // 1 minute
-  const maxRequests = 100;
-
-  const clientId = req.ip || "test-client";
-  const now = Date.now();
-
-  if (!requestCounts.has(clientId)) {
-    requestCounts.set(clientId, { count: 1, resetTime: now + windowMs });
-    return next();
-  }
-
-  const clientData = requestCounts.get(clientId);
-
-  if (now > clientData.resetTime) {
-    requestCounts.set(clientId, { count: 1, resetTime: now + windowMs });
-    return next();
-  }
-
-  if (clientData.count >= maxRequests) {
-    return res.status(429).json({ message: "Too many requests" });
-  }
-
-  clientData.count++;
-  next();
-};
+// Create express-rate-limit middleware for test endpoints
+export const testRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { message: "Too many requests" }
+});
 
 // Create valid JWT token with default test payload
 export const createTestToken = (payload = {}) => {
