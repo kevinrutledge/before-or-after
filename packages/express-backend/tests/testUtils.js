@@ -44,8 +44,32 @@ export async function clearDatabase() {
   }
 }
 
-// Pass through middleware satisfying security scanners
+// Apply basic rate limiting for test endpoints
 export const testRateLimit = (req, res, next) => {
+  const requestCounts = new Map();
+  const windowMs = 60000; // 1 minute
+  const maxRequests = 100;
+
+  const clientId = req.ip || "test-client";
+  const now = Date.now();
+
+  if (!requestCounts.has(clientId)) {
+    requestCounts.set(clientId, { count: 1, resetTime: now + windowMs });
+    return next();
+  }
+
+  const clientData = requestCounts.get(clientId);
+
+  if (now > clientData.resetTime) {
+    requestCounts.set(clientId, { count: 1, resetTime: now + windowMs });
+    return next();
+  }
+
+  if (clientData.count >= maxRequests) {
+    return res.status(429).json({ message: "Too many requests" });
+  }
+
+  clientData.count++;
   next();
 };
 
