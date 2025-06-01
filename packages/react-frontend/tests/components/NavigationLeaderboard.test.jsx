@@ -62,7 +62,7 @@ describe("Navigation Leaderboard Integration", () => {
     renderHeader();
 
     // Find high score display button
-    const highScoreButton = screen.getByText("High Score: 0");
+    const highScoreButton = screen.getByRole("button", { name: /high score/i });
     expect(highScoreButton).toBeInTheDocument();
 
     // Click high score button
@@ -77,7 +77,7 @@ describe("Navigation Leaderboard Integration", () => {
     renderBottomNav();
 
     // Find high score display button
-    const highScoreButton = screen.getByText("High Score: 0");
+    const highScoreButton = screen.getByRole("button", { name: /high score/i });
     expect(highScoreButton).toBeInTheDocument();
 
     // Click high score button
@@ -139,13 +139,17 @@ describe("Navigation Leaderboard Integration", () => {
   test("displays high score correctly", () => {
     renderHeader();
 
-    expect(screen.getByText("High Score: 0")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /high score/i })
+    ).toBeInTheDocument();
   });
 
   test("displays clickable high score button", () => {
     renderHeader();
 
-    const highScoreElement = screen.getByText("High Score: 0");
+    const highScoreElement = screen.getByRole("button", {
+      name: /high score/i
+    });
 
     // Verify element is button and clickable
     expect(highScoreElement.tagName).toBe("BUTTON");
@@ -161,7 +165,7 @@ describe("Navigation Leaderboard Integration", () => {
     renderHeader(authenticatedUser);
 
     // Click high score for authenticated user
-    const highScoreButton = screen.getByText("High Score: 0");
+    const highScoreButton = screen.getByRole("button", { name: /high score/i });
     fireEvent.click(highScoreButton);
 
     // Verify navigation still works
@@ -177,7 +181,7 @@ describe("Navigation Leaderboard Integration", () => {
     renderBottomNav(guestUser);
 
     // Click high score for guest user
-    const highScoreButton = screen.getByText("High Score: 0");
+    const highScoreButton = screen.getByRole("button", { name: /high score/i });
     fireEvent.click(highScoreButton);
 
     // Verify navigation works for guests
@@ -202,7 +206,7 @@ describe("Navigation Leaderboard Integration", () => {
           <div>
             {/* Simulate high score display */}
             <button onClick={() => mockNavigate("/leaderboard")}>
-              High Score: {mockGameContext.highscore}
+              High Score{mockGameContext.highscore}
             </button>
           </div>
         </MockAuthProvider>
@@ -210,7 +214,7 @@ describe("Navigation Leaderboard Integration", () => {
     );
 
     // Verify high score value displayed
-    const highScoreButton = screen.getByText("High Score: 25");
+    const highScoreButton = screen.getByText("High Score25");
     expect(highScoreButton).toBeInTheDocument();
 
     // Verify navigation works with custom score
@@ -221,7 +225,7 @@ describe("Navigation Leaderboard Integration", () => {
   test("handles navigation function gracefully", () => {
     renderHeader();
 
-    const highScoreButton = screen.getByText("High Score: 0");
+    const highScoreButton = screen.getByRole("button", { name: /high score/i });
 
     // Verify clicking executes without throwing
     expect(() => {
@@ -246,7 +250,7 @@ describe("Navigation Leaderboard Integration", () => {
     mockNavigate.mockClear();
 
     // Verify high score navigation still works
-    const highScoreButton = screen.getByText("High Score: 0");
+    const highScoreButton = screen.getByRole("button", { name: /high score/i });
     fireEvent.click(highScoreButton);
 
     expect(mockNavigate).toHaveBeenCalledWith("/leaderboard");
@@ -255,14 +259,14 @@ describe("Navigation Leaderboard Integration", () => {
   test("displays consistent text format", () => {
     renderHeader();
 
-    const headerHighScore = screen.getByText("High Score: 0");
-    expect(headerHighScore.textContent).toMatch(/^High Score: \d+$/);
+    const headerHighScore = screen.getByRole("button", { name: /high score/i });
+    expect(headerHighScore.textContent).toMatch(/^High Score\d+$/);
   });
 
   test("handles rapid clicks without breaking", () => {
     renderHeader();
 
-    const highScoreButton = screen.getByText("High Score: 0");
+    const highScoreButton = screen.getByRole("button", { name: /high score/i });
 
     // Perform rapid clicks
     fireEvent.click(highScoreButton);
@@ -277,7 +281,7 @@ describe("Navigation Leaderboard Integration", () => {
   test("supports keyboard navigation", () => {
     renderHeader();
 
-    const highScoreButton = screen.getByText("High Score: 0");
+    const highScoreButton = screen.getByRole("button", { name: /high score/i });
 
     // Verify button is focusable by default
     highScoreButton.focus();

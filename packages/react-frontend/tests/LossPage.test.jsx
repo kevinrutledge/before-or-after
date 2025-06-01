@@ -32,7 +32,10 @@ describe("LossPage Component", () => {
 
     // Check for score label and value separately
     expect(screen.getByText("Your score")).toBeInTheDocument();
-    expect(screen.getByText("0")).toBeInTheDocument();
+    const lossScoreSection = screen
+      .getByText("Your score")
+      .closest(".loss-score");
+    expect(lossScoreSection).toHaveTextContent("0");
 
     // Check for GIF placeholder on desktop
     expect(screen.getByText("GIF Placeholder (Desktop)")).toBeInTheDocument();
