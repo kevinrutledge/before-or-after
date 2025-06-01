@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = "test-secret"; // Use your real secret or a test one
+const JWT_SECRET = "test-secret";
 
 describe("JWT Token Utility", () => {
   it("should sign and verify a token with payload", () => {

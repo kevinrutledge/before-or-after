@@ -84,4 +84,3 @@ describe('Authentication and Game Play', () => {
         cy.url().should('not.include', '/admin');
     });
 });
-
