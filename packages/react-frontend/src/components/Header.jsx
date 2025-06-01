@@ -41,7 +41,7 @@ function Header() {
   return (
     <header className="desktop-only">
       <div className="header-nav">
-        <div className="container">
+        <div className="container header-container">
           <button className="logo-button" onClick={goHome}>
             <div className="logo-square">
               <img
@@ -54,10 +54,12 @@ function Header() {
           </button>
 
           <button
-            className="high-score-display"
-            onClick={goToLeaderboard}
-            style={{ cursor: "pointer", background: "none", border: "none" }}>
-            High Score: {highscore}
+            className="high-score-button header-center"
+            onClick={goToLeaderboard}>
+            <div className="high-score-pill">
+              <span className="score-label">High Score</span>
+              <span className="score-value">{highscore}</span>
+            </div>
           </button>
 
           <div className="account-dropdown">
