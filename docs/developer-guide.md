@@ -1,354 +1,597 @@
-## 1. Introduction
+# Before or After Developer Guide
 
-Welcome to the **Before or After** developer guide. This document outlines
-project goals, UI flows, and technical details needed to build and maintain the
-game.
+This guide outlines project architecture, implementation patterns, and technical
+details needed to build and maintain the Before or After game application.
 
-## 2. Table of Contents
+## Table of Contents
 
-1. [Introduction](#1-introduction)
-2. [Table of Contents](#2-table-of-contents)
-3. [Project Overview](#3-project-overview)
-4. [Page Map & UI Flows](#4-page-map--ui-flows)
-5. [Architecture & Tech Stack](#5-architecture--tech-stack)
-6. [Directory Structure](#6-directory-structure)
-7. [Getting Started](#7-getting-started)
-8. [Core Components](#8-core-components)
-9. [API Endpoints](#9-api-endpoints)
-10. [Authentication & Authorization](#10-authentication--authorization)
-11. [Game Logic](#11-game-logic)
-12. [Style & Theming](#12-style--theming)
-13. [Testing](#13-testing)
-14. [Sprint Planning & Onboarding](#14-sprint-planning--onboarding)
-15. [Additional Notes](#15-additional-notes)
+1. [Project Overview](#project-overview)
+2. [Architecture & Tech Stack](#architecture--tech-stack)
+3. [Directory Structure](#directory-structure)
+4. [Getting Started](#getting-started)
+5. [Page Map & UI Flows](#page-map--ui-flows)
+6. [Core Components](#core-components)
+7. [Authentication & Authorization](#authentication--authorization)
+8. [Game Logic](#game-logic)
+9. [Admin Management](#admin-management)
+10. [API Endpoints](#api-endpoints)
+11. [Database Schema](#database-schema)
+12. [Image Management](#image-management)
+13. [Style & Theming](#style--theming)
+14. [Testing Strategy](#testing-strategy)
+15. [Responsive Design](#responsive-design)
+16. [Error Handling](#error-handling)
+17. [Performance Considerations](#performance-considerations)
 
-## 3. Project Overview
+## Project Overview
 
-- **Name:** Before or After
-- **Gameplay:** Compare release dates between cultural items. Show card with
-  year and month, then prompt for before/after comparison with new card.
-- **Game Flow:** Start with reference card. Show second card without year.
-  Advance on correct guesses using current card as new reference. Show loss
-  screen on incorrect guesses.
-- **Card Model:** Store items with title, year, month, imageUrl, sourceUrl, and
-  category fields.
-- **Authentication:** Support both guest and authenticated play modes with local
-  storage tokens.
-- **Roles:** Allow public gameplay (Home, Game, Loss screens) and admin
-  functionality (Dashboard, Card management).
-- **Goals:** Deliver responsive MVP with core features in four-week timeframe.
+**Before or After** is a web-based trivia game where players compare release
+dates of cultural artifacts including movies, albums, games, and technology.
 
-## 4. Page Map & UI Flows
+### Core Gameplay
 
-### Public Pages
+- Players view two cards showing cultural items with images and titles
+- Reference card displays month/year while comparison card hides the date
+- Users guess whether the comparison item was released before or after the
+  reference
+- Correct guesses advance the game with the comparison card becoming the new
+  reference
+- Incorrect guesses end the session and display the final score
 
-- **Home Page**: Display logo, tagline, and start buttons.
-- **Game Page**: Show two cards (stacked on mobile, side-by-side on desktop).
-  Render Before/After controls. Show score. Display login prompt for guest
-  users.
-- **Loss Page**: Display final score with loss GIF. Provide Play Again and Back
-  to Home buttons.
-- **Login Page**: Center form card with email, password fields. Include login
-  button and sign-up link.
-- **Signup Page**: Center form card with email, password, and confirm password
-  fields. Include signup button and login link.
+### Key Features
 
-### Admin Pages
+- User registration and authentication with username/email login
+- Score tracking with persistent high score leaderboards
+- Admin dashboard for content management and card creation
+- Image upload system with S3 storage and automatic processing
+- Responsive design supporting mobile and desktop experiences
+- Loss GIF system that displays different animations based on score ranges
 
-- **Dashboard**: Show metrics at top. List Loss GIF categories with headers.
-- **Card Viewer**: Display infinite-scroll grid of cards. Use fixed-width cards
-  that adapt to viewport.
+### Technical Goals
 
-### Navigation
+- Deliver production-ready application with comprehensive testing
+- Support concurrent users with efficient database queries
+- Maintain consistent UI patterns across all device sizes
+- Provide admin tools for content management without technical knowledge
 
-- **Desktop Nav**: Top bar with brand title center, score display, and auth
-  controls on right.
-- **Mobile Nav**: Bottom tab bar with navigation icons and auth controls.
+## Architecture & Tech Stack
 
-Use React Router to manage routes and RouteGuard to handle both guest and
-authenticated modes.
+### Backend
 
-## 5. Architecture & Tech Stack
+- **Runtime**: Node.js with ES modules
+- **Framework**: Native HTTP server with Express-style routing
+- **Database**: MongoDB with native driver
+- **Storage**: AWS S3 for image hosting
+- **Authentication**: JWT tokens with 24-hour expiration
+- **Image Processing**: Sharp for thumbnail generation and format conversion
 
-- **Backend:** Node.js, Express, MongoDB native driver
-- **Database:** MongoDB Atlas
-- **Storage:** AWS S3 for images
-- **Frontend:** React with Vite
-- **Styling:** CSS with variables
-- **Authentication:** Token-based with localStorage storage
-- **Testing:** Jest, React Testing Library, Supertest
-- **CI/CD:** GitHub Actions for build, test, and deploy
+### Frontend
 
-## 6. Directory Structure
+- **Framework**: React 19 with Vite build system
+- **Routing**: React Router DOM with protected routes
+- **State Management**: React Context for auth and game state
+- **Data Fetching**: TanStack Query for caching and synchronization
+- **Styling**: CSS modules with CSS variables for theming
+- **UI Components**: Custom components with responsive design patterns
+
+### Development Tools
+
+- **Testing**: Jest with React Testing Library and Supertest
+- **Code Quality**: ESLint with Prettier formatting
+- **Type Safety**: JSDoc comments for documentation
+- **Package Management**: npm workspaces for monorepo structure
+
+## Directory Structure
 
 ```text
 / (repo root)
-├── .github/               # CI workflows & issue/PR templates
-├── docs/                  # Markdown guides (onboarding, dev guide)
+├── .github/               # CI workflows and issue templates
+├── docs/                  # Documentation and guides
 ├── packages/
 │   ├── express-backend/   # API server
-│   │   ├── controllers/   # HTTP handlers
-│   │   ├── middleware/    # Auth middleware, request processing
-│   │   ├── models/        # MongoDB schemas and data access
-│   │   ├── routes/        # API route definitions
-│   │   ├── services/      # Business logic
-│   │   └── src/           # Server entry point and core setup
-│   └── react-frontend/    # SPA client
-│       ├── components/    # Shared React components
+│   │   ├── api/           # Route handlers organized by feature
+│   │   ├── middleware/    # Authentication and request processing
+│   │   ├── models/        # Database models and schema definitions
+│   │   ├── services/      # Business logic and external integrations
+│   │   ├── utils/         # Shared utilities and helpers
+│   │   ├── tests/         # Backend test suites
+│   │   └── server.js      # Application entry point
+│   └── react-frontend/    # Client application
+│       ├── components/    # Reusable UI components
 │       ├── context/       # React context providers
 │       ├── hooks/         # Custom React hooks
-│       ├── pages/         # Route components
+│       ├── pages/         # Route-level components
 │       ├── routes/        # Router configuration
-│       ├── styles/        # Global CSS and theme variables
-│       ├── utils/         # Helper functions and utilities
-│       └── src/           # App entry point
+│       ├── styles/        # Global CSS and theme definitions
+│       ├── utils/         # Client-side utilities
+│       ├── tests/         # Frontend test suites
+│       └── src/           # Application entry point and main components
 ```
 
-## 7. Getting Started
+## Getting Started
 
-Set up development environment:
+### Prerequisites
 
-1. **Clone repository**
+- Node.js 18+ with npm
+- MongoDB Atlas account or local MongoDB instance
+- AWS S3 bucket with configured access credentials
+
+### Installation
+
+1. Clone the repository and install dependencies:
 
    ```bash
-   git clone git@github.com:your-org/before-or-after.git
-   ```
-
-2. **Install dependencies**
-
-   ```bash
+   git clone [repository-url]
    cd before-or-after
    npm ci
    ```
 
-3. **Start applications**
+2. Configure environment variables:
 
-   - Backend: `npm run dev:backend`
-   - Frontend: `npm run dev:frontend`
-   - Both: `npm run dev`
-
-4. **Environment variables**
-
-   Copy `.env.example` to `.env` and set required variables:
-
-   ```
-   MONGO_URI=<your-mongo-connection-string>
-   PORT=8000
-   SESSION_SECRET=<your_session_secret_here>
-   S3_REGION=<provided-by-admin>
-   S3_BUCKET_NAME=<provided-by-admin>
-   AWS_ACCESS_KEY_ID=<provided-by-admin>
-   AWS_SECRET_ACCESS_KEY=<provided-by-admin>
+   ```bash
+   cp .env.example .env
+   # Edit .env with your database and AWS credentials
    ```
 
-## 8. Core Components
+3. Start development servers:
+   ```bash
+   npm run dev  # Starts both frontend and backend
+   ```
 
-### Layout & Navigation
+### Environment Configuration
 
-- **Header.jsx**: Display brand center, scores, and auth controls on desktop.
-- **BottomNav.jsx**: Mobile-only tabs for navigation with auth controls.
-- **Layout.jsx**: Render Header or BottomNav based on viewport size.
-- **RouteGuard.jsx**: Protect routes and enable guest mode functionality.
+Set these variables in your `.env` file:
+
+```
+MONGO_URI=mongodb+srv://your-connection-string
+JWT_SECRET=your-jwt-secret-key
+S3_REGION=your-aws-region
+S3_BUCKET_NAME=your-bucket-name
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+EMAIL_SERVICE=gmail
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+```
+
+## Page Map & UI Flows
+
+### Public Pages
+
+- **Home Page**: Landing page with game logo, tagline, and play button
+- **Game Page**: Core gameplay interface with card comparison and scoring
+- **Loss Page**: Game over screen with final score and restart options
+- **Leaderboard Page**: Top player scores with ranking display
+- **Login Page**: User authentication with email/username and password
+- **Signup Page**: Account creation with email, username, and password
+  confirmation
+- **Forgot Password Page**: Three-stage password reset with email verification
+
+### Admin Pages
+
+- **Admin Dashboard**: Content management interface with card and loss GIF
+  management
+- **Card Management**: Grid view of game cards with edit and delete operations
+- **Loss GIF Management**: Configuration interface for score-based GIF display
+
+### Navigation Patterns
+
+- **Desktop**: Top navigation bar with logo, high score display, and account
+  menu
+- **Mobile**: Bottom navigation with same functionality adapted for touch
+  interfaces
+- **Responsive**: Automatic switching between layouts based on viewport width
+
+## Core Components
+
+### Layout Components
+
+- **Layout.jsx**: Main wrapper that renders appropriate navigation based on
+  screen size
+- **Header.jsx**: Desktop navigation with brand logo, score display, and user
+  menu
+- **BottomNav.jsx**: Mobile navigation with touch-optimized controls
+- **PageContainer.jsx**: Content wrapper with consistent spacing and max-width
+  constraints
+- **Background.jsx**: Grid pattern background component used across pages
 
 ### Game Components
 
-- **Card.jsx**: Display card with title, image, and conditional date formatting.
-- **CardPair.jsx**: Render reference and current cards with proper layout.
-- **GuessButtons.jsx**: Provide Before/After buttons to compare dates.
-- **ResultOverlay.jsx**: Show animated feedback on correct/incorrect guesses.
+- **Card.jsx**: Displays cultural artifact with image, title, and conditional
+  date information
+- **ResultOverlay.jsx**: Animated feedback overlay showing guess results
+- **PlayButton.jsx**: Styled play button with star animation effects
 
-### Authentication Components
+### Admin Components
 
-- **LoginPage.jsx**: Handle login form submission and token storage.
-- **SignupPage.jsx**: Process user registration and redirect to login.
+- **AdminCard.jsx**: Card management interface with edit and delete controls
+- **AdminCardForm.jsx**: Modal form for creating new game cards
+- **EditCardForm.jsx**: Modal form for updating existing cards
+- **ImageUpload.jsx**: Drag-and-drop image upload with preview functionality
+- **LossGifCard.jsx**: Loss GIF management interface
+- **LossGifForm.jsx**: Modal form for configuring loss GIF settings
+- **Modal.jsx**: Reusable modal wrapper with escape key and overlay click
+  handling
 
-### Game State Management
+### Utility Components
 
-- **GameContext.jsx**: Manage game state, score tracking, and auth state.
-- **deckUtils.js**: Handle card deck shuffling and management.
-- **gameUtils.js**: Process game logic including compareCards function.
-- **authUtils.js**: Handle token management and auth state.
+- **ProtectedRoute.jsx**: Route wrapper for role-based access control
 
-## 9. API Endpoints
+## Authentication & Authorization
 
-### Public
+### User Registration
 
-- **GET `/api/cards/next`**
+Users create accounts with email addresses and unique usernames. Password
+requirements enforce minimum 6-character length with bcrypt hashing for secure
+storage.
 
-  - Retrieve random card for gameplay session.
-  - Response: `{ id, title, year, month, imageUrl, sourceUrl, category }`
+### Login System
 
-- **POST `/api/cards/guess`**
+Authentication accepts either email address or username with password
+validation. Successful login generates JWT tokens containing user
+identification, role information, and 24-hour expiration.
 
-  - Body: `{ previousYear, previousMonth, currentYear, currentMonth, guess }`
-  - Returns: `{ correct: boolean, nextCard: Card }`
-  - Direct player to Loss page on incorrect guesses.
+### Token Management
 
-### Authentication
+Client applications store JWT tokens in localStorage with automatic inclusion in
+API requests via Authorization headers. Token expiration triggers automatic
+logout with redirect to login page.
 
-- **POST `/api/auth/login`**
+### Role-Based Access
 
-  - Body: `{ email, password }`
-  - Returns: `{ token: string }`
-  - Store token in localStorage on client.
-
-- **POST `/api/auth/signup`**
-
-  - Body: `{ email, password }`
-  - Returns: `{ success: boolean }`
-  - Redirect to login page on success.
-
-### Admin
-
-- **GET `/api/admin/cards`**
-
-  - List cards with pagination support via `?cursor=&limit=`.
-  - Include year, month, imageUrl, and other card fields in response.
-
-- **GET `/api/admin/cards/:id`**
-
-  - Fetch single card with complete field set.
-
-NOTE: Secure admin endpoints with Bearer token in Authorization header.
-
-## 10. Authentication & Authorization
-
-### Token-Based Authentication
-
-- Use JWT-based authentication with localStorage storage.
-- Token format: JWT with user info (email, role, id) and expiration.
-- Include token in Authorization header as Bearer token for API requests.
-- Support session expiration with 24-hour token lifetime.
-
-### Guest Mode Implementation
-
-- Enable unregistered users to play as guests with localStorage score tracking.
-- Display login prompt for guest users in Game page.
-- Implement score merging when guest user authenticates via GameContext.
-- Track high scores separately for guest and authenticated users using different
-  localStorage keys.
+- **User Role**: Access to gameplay, leaderboards, and personal score tracking
+- **Admin Role**: Full system access including content management and user
+  administration
 
 ### Password Reset Flow
 
-- Three-stage password reset process: request, verification, reset.
-- Endpoints: `/api/auth/forgot-password`, `/api/auth/verify-code`,
-  `/api/auth/reset-password`.
-- Email verification using 6-digit code with 15-minute expiration.
-- Temporary JWT token for password reset authorization.
-- Secure implementation with email obfuscation for privacy.
+Three-stage password reset process:
 
-### Auth State Management
-
-- Use AuthContext to track authentication state across components.
-- Track isAuthenticated, isGuest, and user profile information.
-- Implement login/logout and guest mode toggle handlers.
-- Use storage event listener to sync auth state across browser tabs.
+1. **Request Stage**: User enters email address to receive verification code
+2. **Verification Stage**: User enters 6-digit code with 15-minute expiration
+3. **Reset Stage**: User sets new password with temporary JWT authorization
 
 ### Route Protection
 
-- Use ProtectedRoute component to guard routes while allowing guest access.
-- Implement conditional UI in Header and BottomNav based on auth state.
-- Support role-based access control for admin routes.
-- Redirect to login with return path for unauthenticated users.
+Protected routes verify authentication status and role requirements before
+rendering content. Unauthenticated users redirect to login with return path
+preservation.
 
-## 11. Game Logic
+## Game Logic
 
-### Card Model
+### Card Data Model
 
-- Store card data with title, year, month, imageUrl, sourceUrl, and category.
-- Use month field (1-12) for more precise date comparisons.
-- Index card collection on year, month, and category fields.
+Game cards store cultural artifacts with these properties:
+
+- **title**: Display name for the artifact
+- **year**: Release year (1000-2030 range)
+- **month**: Release month (1-12 numeric values)
+- **imageUrl**: S3 URL for full-size display image
+- **thumbnailUrl**: S3 URL for optimized thumbnail
+- **sourceUrl**: Reference link to original content
+- **category**: Classification (movie, album, game, technology, art)
+
+### Gameplay Mechanics
+
+Players compare two cards based on chronological release order. The system
+processes guesses by comparing year values first, then month values for
+same-year items. Exact matches (same year and month) automatically count as
+incorrect guesses.
 
 ### Deck Management
 
-- Implement card deck shuffling using Fisher-Yates algorithm.
-- Manage deck state in GameContext.
-- Support reshuffle functionality when deck is empty.
-- Track current and reference cards for comparison.
+The game fetches all available cards at session start and shuffles them using
+Fisher-Yates algorithm. Cards are drawn sequentially from the shuffled deck to
+prevent duplicates within a single game session.
 
-### Game Mechanics
+### Score Tracking
 
-- Compare cards based on both year and month.
-- Use month as tie-breaker when years match.
-- Implement score tracking with localStorage persistence.
-- Separate high score tracking for guest and authenticated users.
-- Add visual feedback for correct/incorrect guesses.
+Correct guesses increment the player's current score while updating the high
+score when applicable. Authenticated users persist scores to the database with
+real-time updates.
 
-### State Transitions
+### Game State Flow
 
-- Track game state: 'initial', 'playing', 'correct', 'incorrect', 'reshuffling'.
-- Handle transitions between states with appropriate UI updates.
-- Reset game state on reshuffle or restart.
+Game sessions progress through these states:
 
-## 12. Style & Theming
+1. **Initialization**: Fetch and shuffle card deck
+2. **Active Play**: Display card pair and accept user guesses
+3. **Result Display**: Show animated feedback for guess accuracy
+4. **Game Over**: Navigate to loss page with final score
 
-- Use CSS variables for consistent theming.
-- Define color palette in global.css:
-  ```css
-  :root {
-    --text: #100910;
-    --background: #f9f5f9;
-    --primary: #121212;
-    --secondary: #e94f37;
-    --accent: #2ab7ca;
-    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  ```
-- Use Inter font for typography.
-- Implement responsive design with mobile-first approach.
-- Create consistent button styles and card layouts.
+## Admin Management
 
-## 13. Testing
+### Card Management
 
-### MongoDB Testing
+Administrators can create, edit, and delete game cards through a visual
+interface. The system supports bulk operations and search functionality across
+card titles, categories, and years.
 
-- Test index configuration and performance.
-- Validate schema constraints including year and month ranges.
-- Verify aggregation pipeline for random card selection.
+### Image Upload System
 
-### Backend Tests
+Card creation includes drag-and-drop image upload with real-time preview. Images
+are processed automatically to generate thumbnails and convert to WebP format
+for optimal performance.
 
-- Test API endpoints with Supertest.
-- Verify token generation and validation.
-- Test guest mode score persistence.
-- Validate card retrieval and guess processing.
+### Loss GIF Configuration
 
-### Frontend Tests
+Administrators configure loss GIFs based on score thresholds. Each GIF entry
+includes category name, minimum score threshold, and image URL for display
+customization.
 
-- Test component rendering with React Testing Library.
-- Verify auth state management in context.
-- Test card comparison logic.
-- Validate form submissions and error handling.
-- Test responsive behavior on different viewports.
+### Content Search
 
-### Test Scripts
+Admin interfaces include search functionality for filtering cards by title,
+category, or release year. Search results update automatically with debounced
+input handling.
 
-```bash
-# Run all tests
-npm test
+## API Endpoints
 
-# Run backend tests
-npm run test --workspace=packages/express-backend
+### Authentication Routes
 
-# Run frontend tests
-npm run test --workspace=packages/react-frontend
+```
+POST /api/auth/login
+POST /api/auth/signup
+POST /api/auth/forgot-password
+POST /api/auth/verify-code
+POST /api/auth/reset-password
 ```
 
-## 14. Sprint Planning & Onboarding
+### Game Routes
 
-- **Sprint 1**: Core UI shell for Home, Game, and Loss pages.
-- **Sprint 2**: Authentication system with guest mode and login/signup pages.
-- **Sprint 3**: Enhanced game mechanics with card deck, month-based comparison.
-- **Sprint 4**: UI polish, animations, and testing.
-- **Task sizing**: Small (~1 h), Medium (~2 h), Large (>4 h).
-- **Definition of Done**: List acceptance criteria in each issue.
-- **WIP limit**: Maximum 2 tasks per person in **In Progress**.
-- **Stand-ups**: Daily 15-minute check-ins.
-- **Retros**: End-of-sprint record of wins and improvements.
+```
+GET /api/cards/all
+GET /api/cards/next
+POST /api/cards/guess
+GET /api/loss-gifs/current?score=X
+```
 
-## 15. Additional Notes
+### Score Management
 
-- Refer to open issues on GitHub for upcoming feature implementations.
-- Implement guest score persistence before building server-side user profiles.
-- Avoid unnecessary complexity in initial implementation.
-- Focus on core gameplay experience before adding administrative features.
+```
+POST /api/scores/update
+GET /api/leaderboard?limit=X
+```
+
+### Admin Routes
+
+```
+GET /api/admin/cards?cursor=X&limit=Y&search=Z
+POST /api/admin/cards-with-image
+PUT /api/admin/cards/:id
+DELETE /api/admin/cards/:id
+GET /api/admin/loss-gifs
+PUT /api/admin/loss-gifs/:id
+DELETE /api/admin/loss-gifs/:id
+```
+
+### Request/Response Patterns
+
+All API endpoints return JSON responses with consistent error message
+formatting. Protected endpoints require Bearer token authentication with
+automatic 401 responses for invalid tokens.
+
+## Database Schema
+
+### Users Collection
+
+```javascript
+{
+  email: String (unique),
+  username: String (unique),
+  password: String (bcrypt hashed),
+  role: String ("user" | "admin"),
+  currentScore: Number (default: 0),
+  highScore: Number (default: 0),
+  createdAt: Date,
+  resetCode: String (optional),
+  resetCodeExpires: Date (optional)
+}
+```
+
+### Cards Collection
+
+```javascript
+{
+  title: String,
+  year: Number (1000-2030),
+  month: Number (1-12),
+  imageUrl: String,
+  thumbnailUrl: String,
+  sourceUrl: String,
+  category: String,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Loss GIFs Collection
+
+```javascript
+{
+  category: String,
+  streakThreshold: Number,
+  imageUrl: String,
+  thumbnailUrl: String,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### Database Indexes
+
+- Users: `{ email: 1 }`, `{ username: 1 }`
+- Cards: `{ year: 1 }`, `{ category: 1 }`, `{ year: 1, category: 1 }`
+- Loss GIFs: `{ streakThreshold: 1 }`, `{ category: 1 }`
+
+## Image Management
+
+### S3 Integration
+
+Image uploads automatically process through Sharp library to generate two
+versions:
+
+- **Thumbnail**: 256x320 pixels at 80% quality for grid displays
+- **Large**: 640x800 pixels at 85% quality for full-size viewing
+
+### Processing Options
+
+Image upload supports two fit modes:
+
+- **Scale**: Maintains aspect ratio with white background padding
+- **Crop**: Fills target dimensions by cropping excess content
+
+### File Validation
+
+Upload system validates file types (JPEG, PNG, WebP) and enforces 10MB maximum
+file size. Invalid uploads display clear error messages with retry options.
+
+### URL Generation
+
+S3 URLs include CDN-optimized paths with cache headers for improved performance.
+Thumbnail URLs provide fallback for large image loading failures.
+
+## Style & Theming
+
+### CSS Architecture
+
+Application uses CSS custom properties for consistent theming across components:
+
+```css
+:root {
+  --primary-color: rgb(37, 99, 235);
+  --before-blue: rgb(86, 54, 230);
+  --before-red: rgb(214, 37, 37);
+  --before-purple: rgb(121, 51, 209);
+  --secondary-color: #4b5563;
+  --background-color: #f8fafc;
+  --text-color: #1e293b;
+  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+```
+
+### Component Styling
+
+Each component uses scoped CSS classes to prevent style conflicts. Responsive
+breakpoints use mobile-first approach with `min-width` media queries.
+
+### Typography
+
+Application uses system font stack for optimal performance:
+
+```css
+font-family:
+  -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+  Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+```
+
+### Animation Patterns
+
+CSS transitions provide smooth interactions with consistent timing functions.
+Component animations use transform properties for optimal performance.
+
+## Testing Strategy
+
+### Frontend Testing
+
+- **Unit Tests**: Component rendering and prop handling
+- **Integration Tests**: User interaction flows and API integration
+- **Authentication Tests**: Login, logout, and token management
+- **Game Flow Tests**: Complete gameplay session validation
+- **Error Handling Tests**: Network failures and API error responses
+
+### Backend Testing
+
+- **API Tests**: Endpoint functionality and response validation
+- **Database Tests**: Model operations and query performance
+- **Authentication Tests**: Token generation and validation
+- **Admin Tests**: Content management and role verification
+- **Error Tests**: Invalid input handling and edge cases
+
+### Test File Organization
+
+```
+tests/
+├── unit/           # Individual component and function tests
+├── integration/    # Multi-component interaction tests
+├── mocks/          # Shared mock implementations
+└── utils/          # Test utilities and helpers
+```
+
+### Test Execution
+
+```bash
+npm test                   # Run all tests
+npm run test:watch         # Watch mode for development
+npm run test:coverage      # Generate coverage reports
+```
+
+## Responsive Design
+
+### Breakpoint Strategy
+
+- **Mobile**: < 768px (bottom navigation, stacked layouts)
+- **Desktop**: ≥ 768px (top navigation, side-by-side layouts)
+
+### Layout Patterns
+
+Components adapt automatically based on viewport size using CSS media queries
+and React hooks for dynamic behavior.
+
+### Container Constraints
+
+Global container system provides consistent content width with override options
+for full-viewport components like leaderboards.
+
+### Touch Optimization
+
+Mobile interfaces use larger touch targets and appropriate spacing for finger
+navigation. Form inputs include proper keyboard types for mobile devices.
+
+## Error Handling
+
+### Client-Side Errors
+
+- Network failures display retry options with user-friendly messages
+- Form validation provides real-time feedback with clear error descriptions
+- Authentication errors trigger automatic logout with redirect handling
+- API timeouts show loading states with fallback content
+
+### Server-Side Errors
+
+- Database connection failures return 500 status with generic error messages
+- Authentication failures return 401 status with token refresh guidance
+- Validation errors return 400 status with specific field error details
+- Rate limiting returns 429 status with retry timing information
+
+### Error Boundaries
+
+React error boundaries catch component failures and display fallback UI without
+crashing the entire application.
+
+## Performance Considerations
+
+### Database Optimization
+
+- Indexed queries for common search patterns
+- Aggregation pipelines for efficient data retrieval
+- Connection pooling for concurrent request handling
+
+### Frontend Optimization
+
+- TanStack Query for intelligent caching and background updates
+- Image lazy loading with intersection observer
+- Component code splitting for reduced bundle sizes
+- CSS variable usage for efficient style updates
+
+### Caching Strategy
+
+- API responses cached with appropriate TTL values
+- Static assets served with long-term cache headers
+- Database query results cached for repeated operations
+
+### Bundle Size Management
+
+- Dynamic imports for admin functionality
+- Tree shaking to eliminate unused code
+- Compression and minification in production builds
