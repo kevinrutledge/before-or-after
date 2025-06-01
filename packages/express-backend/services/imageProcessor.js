@@ -2,16 +2,20 @@ import sharp from "sharp";
 
 /**
  * Process uploaded image into thumbnail and large versions.
- * Creates optimized WebP images with configurable crop mode.
+ * Handle animated GIFs with static thumbnails and preserve original animation.
  */
-export async function processImage(imageBuffer, cropMode = "scale") {
+export async function processImage(
+  imageBuffer,
+  cropMode = "scale",
+  mimeType = ""
+) {
   try {
     // Validate input buffer
     if (!imageBuffer || imageBuffer.length === 0) {
       throw new Error("Invalid image buffer");
     }
 
-    // Clean the cropMode parameter to remove any whitespace
+    // Clean cropMode parameter to remove whitespace
     const cleanCropMode = cropMode.trim();
 
     // Determine resize options based on crop mode
@@ -28,13 +32,27 @@ export async function processImage(imageBuffer, cropMode = "scale") {
 
     const finalOptions = resizeOptions[cleanCropMode] || resizeOptions.crop;
 
-    // Create thumbnail version (256x320, 4:5 ratio)
+    // Handle animated GIFs with static thumbnail and preserved animation
+    if (mimeType === "image/gif") {
+      // Create static thumbnail from first frame
+      const thumbnailBuffer = await sharp(imageBuffer, { pages: 1 })
+        .resize(256, 320, finalOptions)
+        .webp({ quality: 80 })
+        .toBuffer();
+
+      // Return original GIF buffer for animation preservation
+      return {
+        thumbnail: thumbnailBuffer,
+        large: imageBuffer
+      };
+    }
+
+    // Process static images with WebP conversion
     const thumbnailBuffer = await sharp(imageBuffer)
       .resize(256, 320, finalOptions)
       .webp({ quality: 80 })
       .toBuffer();
 
-    // Create large version (640x800, 4:5 ratio)
     const largeBuffer = await sharp(imageBuffer)
       .resize(640, 800, finalOptions)
       .webp({ quality: 85 })
@@ -53,11 +71,11 @@ export async function processImage(imageBuffer, cropMode = "scale") {
  * Validate uploaded file meets requirements.
  */
 export function validateImageFile(file) {
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
   const maxSize = 10 * 1024 * 1024; // 10MB
 
   if (!allowedTypes.includes(file.mimetype)) {
-    throw new Error("Invalid file type. Only JPEG, PNG, and WebP allowed");
+    throw new Error("Invalid file type. Only JPEG, PNG, WebP, and GIF allowed");
   }
 
   if (file.size > maxSize) {

@@ -59,6 +59,51 @@ export async function uploadImagePair(thumbnailBuffer, largeBuffer) {
 }
 
 /**
+ * Upload loss GIF thumbnail and large image versions to dedicated folders.
+ * Returns URLs for both uploaded files.
+ */
+export async function uploadLossGifImagePair(thumbnailBuffer, largeBuffer) {
+  const fileId = randomUUID();
+  const bucketName = process.env.S3_BUCKET_NAME;
+
+  try {
+    // Upload thumbnail to loss-gifs-thumbnails folder
+    const thumbnailKey = `loss-gifs-thumbnails/${fileId}-thumb.webp`;
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: thumbnailKey,
+        Body: thumbnailBuffer,
+        ContentType: "image/webp",
+        CacheControl: "max-age=31536000" // 1 year cache
+      })
+    );
+
+    // Upload large image to loss-gifs folder
+    const largeKey = `loss-gifs/${fileId}-large.webp`;
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: largeKey,
+        Body: largeBuffer,
+        ContentType: "image/webp",
+        CacheControl: "max-age=31536000" // 1 year cache
+      })
+    );
+
+    // Generate URLs
+    const baseUrl = `https://${bucketName}.s3.${process.env.S3_REGION}.amazonaws.com`;
+
+    return {
+      thumbnailUrl: `${baseUrl}/${thumbnailKey}`,
+      imageUrl: `${baseUrl}/${largeKey}`
+    };
+  } catch (error) {
+    throw new Error(`S3 upload failed: ${error.message}`);
+  }
+}
+
+/**
  * Upload single file to S3 (for backward compatibility).
  */
 export async function uploadSingleImage(buffer, fileName) {
@@ -99,8 +144,6 @@ export async function deleteS3Image(imageUrl) {
         Key: key
       })
     );
-
-    console.log(`Deleted S3 object: ${key}`);
   } catch (error) {
     console.error(`Failed to delete S3 object: ${imageUrl}`, error);
     throw error;

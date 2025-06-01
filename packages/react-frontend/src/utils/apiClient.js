@@ -12,15 +12,7 @@ export async function apiRequest(endpoint, options = {}) {
     ? endpoint
     : `/${endpoint}`;
 
-  // Check if we're in production
-  const isProduction = import.meta.env.PROD;
-
-  const url =
-    isProduction && API_URL
-      ? `${API_URL}${normalizedEndpoint}`
-      : normalizedEndpoint;
-
-  console.log(`Making API request to: ${url}`);
+  const url = API_URL ? `${API_URL}${normalizedEndpoint}` : normalizedEndpoint;
 
   // Only set Content-Type for non-FormData requests
   const headers = {};
@@ -38,30 +30,16 @@ export async function apiRequest(endpoint, options = {}) {
     headers
   };
 
-  try {
-    const response = await fetch(url, config);
+  const response = await fetch(url, config);
 
-    if (!response.ok) {
-      let errorMessage = `Request failed with status ${response.status}`;
-
-      // Try to parse error message from response
-      try {
-        const errorData = await response.json();
-        if (errorData.message) {
-          errorMessage = errorData.message;
-        }
-      } catch {
-        // Unable to parse JSON, use default error message
-      }
-
-      throw new Error(errorMessage);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error(`API request error for ${endpoint}:`, error);
-    throw error;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData.message || `Request failed with status ${response.status}`
+    );
   }
+
+  return await response.json();
 }
 
 /**

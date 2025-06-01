@@ -556,13 +556,16 @@ const server = http.createServer(async (req, res) => {
         path.startsWith("/api/admin/loss-gifs/") &&
         req.method === "PUT"
       ) {
+        mockReq.fileData = fileData;
         await adminLossGifsHandler(mockReq, mockRes);
       } else if (
         path.startsWith("/api/admin/loss-gifs/") &&
         req.method === "DELETE"
       ) {
+        mockReq.fileData = fileData;
         await adminLossGifsHandler(mockReq, mockRes);
       } else if (path === "/api/admin/loss-gifs") {
+        mockReq.fileData = fileData;
         await adminLossGifsHandler(mockReq, mockRes);
       } else {
         mockRes.status(404).send("Not Found");
