@@ -2,7 +2,7 @@ import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
-import { useGame } from "../context/GameContext";
+import { useGame } from "../hooks/useGame";
 import Background from "../components/Background";
 
 function LossPage() {

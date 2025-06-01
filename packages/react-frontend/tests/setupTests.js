@@ -31,3 +31,9 @@ Object.defineProperty(window, "getComputedStyle", {
     getPropertyValue: () => ""
   })
 });
+
+// Mock apiClient to prevent import.meta issues
+jest.mock("../src/utils/apiClient", () => {
+  const mockModule = jest.requireActual("./mocks/apiClient");
+  return mockModule;
+});

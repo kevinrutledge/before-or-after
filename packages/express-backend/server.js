@@ -14,6 +14,8 @@ import authVerifyCodeHandler from "./api/auth/verify-code.js";
 import authResetPasswordHandler from "./api/auth/reset-password.js";
 import adminCardsHandler from "./api/admin/cards.js";
 import adminLossGifsHandler from "./api/admin/loss-gifs.js";
+import scoresUpdateHandler from "./api/scores/update.js";
+import leaderboardHandler from "./api/leaderboard.js";
 import { processImage, validateImageFile } from "./services/imageProcessor.js";
 import { uploadImagePair, deleteS3Image } from "./services/s3Service.js";
 import jwt from "jsonwebtoken";
@@ -535,6 +537,10 @@ const server = http.createServer(async (req, res) => {
         await authVerifyCodeHandler(mockReq, mockRes);
       } else if (path === "/api/auth/reset-password") {
         await authResetPasswordHandler(mockReq, mockRes);
+      } else if (path === "/api/scores/update") {
+        await scoresUpdateHandler(mockReq, mockRes);
+      } else if (path === "/api/leaderboard") {
+        await leaderboardHandler(mockReq, mockRes);
       } else if (path.startsWith("/api/admin/cards/") && req.method === "PUT") {
         await handleCardUpdate(req, res, fileData, parsedBody);
         return;
@@ -572,7 +578,7 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
-      // Set default content type if not specified
+      // Set default content type when not specified
       if (!res.getHeader("Content-Type")) {
         res.setHeader("Content-Type", "application/json");
       }

@@ -12,12 +12,9 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate
 }));
 
-jest.mock("../src/context/AuthContext", () => {
-  const mockModule = jest.requireActual("./mocks/AuthContext");
-  return {
-    useAuth: mockModule.useAuth
-  };
-});
+jest.mock("../src/hooks/useAuth", () => ({
+  useAuth: () => jest.requireActual("./mocks/AuthContext").useAuth()
+}));
 
 describe("BottomNav Component", () => {
   beforeEach(() => {
@@ -117,6 +114,8 @@ describe("BottomNav Component", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("High Score: 0")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /high score/i })
+    ).toBeInTheDocument();
   });
 });

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGame } from "../context/GameContext";
-import { useAuth } from "../context/AuthContext";
+import { useGame } from "../hooks/useGame";
+import { useAuth } from "../hooks/useAuth";
 
 function Header() {
   const { highscore } = useGame();
@@ -36,10 +36,12 @@ function Header() {
 
   const goHome = () => navigate("/");
 
+  const goToLeaderboard = () => navigate("/leaderboard");
+
   return (
     <header className="desktop-only">
       <div className="header-nav">
-        <div className="container">
+        <div className="container header-container">
           <button className="logo-button" onClick={goHome}>
             <div className="logo-square">
               <img
@@ -51,7 +53,14 @@ function Header() {
             </div>
           </button>
 
-          <div className="high-score-display">High Score: {highscore}</div>
+          <button
+            className="high-score-button header-center"
+            onClick={goToLeaderboard}>
+            <div className="high-score-pill">
+              <span className="score-label">High Score</span>
+              <span className="score-value">{highscore}</span>
+            </div>
+          </button>
 
           <div className="account-dropdown">
             <button
