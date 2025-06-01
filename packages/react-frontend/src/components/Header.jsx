@@ -54,12 +54,10 @@ function Header() {
           </button>
 
           <button
-            className="high-score-button header-center"
-            onClick={goToLeaderboard}>
-            <div className="high-score-pill">
-              <span className="score-label">High Score</span>
-              <span className="score-value">{highscore}</span>
-            </div>
+            className="high-score-display"
+            onClick={goToLeaderboard}
+            style={{ cursor: "pointer", background: "none", border: "none" }}>
+            High Score: {highscore}
           </button>
 
           <div className="account-dropdown">
