@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 
 /**
  * Display loss GIF card with edit functionality.
- * Mirrors AdminCard structure for consistency.
+ * Show category name and score range from database fields.
  */
 const LossGifCard = forwardRef(({ lossGif, onEdit }, ref) => {
   return (
@@ -35,7 +35,7 @@ const LossGifCard = forwardRef(({ lossGif, onEdit }, ref) => {
         </div>
       </div>
       <div className="admin-card-info">
-        <span className="admin-card-category">{lossGif.category}</span>
+        <span className="admin-card-category">Score: {lossGif.scoreRange}</span>
         <span className="admin-card-year">
           Threshold: {lossGif.streakThreshold}
         </span>
