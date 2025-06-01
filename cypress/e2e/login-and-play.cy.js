@@ -7,7 +7,8 @@ function login() {
   cy.contains('button', 'Sign In').click();
   cy.contains('A daily game').should('be.visible');
   cy.contains('Play').click();
-  cy.contains('Current Score').should('be.visible');
+  cy.contains('Current Score: 0').should('be.visible');
+  highScoreCheck();
   
 }
 // Helper function to get card info from the DOM
@@ -178,7 +179,6 @@ describe('Login and play 2 correctly', () => {
 describe('Login and guess incorrectly', () => {
   it('logs in and makes a correct guess using compareCards', () => {
     login();
-    highScoreCheck();
     cy.contains('Current Score: 0').should('be.visible');
     pickCorrectCard();
     cy.contains('Current Score: 1').should('be.visible');
@@ -195,7 +195,6 @@ describe('Login and guess incorrectly', () => {
 describe('Login, play, lose, play again, lose', () => {
   it('tests play again ensures score resets', () => {
     login();
-    highScoreCheck();
 
     cy.contains('Current Score: 0').should('be.visible');
     pickCorrectCard();
