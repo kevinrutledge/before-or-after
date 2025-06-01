@@ -42,7 +42,7 @@ describe("Admin Loss GIFs API", () => {
     app = express();
     app.use(express.json());
 
-    // Import and mount the endpoint
+    // Import and mount endpoint
     const adminLossGifsHandler = (await import("../api/admin/loss-gifs.js"))
       .default;
     app.use("/api/admin/loss-gifs", adminLossGifsHandler);
@@ -90,12 +90,14 @@ describe("Admin Loss GIFs API", () => {
     await collection.insertMany([
       {
         category: "bad",
+        scoreRange: "< 2",
         streakThreshold: 2,
         imageUrl: "https://example.com/bad.gif",
         createdAt: new Date()
       },
       {
         category: "frustrated",
+        scoreRange: "2 - 4",
         streakThreshold: 5,
         imageUrl: "https://example.com/frustrated.gif",
         createdAt: new Date()
@@ -114,40 +116,6 @@ describe("Admin Loss GIFs API", () => {
     expect(response.body[0].category).toBe("bad");
   });
 
-  test("creates new loss GIF with valid data", async () => {
-    const newGif = {
-      category: "ecstatic",
-      streakThreshold: 15,
-      imageUrl: "https://example.com/ecstatic.gif",
-      thumbnailUrl: "https://example.com/ecstatic-thumb.gif"
-    };
-
-    const response = await request(app)
-      .post("/api/admin/loss-gifs")
-      .set("Authorization", `Bearer ${adminToken}`)
-      .send(newGif);
-
-    expect(response.status).toBe(201);
-    expect(response.body.category).toBe("ecstatic");
-    expect(response.body.streakThreshold).toBe(15);
-    expect(response.body._id).toBeDefined();
-  });
-
-  test("validates required fields for creation", async () => {
-    const incompleteGif = {
-      category: "test"
-      // Missing required fields
-    };
-
-    const response = await request(app)
-      .post("/api/admin/loss-gifs")
-      .set("Authorization", `Bearer ${adminToken}`)
-      .send(incompleteGif);
-
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBe("Missing required fields");
-  });
-
   test("updates existing loss GIF", async () => {
     // Create test GIF first
     const { getLossGifsCollection } = await import("../models/LossGif.js");
@@ -155,6 +123,7 @@ describe("Admin Loss GIFs API", () => {
 
     const insertResult = await collection.insertOne({
       category: "decent",
+      scoreRange: "5 - 7",
       streakThreshold: 8,
       imageUrl: "https://example.com/decent.gif",
       createdAt: new Date()
@@ -164,8 +133,8 @@ describe("Admin Loss GIFs API", () => {
 
     const updateData = {
       category: "good",
-      streakThreshold: 10,
-      imageUrl: "https://example.com/good.gif"
+      scoreRange: "8 - 11",
+      streakThreshold: 10
     };
 
     const response = await request(app)
@@ -175,16 +144,18 @@ describe("Admin Loss GIFs API", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.category).toBe("good");
+    expect(response.body.scoreRange).toBe("8 - 11");
     expect(response.body.streakThreshold).toBe(10);
   });
 
-  test("deletes existing loss GIF", async () => {
+  test("validates required fields for update", async () => {
     // Create test GIF first
     const { getLossGifsCollection } = await import("../models/LossGif.js");
     const { client, collection } = await getLossGifsCollection();
 
     const insertResult = await collection.insertOne({
       category: "test",
+      scoreRange: "< 2",
       streakThreshold: 1,
       imageUrl: "https://example.com/test.gif",
       createdAt: new Date()
@@ -192,24 +163,57 @@ describe("Admin Loss GIFs API", () => {
 
     await client.close();
 
+    const incompleteUpdate = {
+      category: "test"
+      // Missing required fields scoreRange and streakThreshold
+    };
+
     const response = await request(app)
-      .delete(`/api/admin/loss-gifs/${insertResult.insertedId}`)
-      .set("Authorization", `Bearer ${adminToken}`);
+      .put(`/api/admin/loss-gifs/${insertResult.insertedId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send(incompleteUpdate);
 
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBe("Loss GIF deleted successfully");
-
-    // Verify deletion
-    const { client: verifyClient, collection: verifyCollection } =
-      await getLossGifsCollection();
-    const deletedGif = await verifyCollection.findOne({
-      _id: insertResult.insertedId
-    });
-    expect(deletedGif).toBeNull();
-    await verifyClient.close();
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Missing required fields");
   });
 
-  test("handles delete of non-existent GIF", async () => {
+  test("handles update of non-existent GIF", async () => {
+    const { ObjectId } = await import("mongodb");
+    const fakeId = new ObjectId();
+
+    const updateData = {
+      category: "fake",
+      scoreRange: "0 - 1",
+      streakThreshold: 1
+    };
+
+    const response = await request(app)
+      .put(`/api/admin/loss-gifs/${fakeId}`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send(updateData);
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Loss GIF not found");
+  });
+
+  test("rejects unsupported POST method", async () => {
+    const newGif = {
+      category: "ecstatic",
+      scoreRange: ">= 12",
+      streakThreshold: 15,
+      imageUrl: "https://example.com/ecstatic.gif"
+    };
+
+    const response = await request(app)
+      .post("/api/admin/loss-gifs")
+      .set("Authorization", `Bearer ${adminToken}`)
+      .send(newGif);
+
+    expect(response.status).toBe(405);
+    expect(response.body.message).toBe("Method not allowed");
+  });
+
+  test("rejects unsupported DELETE method", async () => {
     const { ObjectId } = await import("mongodb");
     const fakeId = new ObjectId();
 
@@ -217,7 +221,7 @@ describe("Admin Loss GIFs API", () => {
       .delete(`/api/admin/loss-gifs/${fakeId}`)
       .set("Authorization", `Bearer ${adminToken}`);
 
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe("Loss GIF not found");
+    expect(response.status).toBe(405);
+    expect(response.body.message).toBe("Method not allowed");
   });
 });
