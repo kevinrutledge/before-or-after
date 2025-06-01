@@ -41,7 +41,7 @@ function Header() {
   return (
     <header className="desktop-only">
       <div className="header-nav">
-        <div className="container header-container">
+        <div className="container">
           <button className="logo-button" onClick={goHome}>
             <div className="logo-square">
               <img
