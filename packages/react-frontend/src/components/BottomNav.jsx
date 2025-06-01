@@ -53,11 +53,11 @@ function BottomNav() {
             </div>
           </button>
 
-          <button
-            className="high-score-display"
-            onClick={goToLeaderboard}
-            style={{ cursor: "pointer", background: "none", border: "none" }}>
-            High Score: {highscore}
+          <button className="high-score-button" onClick={goToLeaderboard}>
+            <div className="high-score-pill mobile-score-pill">
+              <span className="score-label">High Score</span>
+              <span className="score-value">{highscore}</span>
+            </div>
           </button>
 
           <div className="account-dropdown">

@@ -114,6 +114,8 @@ describe("BottomNav Component", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("High Score: 0")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /high score/i })
+    ).toBeInTheDocument();
   });
 });
