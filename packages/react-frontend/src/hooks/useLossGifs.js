@@ -52,8 +52,9 @@ export const useUpdateLossGif = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ lossGifId, formData, selectedFile }) =>
-      updateLossGif(lossGifId, formData, selectedFile),
+    mutationFn: ({ lossGifId, formData, selectedFile }) => {
+      return updateLossGif(lossGifId, formData, selectedFile);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-loss-gifs"] });
     }

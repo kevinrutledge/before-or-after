@@ -179,7 +179,7 @@ function AdminDashboard() {
             <h1>Admin Dashboard</h1>
           </header>
 
-          {/* Loss GIF Management Section */}
+          {/* Loss GIF Management Section - Fixed Categories */}
           <section style={{ marginBottom: "3rem" }}>
             <h2 style={{ marginBottom: "2rem", color: "var(--text-color)" }}>
               Loss GIF Management
@@ -205,13 +205,29 @@ function AdminDashboard() {
               </div>
             ) : (
               <div className="admin-cards-grid">
-                {lossGifs?.map((lossGif) => (
-                  <LossGifCard
-                    key={lossGif._id}
-                    lossGif={lossGif}
-                    onEdit={handleEditLossGif}
-                  />
-                ))}
+                {lossGifs
+                  ?.sort((a, b) => a.streakThreshold - b.streakThreshold)
+                  .map((lossGif) => (
+                    <LossGifCard
+                      key={lossGif._id}
+                      lossGif={lossGif}
+                      onEdit={handleEditLossGif}
+                    />
+                  ))}
+              </div>
+            )}
+
+            {/* Display warning when not exactly 5 categories */}
+            {lossGifs && lossGifs.length !== 5 && (
+              <div
+                style={{
+                  textAlign: "center",
+                  color: "var(--before-red)",
+                  marginTop: "1rem",
+                  fontSize: "0.9rem"
+                }}>
+                Expected 5 loss GIF categories, found {lossGifs.length}. Run
+                initialization script.
               </div>
             )}
           </section>

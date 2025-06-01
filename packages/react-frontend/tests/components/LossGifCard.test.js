@@ -13,6 +13,7 @@ describe("LossGifCard component", () => {
       _id: "test-id",
       category: "frustrated",
       streakThreshold: 5,
+      scoreRange: "2 - 4",
       imageUrl: "https://example.com/frustrated.gif",
       thumbnailUrl: "https://example.com/frustrated-thumb.gif"
     };
@@ -32,11 +33,9 @@ describe("LossGifCard component", () => {
     expect(screen.getByText("Threshold: 5")).toBeInTheDocument();
   });
 
-  test("shows category in card info section", () => {
+  test("shows score range in card info section", () => {
     render(<LossGifCard lossGif={mockLossGif} onEdit={mockOnEdit} />);
-
-    const categoryElements = screen.getAllByText("frustrated");
-    expect(categoryElements.length).toBeGreaterThan(1); // Title + info section
+    expect(screen.getByText("Score: 2 - 4")).toBeInTheDocument();
   });
 
   test("displays thumbnail image with correct attributes", () => {
