@@ -13,14 +13,38 @@ try {
 dotenv.config({ path: path.join(dirName, "../.env") });
 
 /**
- * User schema for authentication.
+ * User schema for authentication with username and score tracking.
  */
 export const userSchema = {
   email: { type: String, required: true },
+  username: { type: String, required: true },
   password: { type: String, required: true },
   role: { type: String, default: "user" }, // "user" or "admin"
+  currentScore: { type: Number, default: 0 },
+  highScore: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 };
+
+/**
+ * Validate username format and length requirements.
+ */
+export function validateUsername(username) {
+  if (!username) {
+    return { valid: false, message: "Username required" };
+  }
+
+  if (username.length < 3 || username.length > 20) {
+    return { valid: false, message: "Username must be 3-20 characters" };
+  }
+
+  // Allow alphanumeric, underscore, dash
+  const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+  if (!usernameRegex.test(username)) {
+    return { valid: false, message: "Username contains invalid characters" };
+  }
+
+  return { valid: true };
+}
 
 /**
  * Get database connection and users collection.
@@ -39,8 +63,9 @@ export async function getUsersCollection() {
     const db = client.db();
     const collection = db.collection("users");
 
-    // Create unique index on email if it doesn't exist
+    // Create unique indexes on email and username
     await collection.createIndex({ email: 1 }, { unique: true });
+    await collection.createIndex({ username: 1 }, { unique: true });
 
     return { client, collection };
   } catch (error) {
@@ -50,31 +75,41 @@ export async function getUsersCollection() {
 }
 
 /**
- * Create a new user with hashed password.
+ * Create user with hashed password, username, and initial scores.
  */
-export async function createUser(email, password, role = "user") {
+export async function createUser(email, username, password, role = "user") {
   let client;
   try {
     const { client: dbClient, collection } = await getUsersCollection();
     client = dbClient;
 
-    // Hash the password
+    // Validate username format
+    const usernameValidation = validateUsername(username);
+    if (!usernameValidation.valid) {
+      return { success: false, message: usernameValidation.message };
+    }
+
+    // Hash password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Create the user
+    // Create user record with initial scores
     const result = await collection.insertOne({
       email,
+      username,
       password: hashedPassword,
       role,
+      currentScore: 0,
+      highScore: 0,
       createdAt: new Date()
     });
 
     return { success: true, userId: result.insertedId };
   } catch (error) {
-    // Handle duplicate email
+    // Handle duplicate email or username
     if (error.code === 11000) {
-      return { success: false, message: "Email already exists" };
+      const field = error.keyPattern.email ? "Email" : "Username";
+      return { success: false, message: `${field} already exists` };
     }
     console.error("User creation error:", error);
     throw error;
@@ -84,14 +119,26 @@ export async function createUser(email, password, role = "user") {
 }
 
 /**
- * Validate user credentials.
+ * Validate user credentials using email or username.
  */
-export async function validateUser(email, password) {
+export async function validateUser(emailOrUsername, password) {
   const { client, collection } = await getUsersCollection();
 
   try {
-    // Find the user
-    const user = await collection.findOne({ email });
+    // Determine whether input is email or username
+    const isEmail = emailOrUsername.includes("@");
+
+    // Use exact string matching with case-insensitive collation for username
+    const query = isEmail
+      ? { email: emailOrUsername }
+      : { username: emailOrUsername };
+
+    // Find user by email or exact username match (case-insensitive via collation)
+    const user = isEmail
+      ? await collection.findOne(query)
+      : await collection.findOne(query, {
+          collation: { locale: "en", strength: 2 }
+        });
 
     if (!user) {
       return { success: false, message: "Invalid credentials" };
@@ -105,12 +152,67 @@ export async function validateUser(email, password) {
     }
 
     // Return user info without password
-    const { _id, email: userEmail, role, createdAt } = user;
+    const { _id, email, username, role, currentScore, highScore, createdAt } =
+      user;
     return {
       success: true,
-      user: { _id, email: userEmail, role, createdAt }
+      user: { _id, email, username, role, currentScore, highScore, createdAt }
     };
   } finally {
     await client.close();
+  }
+}
+
+/**
+ * Update user scores in database.
+ */
+export async function updateUserScores(userId, currentScore, highScore) {
+  let client;
+  try {
+    const { client: dbClient, collection } = await getUsersCollection();
+    client = dbClient;
+
+    const { ObjectId } = await import("mongodb");
+    const result = await collection.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          currentScore: parseInt(currentScore),
+          highScore: parseInt(highScore)
+        }
+      }
+    );
+
+    return { success: result.modifiedCount > 0 };
+  } catch (error) {
+    console.error("Score update error:", error);
+    throw error;
+  } finally {
+    if (client) await client.close();
+  }
+}
+
+/**
+ * Get leaderboard data sorted by high score.
+ */
+export async function getLeaderboard(limit = 10) {
+  let client;
+  try {
+    const { client: dbClient, collection } = await getUsersCollection();
+    client = dbClient;
+
+    const leaderboard = await collection
+      .find({ highScore: { $gt: 0 } })
+      .sort({ highScore: -1 })
+      .limit(limit)
+      .project({ username: 1, highScore: 1 })
+      .toArray();
+
+    return leaderboard;
+  } catch (error) {
+    console.error("Leaderboard fetch error:", error);
+    throw error;
+  } finally {
+    if (client) await client.close();
   }
 }

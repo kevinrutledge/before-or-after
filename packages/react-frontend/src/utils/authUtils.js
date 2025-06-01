@@ -4,7 +4,6 @@
 
 // Auth-related storage keys
 const AUTH_TOKEN_KEY = "authToken";
-const GUEST_MODE_KEY = "guestMode";
 
 // Store token in localStorage
 export function setAuthToken(token) {
@@ -19,21 +18,6 @@ export function getAuthToken() {
 // Remove token from localStorage
 export function removeAuthToken() {
   localStorage.removeItem(AUTH_TOKEN_KEY);
-}
-
-// Set guest mode in localStorage
-export function setGuestMode(enabled = true) {
-  localStorage.setItem(GUEST_MODE_KEY, enabled.toString());
-}
-
-// Check if guest mode is enabled
-export function isGuestMode() {
-  return localStorage.getItem(GUEST_MODE_KEY) === "true";
-}
-
-// Clear guest mode from localStorage
-export function clearGuestMode() {
-  localStorage.removeItem(GUEST_MODE_KEY);
 }
 
 // Check if user is authenticated

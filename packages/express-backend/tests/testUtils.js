@@ -1,5 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
+import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 
 // Singleton MongoDB instance for tests
 let mongoServer;
@@ -42,3 +44,28 @@ export async function clearDatabase() {
     await client.close();
   }
 }
+
+// Create express-rate-limit middleware for test endpoints
+export const testRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { message: "Too many requests" }
+});
+
+// Create valid JWT token with default test payload
+export const createTestToken = (payload = {}) => {
+  const defaultPayload = {
+    email: "test@example.com",
+    role: "user",
+    id: "507f1f77bcf86cd799439011"
+  };
+
+  return jwt.sign({ ...defaultPayload, ...payload }, process.env.JWT_SECRET, {
+    expiresIn: "1h"
+  });
+};
+
+// Create invalid token using random string
+export const createInvalidToken = () => {
+  return `invalid-token-${Math.random().toString(36)}`;
+};

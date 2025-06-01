@@ -12,12 +12,9 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockNavigate
 }));
 
-jest.mock("../src/context/AuthContext", () => {
-  const mockModule = jest.requireActual("./mocks/AuthContext");
-  return {
-    useAuth: mockModule.useAuth
-  };
-});
+jest.mock("../src/hooks/useAuth", () => ({
+  useAuth: () => jest.requireActual("./mocks/AuthContext").useAuth()
+}));
 
 describe("Header Component", () => {
   beforeEach(() => {

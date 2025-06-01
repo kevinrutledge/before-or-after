@@ -7,6 +7,7 @@
     "test": "jest --config=jest.config.cjs",
     "test:watch": "jest --watch --config=jest.config.cjs",
     "test:coverage": "jest --coverage --config=jest.config.cjs",
+    "test:file": "jest --config=jest.config.cjs",
     "dev": "nodemon --experimental-json-modules server.js",
     "build": "mkdir -p public && echo \"Before or After API\" > public/index.html",
     "start": "node --experimental-json-modules server.js",
