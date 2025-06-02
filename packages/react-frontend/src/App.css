@@ -675,13 +675,20 @@ body.game-page {
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.1rem;
+  margin-bottom: 0.3rem;
 }
 
 .form-group label {
@@ -717,7 +724,7 @@ body.game-page {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: var(--secondary);
   display: flex;
   align-items: center;
@@ -786,25 +793,79 @@ body.game-page {
 
 @media (max-width: 480px) {
   .login-page {
-    max-width: 100%;
+    max-width: 100vw;
     margin: 0;
-    padding: 1.5rem;
-    height: 100vh;
+    padding: 0.5rem 0.5rem 160px 0.5rem;
     border-radius: 0;
+    box-shadow: none;
+    min-height: auto;
+    height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-y: visible;
+    padding-bottom: 3.5rem;
+  }
+
+  .login-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
   }
 
   .login-form {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
+    gap: 0.1rem;
   }
 
-  .login-button {
-    margin-top: auto;
-    margin-bottom: 2rem;
+  .form-group {
+    gap: 0.05rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .form-group label {
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    font-size: 0.95rem;
+    padding: 0.4rem;
+    min-height: 44px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .login-button,
+  .cancel-button {
+    width: 100%;
+    min-height: 44px;
+    font-size: 1rem;
+    padding: 0.7rem;
+  }
+
+  .password-toggle {
+    font-size: 1.3rem;
+    right: 8px;
+    padding: 0 0.5rem;
+    height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .login-links {
+    margin-top: 0.5rem;
+    margin-bottom: 3.5rem;
+  }
+
+  body,
+  .app-container,
+  .main-content {
+    height: auto !important;
+    min-height: auto !important;
+    overflow-y: visible !important;
   }
 }
 
@@ -2230,8 +2291,18 @@ body.game-page {
     margin-left: 1rem;
   }
 
-  .bottom-nav .nav-items {
-    padding: 0 0.5rem;
+  .mobile-only.bottom-nav {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+  }
+  .mobile-only.bottom-nav .nav-items {
+    height: 36px !important;
+    padding: 0 !important;
+  }
+  .mobile-only.bottom-nav .logo-button,
+  .mobile-only.bottom-nav .account-button {
+    padding: 2px !important;
   }
 }
 
