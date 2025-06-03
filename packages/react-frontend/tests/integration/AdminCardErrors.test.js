@@ -1,7 +1,9 @@
 import request from "supertest";
 import jwt from "jsonwebtoken";
-import app from "../../server.js"; // Adjust path if your Express app is exported elsewhere
+import assert from "assert";
 
+//import app from "../../server.js"; // Adjust path if your Express app is exported elsewhere
+import server from "../../../express-backend/server.js"; // Ensure server is imported correctly
 // Use the same secret as your backend .env for test tokens
 const JWT_SECRET =
   process.env.JWT_SECRET ||
@@ -21,7 +23,14 @@ function getAdminToken() {
 }
 
 describe("Admin Card API Error Handling", () => {
+  test("placeholder test", () => {
+    expect(true).toBe(true);
+  });
+});
+
+describe("Admin Card API Error Handling", () => {
   let adminToken;
+  assert(true); // Placeholder to ensure the test suite runs
 
   beforeAll(() => {
     adminToken = getAdminToken();

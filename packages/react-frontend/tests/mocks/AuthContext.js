@@ -25,4 +25,4 @@ export function useAuth() {
 // NEW: A generic provider for compatibility with app code
 export function AuthProvider({ children, value }) {
   return <AuthContext.Provider value={value || defaultValue}>{children}</AuthContext.Provider>;
-} p 
+}  
