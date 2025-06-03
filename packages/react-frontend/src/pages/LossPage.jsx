@@ -4,7 +4,7 @@ import PageContainer from "../components/PageContainer";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../hooks/useGame";
 import Background from "../components/Background";
-import {apiRequest} from "../utils/apiClient";
+import { apiRequest } from "../utils/apiClient";
 
 function LossPage() {
   const navigate = useNavigate();
@@ -38,57 +38,15 @@ function LossPage() {
     };
   }, [score]);
 
-  // Should add fallbacks for when the GIF is not found or loading fails
-  const fallbackGifs = [
-    {
-      min: 0,
-      max: 2,
-      url: "/assets/loss-bad.gif",
-      alt: "Bad loss reaction GIF"
-    },
-    {
-      min: 3,
-      max: 4,
-      url: "/assets/loss-frustrated.gif",
-      alt: "Frustrated reaction GIF"
-    },
-    {
-      min: 5,
-      max: 7,
-      url: "/assets/loss-decent.gif",
-      alt: "Decent reaction GIF"
-    },
-    {
-      min: 8,
-      max: 11,
-      url: "/assets/loss-satisfied.gif",
-      alt: "Satisfied reaction GIF"
-    },
-    {
-      min: 12,
-      max: 1000,
-      url: "/assets/loss-ecstatic.gif",
-      alt: "Ecstatic reaction GIF"
-    }
-  ];
-
-  function getFallbackGif(score) {
-    return (
-      fallbackGifs.find((g) => score >= g.min && score <= g.max) ||
-      fallbackGifs[0]
-    );
-  }
-
   let gifContent;
   if (loading) {
     gifContent = <div className="loss-gif-large">Loading reaction...</div>;
   } else if (error || !gif?.imageUrl) {
-    const fallback = getFallbackGif(score);
     gifContent = (
       <img
         className="loss-gif-large"
-        src={fallback.url}
-        alt={fallback.alt}
+        src="/assets/loss.webp"
+        alt="Loss reaction"
         draggable={false}
       />
     );
