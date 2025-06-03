@@ -9,10 +9,10 @@ function ImageUpload({ onFileSelect, onError, selectedFile }) {
   const handleFileSelect = (file) => {
     if (!file) return;
 
-    // Validate file type
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    // Validate file type - NOW INCLUDES GIF
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
     if (!allowedTypes.includes(file.type)) {
-      onError("Invalid file type. Only JPEG, PNG, and WebP allowed");
+      onError("Invalid file type. Only JPEG, PNG, WebP, and GIF allowed");
       return;
     }
 
@@ -84,7 +84,7 @@ function ImageUpload({ onFileSelect, onError, selectedFile }) {
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/jpeg,image/png,image/webp,image/gif"
         onChange={handleInputChange}
         style={{ display: "none" }}
       />
@@ -149,7 +149,7 @@ function ImageUpload({ onFileSelect, onError, selectedFile }) {
               </svg>
             </div>
             <p className="upload-text">Click or drag image here</p>
-            <p className="upload-hint">JPEG, PNG, or WebP • Max 10MB</p>
+            <p className="upload-hint">JPEG, PNG, WebP, or GIF • Max 10MB</p>
           </div>
         )}
       </div>

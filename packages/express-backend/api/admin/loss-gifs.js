@@ -86,13 +86,17 @@ export default async function handler(req, res) {
       if (fileData.image) {
         validateImageFile(fileData.image);
 
-        const { thumbnail, large } = await processImage(
+        const processed = await processImage(
           fileData.image.buffer,
           "scale",
           fileData.image.mimetype
         );
 
-        updatedUrls = await uploadLossGifImagePair(thumbnail, large);
+        updatedUrls = await uploadLossGifImagePair(
+          processed.thumbnail,
+          processed.large,
+          processed.originalMimeType
+        );
       }
 
       // Build update object

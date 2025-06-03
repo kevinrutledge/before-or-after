@@ -17,12 +17,21 @@ const s3Client = new S3Client({
  * Upload both thumbnail and large image versions to S3.
  * Returns URLs for both uploaded files.
  */
-export async function uploadImagePair(thumbnailBuffer, largeBuffer) {
+export async function uploadImagePair(
+  thumbnailBuffer,
+  largeBuffer,
+  originalMimeType = "image/webp"
+) {
   const fileId = randomUUID();
   const bucketName = process.env.S3_BUCKET_NAME;
 
+  // Determine file extension and content type for large image
+  const isGif = originalMimeType === "image/gif";
+  const largeExtension = isGif ? "gif" : "webp";
+  const largeContentType = isGif ? "image/gif" : "image/webp";
+
   try {
-    // Upload thumbnail
+    // Upload thumbnail (always WebP)
     const thumbnailKey = `thumbnails/${fileId}-thumb.webp`;
     await s3Client.send(
       new PutObjectCommand({
@@ -34,14 +43,14 @@ export async function uploadImagePair(thumbnailBuffer, largeBuffer) {
       })
     );
 
-    // Upload large image
-    const largeKey = `images/${fileId}-large.webp`;
+    // Upload large image with proper type
+    const largeKey = `images/${fileId}-large.${largeExtension}`;
     await s3Client.send(
       new PutObjectCommand({
         Bucket: bucketName,
         Key: largeKey,
         Body: largeBuffer,
-        ContentType: "image/webp",
+        ContentType: largeContentType,
         CacheControl: "max-age=31536000" // 1 year cache
       })
     );
@@ -62,12 +71,21 @@ export async function uploadImagePair(thumbnailBuffer, largeBuffer) {
  * Upload loss GIF thumbnail and large image versions to dedicated folders.
  * Returns URLs for both uploaded files.
  */
-export async function uploadLossGifImagePair(thumbnailBuffer, largeBuffer) {
+export async function uploadLossGifImagePair(
+  thumbnailBuffer,
+  largeBuffer,
+  originalMimeType = "image/webp"
+) {
   const fileId = randomUUID();
   const bucketName = process.env.S3_BUCKET_NAME;
 
+  // Determine file extension and content type for large image
+  const isGif = originalMimeType === "image/gif";
+  const largeExtension = isGif ? "gif" : "webp";
+  const largeContentType = isGif ? "image/gif" : "image/webp";
+
   try {
-    // Upload thumbnail to loss-gifs-thumbnails folder
+    // Upload thumbnail to loss-gifs-thumbnails folder (always WebP)
     const thumbnailKey = `loss-gifs-thumbnails/${fileId}-thumb.webp`;
     await s3Client.send(
       new PutObjectCommand({
@@ -79,14 +97,14 @@ export async function uploadLossGifImagePair(thumbnailBuffer, largeBuffer) {
       })
     );
 
-    // Upload large image to loss-gifs folder
-    const largeKey = `loss-gifs/${fileId}-large.webp`;
+    // Upload large image to loss-gifs folder with proper type
+    const largeKey = `loss-gifs/${fileId}-large.${largeExtension}`;
     await s3Client.send(
       new PutObjectCommand({
         Bucket: bucketName,
         Key: largeKey,
         Body: largeBuffer,
-        ContentType: "image/webp",
+        ContentType: largeContentType,
         CacheControl: "max-age=31536000" // 1 year cache
       })
     );

@@ -43,7 +43,8 @@ export async function processImage(
       // Return original GIF buffer for animation preservation
       return {
         thumbnail: thumbnailBuffer,
-        large: imageBuffer
+        large: imageBuffer,
+        originalMimeType: mimeType
       };
     }
 
@@ -60,7 +61,8 @@ export async function processImage(
 
     return {
       thumbnail: thumbnailBuffer,
-      large: largeBuffer
+      large: largeBuffer,
+      originalMimeType: "image/webp"
     };
   } catch (error) {
     throw new Error(`Image processing failed: ${error.message}`);
