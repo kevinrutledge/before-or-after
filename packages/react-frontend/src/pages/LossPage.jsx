@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
-import useIsMobile from "../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../hooks/useGame";
 import Background from "../components/Background";
 import {apiRequest} from "../utils/apiClient";
 
 function LossPage() {
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { score } = useGame();
 
