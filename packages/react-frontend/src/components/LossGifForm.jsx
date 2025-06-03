@@ -9,8 +9,8 @@ import ImageUpload from "./ImageUpload";
 function LossGifForm({ lossGif, onClose }) {
   const [formData, setFormData] = useState({
     category: lossGif.category || "",
-    streakThreshold: lossGif.streakThreshold || "",
-    imageUrl: lossGif.imageUrl || ""
+    scoreRange: lossGif.scoreRange || "",
+    streakThreshold: lossGif.streakThreshold || ""
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -23,7 +23,8 @@ function LossGifForm({ lossGif, onClose }) {
    */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const newFormData = { ...formData, [name]: value };
+    setFormData(newFormData);
   };
 
   /**
@@ -50,30 +51,31 @@ function LossGifForm({ lossGif, onClose }) {
     setUploadError("");
 
     // Validate required fields with proper trimming
-    const { category, streakThreshold, imageUrl } = formData;
+    const { category, scoreRange, streakThreshold } = formData;
     const trimmedCategory = (category || "").trim();
-    const trimmedImageUrl = (imageUrl || "").trim();
+    const trimmedScoreRange = (scoreRange || "").trim();
 
-    if (!trimmedCategory || !streakThreshold || !trimmedImageUrl) {
-      setUploadError("All fields are required");
+    if (!trimmedCategory || !streakThreshold || !trimmedScoreRange) {
+      const errorMsg = "All fields are required";
+      setUploadError(errorMsg);
       return;
     }
 
-    updateMutation.mutate(
-      {
-        lossGifId: lossGif._id,
-        formData,
-        selectedFile
+    // Call mutation with payload
+    const mutationPayload = {
+      lossGifId: lossGif._id,
+      formData,
+      selectedFile
+    };
+
+    updateMutation.mutate(mutationPayload, {
+      onSuccess: () => {
+        onClose();
       },
-      {
-        onSuccess: () => {
-          onClose();
-        },
-        onError: (error) => {
-          setUploadError(error.message || "Failed to update loss GIF");
-        }
+      onError: (error) => {
+        setUploadError(error.message || "Failed to update loss GIF");
       }
-    );
+    });
   };
 
   return (
@@ -94,6 +96,19 @@ function LossGifForm({ lossGif, onClose }) {
         </div>
 
         <div className="form-group">
+          <label htmlFor="scoreRange">Score Range</label>
+          <input
+            type="text"
+            id="scoreRange"
+            name="scoreRange"
+            value={formData.scoreRange}
+            onChange={handleInputChange}
+            placeholder="< 2, 2 - 4, ≥ 12, etc."
+            required
+          />
+        </div>
+
+        <div className="form-group">
           <label htmlFor="streakThreshold">Streak Threshold</label>
           <input
             type="number"
@@ -102,19 +117,6 @@ function LossGifForm({ lossGif, onClose }) {
             min="0"
             value={formData.streakThreshold}
             onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="imageUrl">Current Image URL</label>
-          <input
-            type="url"
-            id="imageUrl"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleInputChange}
-            placeholder="https://..."
             required
           />
         </div>
