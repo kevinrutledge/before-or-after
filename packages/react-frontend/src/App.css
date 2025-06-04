@@ -1117,6 +1117,12 @@ footer {
 }
 
 /* Admin Dashboard Header Flex Layout */
+.admin-section-header {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+}
+
 .admin-header-flex {
   display: flex;
   align-items: center;

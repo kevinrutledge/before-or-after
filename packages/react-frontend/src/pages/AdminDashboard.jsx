@@ -178,9 +178,11 @@ function AdminDashboard() {
 
           {/* Loss GIF Management Section - Fixed Categories */}
           <section style={{ marginBottom: "3rem" }}>
-            <h2 style={{ marginBottom: "2rem", color: "var(--text-color)" }}>
-              Loss GIF Management
-            </h2>
+            <div className="admin-section-header">
+              <h2 style={{ marginBottom: "2rem", color: "var(--text-color)" }}>
+                Loss GIF Management
+              </h2>
+            </div>
 
             {lossGifsError && (
               <div className="admin-error">
@@ -231,38 +233,40 @@ function AdminDashboard() {
 
           {/* Card Management Section */}
           <section>
-            <div className="admin-card-management-header">
-              <h2 style={{ color: "var(--text-color)", margin: 0 }}>
-                Card Management
-              </h2>
+            <div className="admin-section-header">
+              <div className="admin-card-management-header">
+                <h2 style={{ color: "var(--text-color)", margin: 0 }}>
+                  Card Management
+                </h2>
 
-              {/* Search bar positioned on same line */}
-              <div className="admin-card-search-container">
-                <div className="admin-search-bar-cards">
-                  <svg
-                    className="admin-search-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder="Search by title, category, or year"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="admin-search-input-cards"
-                  />
-                  {searchQuery && (
-                    <button
-                      className="admin-search-clear-cards"
-                      onClick={handleClearSearch}
-                      aria-label="Clear search">
-                      ×
-                    </button>
-                  )}
+                {/* Search bar positioned on same line */}
+                <div className="admin-card-search-container">
+                  <div className="admin-search-bar-cards">
+                    <svg
+                      className="admin-search-icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Search by title, category, or year"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="admin-search-input-cards"
+                    />
+                    {searchQuery && (
+                      <button
+                        className="admin-search-clear-cards"
+                        onClick={handleClearSearch}
+                        aria-label="Clear search">
+                        ×
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
