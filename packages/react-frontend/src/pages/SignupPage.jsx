@@ -185,7 +185,6 @@ function SignupPage() {
                 Sign In
               </Link>
             </div>
-            <div style={{ height: "64px" }} aria-hidden="true"></div>
           </form>
         </div>
       </PageContainer>

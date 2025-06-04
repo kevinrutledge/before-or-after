@@ -188,6 +188,7 @@ function GamePage() {
               className="current-card"
               title={currentCard?.title}
               imageUrl={currentCard?.imageUrl}
+              sourceUrl={currentCard?.sourceUrl}
               year={currentCard?.year}
               month={currentCard?.month}
               isReference={false}>
@@ -218,6 +219,7 @@ function GamePage() {
               className="reference-card"
               title={referenceCard?.title}
               imageUrl={referenceCard?.imageUrl}
+              sourceUrl={referenceCard?.sourceUrl}
               year={referenceCard?.year}
               month={referenceCard?.month}
               isReference={true}

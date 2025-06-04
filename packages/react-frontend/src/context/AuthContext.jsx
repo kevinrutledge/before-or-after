@@ -18,7 +18,6 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const checkAuthStatus = () => {
       const authenticated = checkAuth();
-
       setIsAuthenticated(authenticated);
       setUser(authenticated ? getCurrentUser() : null);
       setIsLoading(false);
@@ -32,11 +31,15 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener("storage", checkAuthStatus);
   }, []);
 
-  // Login function
-  const login = (token) => {
+  const login = (token, userData = null) => {
     setAuthToken(token);
     setIsAuthenticated(true);
-    setUser(getCurrentUser());
+
+    if (userData) {
+      setUser(userData);
+    } else {
+      setUser(getCurrentUser());
+    }
   };
 
   // Logout function
