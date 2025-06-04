@@ -17,6 +17,7 @@ body {
 /* Create full-height flexible container. */
 .layout {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -30,7 +31,7 @@ body {
 /* Center content with consistent width constraints. */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: none;
   margin: 0 auto;
   padding: 0 0.75rem; /* Mobile padding by default */
 }
