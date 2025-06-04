@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from "url";
 
 let dirName;
 try {
-  dirName = path.dirname(fileURLToPath(import.meta.url));
+  dirName = __dirname || process.cwd();
 } catch {
   dirName = process.cwd();
 }
