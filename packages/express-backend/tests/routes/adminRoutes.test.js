@@ -25,6 +25,8 @@ describe("Admin Routes", () => {
   beforeAll(async () => {
     await startMemoryServer();
 
+    process.env.JWT_SECRET = "test-jwt-secret-key";
+
     // Create Express app with admin routes
     app = express();
     app.use(express.json());
