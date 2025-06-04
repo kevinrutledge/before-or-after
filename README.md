@@ -1,8 +1,8 @@
 # Before or After
 
 <div align="center">
-  <img src="packages/react-frontend/public/assets/logo.svg" alt="Before or After Logo" width="200"/>
-  <br/>
+  <img src="packages/react-frontend/public/assets/logo.svg" alt="Before or After Logo" width="300"/>
+  <br/><br/>
   <a href="https://github.com/kevinrutledge/before-or-after/actions/workflows/ci.yml">
     <img src="https://github.com/kevinrutledge/before-or-after/actions/workflows/ci.yml/badge.svg" alt="CI Status">
   </a>
