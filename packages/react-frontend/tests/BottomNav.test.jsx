@@ -3,7 +3,7 @@ import { jest } from "@jest/globals";
 import { describe, test, expect, beforeEach } from "@jest/globals";
 import BottomNav from "../src/components/BottomNav";
 import { MemoryRouter } from "react-router-dom";
-import { GameProvider } from "../src/context/GameContext";
+import { GameProvider } from "../src/context/GameProvider";
 import { MockAuthProvider } from "./mocks/AuthContext";
 
 const mockNavigate = jest.fn();

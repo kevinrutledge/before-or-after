@@ -9,7 +9,7 @@ import {
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import GamePage from "../../src/pages/GamePage";
-import { GameProvider } from "../../src/context/GameContext";
+import { GameProvider } from "../../src/context/GameProvider";
 import { MockAuthProvider } from "../mocks/AuthContext";
 
 // Mock deck utils to control card order

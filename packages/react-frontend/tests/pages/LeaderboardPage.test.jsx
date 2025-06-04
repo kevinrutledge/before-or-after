@@ -4,7 +4,7 @@ import { describe, test, expect, beforeEach } from "@jest/globals";
 import { MemoryRouter } from "react-router-dom";
 import LeaderboardPage from "../../src/pages/LeaderboardPage";
 import { MockAuthProvider } from "../mocks/AuthContext";
-import { GameProvider } from "../../src/context/GameContext";
+import { GameProvider } from "../../src/context/GameProvider";
 
 // Mock API client
 jest.mock("../../src/utils/apiClient", () => ({

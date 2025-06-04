@@ -4,7 +4,7 @@ import { describe, test, expect, beforeEach } from "@jest/globals";
 import { MemoryRouter } from "react-router-dom";
 import Header from "../../src/components/Header";
 import BottomNav from "../../src/components/BottomNav";
-import { GameProvider } from "../../src/context/GameContext";
+import { GameProvider } from "../../src/context/GameProvider";
 import { MockAuthProvider } from "../mocks/AuthContext";
 
 // Mock navigate function
