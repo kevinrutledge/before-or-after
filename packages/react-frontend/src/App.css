@@ -256,7 +256,6 @@ footer {
   display: block;
   margin: 0 auto 1.5rem auto;
   border-radius: 1rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   object-fit: contain;
   background: none;
 }
@@ -290,8 +289,8 @@ footer {
 }
 
 .play-again-button {
-  flex: 1 1 0;
-  padding: 0.9rem 0;
+  flex: 2 1 0;
+  padding: 0.75rem 0;
   font-size: 1.1rem;
   border: none;
   border-radius: 0.5rem;
@@ -313,13 +312,24 @@ footer {
   transform: translateY(-2px) scale(1.03);
 }
 
-.back-home-button {
-  background: var(--accent-color);
-  color: #fff;
+.loss-buttons-row .back-home-button {
+  flex: 1 1 0 !important;
+  min-width: 120px !important;
+  padding: 0.9rem 0 !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+  background: #f3f4f6 !important;
+  color: var(--text-color) !important;
+  border: 1px solid #d1d5db !important;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 .back-home-button:hover {
-  background: #d97706;
+  background-color: #e5e7eb;
   transform: translateY(-2px) scale(1.03);
 }
 
@@ -338,6 +348,8 @@ footer {
     max-width: 95vw;
     height: 160px;
     font-size: 1rem;
+    box-shadow: none;
+    border-radius: 1rem;
   }
   .score-value {
     font-size: 2rem;
@@ -614,21 +626,24 @@ footer {
 }
 
 .back-home-button {
-  font-weight: 100;
-  font-size: 0.9rem;
-  background-color: var(--accent-color);
-  color: black !important;
-  border: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  width: auto;
-  max-width: 120px;
-  max-height: 50px;
-  height: auto;
+  flex: 0 0 auto;
+  min-width: 120px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f3f4f6;
+  color: var(--text-color);
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 .back-home-button:hover {
-  background-color: #d97706;
-  transform: scale(1.05);
+  background: #e5e7eb;
+  transform: translateY(-2px) scale(1.03);
 }
 
 .back-home-button:active {
@@ -2438,13 +2453,12 @@ footer {
     height: 44px;
     padding: 8px 20px;
   }
-
-  .mobile-score-pill .score-label {
-    font-size: 0.7rem;
+  ore-val .mobile-score-pill .score-label {
+    font-size: 1.2rem;
   }
 
   .mobile-score-pill .score-value {
-    font-size: 0.9rem;
+    font-size: 1.5rem;
   }
 }
 
@@ -2563,10 +2577,10 @@ footer {
   }
 
   .score-label {
-    font-size: 0.7rem;
+    font-size: 1.2rem;
   }
 
   .score-value {
-    font-size: 0.9rem;
+    font-size: 2.5rem;
   }
 }

@@ -58,5 +58,5 @@ weeks, we worked as a team to deploy this web application.
   relationships
 - [Contributing Guidelines](docs/CONTRIBUTING.md) - Learn how to contribute code
   and submit pull requests
-- [Authentication Flows](docs/README.md) - View authentication flows for
-  signup and sign-in
+- [Authentication Flows](docs/README.md) - View authentication flows for signup
+  and sign-in
