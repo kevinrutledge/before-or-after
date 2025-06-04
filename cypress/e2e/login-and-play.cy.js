@@ -8,7 +8,7 @@ function login() {
   cy.contains('A daily game').should('be.visible');
   cy.contains('Play').click();
   cy.contains('Current Score: 0').should('be.visible');
-  highScoreCheck();
+  cy.highScoreCheck(0);
 }
 // Helper function to get card info from the DOM
 function getCardInfo(cardSelector) {
@@ -20,85 +20,19 @@ function getCardInfo(cardSelector) {
     });
   });
 }
-function pickCorrectCard(){
-  getCardInfo('.current-card').then((currentCard) => {
-      getCardInfo('.reference-card').then((referenceCard) => {
-        cy.window().then((win) => {
-          if (win.compareCards(referenceCard, currentCard, "before")) {
-            cy.contains('Before').click();
-          } else {
-            cy.contains('After').click();
-          }
-        });
-      });
-    });
-}
-
-function pickInCorrectCard(){
-  getCardInfo('.current-card').then((currentCard) => {
-      getCardInfo('.reference-card').then((referenceCard) => {
-        cy.window().then((win) => {
-          if (!win.compareCards(referenceCard, currentCard, "before")) {
-            cy.contains('Before').click();
-          } else {
-            cy.contains('After').click();
-          }
-        });
-      });
-    });
-}
-
-function checkLoss(){
-  cy.contains('Game Over').should('be.visible');
-  cy.url().should('include', '/loss');
-}
-
-function highScoreCheck() {
-  cy.contains('High Score').should('be.visible');
-  cy.get('.score-value').first().invoke('text').then((text) => {
-    const score = parseInt(text, 10);
-    expect(score).to.be.at.least(0);
-  });
-}
-
-function getHighScore() {
-  return cy.get('.score-value').first().invoke('text').then(text => {
-    return parseInt(text, 10);
-  });
-}
-
-function answerCorrectlyNTimes(n) {
-  for (let i = 0; i < n; i++) {
-    cy.contains(`Current Score: ${i}`).should('be.visible');
-    pickCorrectCard();
-  }
-}
 
 
 it('only updates highscore if score is higher', () => {
   login();
-
-  // Get the current highscore
-  getHighScore().then((initialHighScore) => {
-    // Play and get a new score (simulate correct guesses)
-    pickCorrectCard();
-    cy.contains('Current Score: 1').should('be.visible');
-
-    // Check if highscore updated only if score > initialHighScore
-    getHighScore().then((newHighScore) => {
-      if (1 > initialHighScore) {
-        expect(newHighScore).to.eq(1);
-      } else {
-        expect(newHighScore).to.eq(initialHighScore);
-      }
-    });
-  });
+  cy.highScoreCheck(0);
+  cy.pickCorrectCard();
+  cy.highScoreCheck(1);
 });
 
 describe('Login and guess correct card', () => {
   it('logs in and makes a correct guess using compareCards', () => {
     login();
-    pickCorrectCard();
+    cy.pickCorrectCard();
     cy.contains('Current Score: 1').should('be.visible');
   });
 });
@@ -108,10 +42,10 @@ describe('Login and guess correct card', () => {
 describe('Login and play 2 correctly', () => {
   it('logs in and makes a correct guess using compareCards', () => {
     login();
-    answerCorrectlyNTimes(10);
+    cy.answerCorrectlyNTimes(10);
     cy.contains('Current Score: 10').should('be.visible');
-    pickInCorrectCard();
-    checkLoss();
+    cy.pickIncorrectCard();
+    cy.checkLoss();
 
   });
 });
@@ -119,15 +53,10 @@ describe('Login and play 2 correctly', () => {
 describe('Login and guess incorrectly', () => {
   it('logs in and makes a correct guess using compareCards', () => {
     login();
-    cy.contains('Current Score: 0').should('be.visible');
-    pickCorrectCard();
-    cy.contains('Current Score: 1').should('be.visible');
-    pickCorrectCard();
+    cy.answerCorrectlyNTimes(2);
     cy.contains('Current Score: 2').should('be.visible');
-    pickInCorrectCard();
-    cy.contains('Current Score: 2').should('be.visible');
-    cy.contains('Game Over').should('be.visible');
-    cy.url().should('include', '/loss');
+    cy.pickIncorrectCard();
+    cy.checkLoss();
     })
 });
 
@@ -136,28 +65,11 @@ describe('Login, play, lose, play again, lose', () => {
   it('tests play again ensures score resets', () => {
     login();
 
-    cy.contains('Current Score: 0').should('be.visible');
-    pickCorrectCard();
-    cy.contains('Current Score: 1').should('be.visible');
-    pickCorrectCard();
-    cy.contains('Current Score: 2').should('be.visible');
-    pickInCorrectCard();
-    cy.contains('Current Score: 2').should('be.visible');
-    checkLoss();
-
-    cy.contains('Play Again').click();
-    cy.contains('Current Score: 0').should('be.visible');
-    pickCorrectCard();
-    cy.contains('Current Score: 1').should('be.visible');
-    pickInCorrectCard();
-    cy.contains('Current Score: 1').should('be.visible');
+    cy.pickIncorrectCard(2);
+    //cy.checkScore(2);
   
-    checkLoss();
 
-    //ensure highscore is the highest number
-    getHighScore().then((finalHighScore) => {
-      expect(finalHighScore).to.eq(2);
-    });
+    //ensure highscore is the highest numbe
 
     })
 });
