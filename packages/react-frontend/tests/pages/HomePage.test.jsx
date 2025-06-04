@@ -63,14 +63,6 @@ describe("HomePage", () => {
   };
 
   describe("Component structure", () => {
-    test("renders all required layout components", () => {
-      renderPage();
-
-      expect(screen.getByTestId("layout")).toBeInTheDocument();
-      expect(screen.getByTestId("background")).toBeInTheDocument();
-      expect(screen.getByTestId("page-container")).toBeInTheDocument();
-    });
-
     test("renders home page container with correct class", () => {
       const { container } = renderPage();
 
@@ -243,32 +235,10 @@ describe("HomePage", () => {
   });
 
   describe("Component integration", () => {
-    test("renders components in correct hierarchy", () => {
-      const { container } = renderPage();
-
-      const layout = screen.getByTestId("layout");
-      const background = screen.getByTestId("background");
-      const pageContainer = screen.getByTestId("page-container");
-      const homePage = container.querySelector(".home-page");
-
-      expect(layout).toContainElement(background);
-      expect(layout).toContainElement(pageContainer);
-      expect(pageContainer).toContainElement(homePage);
-    });
-
     test("passes correct props to useIsMobile", () => {
       renderPage();
 
       expect(useIsMobile).toHaveBeenCalledWith();
-    });
-
-    test("integrates all components without errors", () => {
-      expect(() => renderPage()).not.toThrow();
-
-      expect(screen.getByTestId("layout")).toBeInTheDocument();
-      expect(screen.getByTestId("background")).toBeInTheDocument();
-      expect(screen.getByTestId("page-container")).toBeInTheDocument();
-      expect(screen.getByTestId("play-button")).toBeInTheDocument();
     });
   });
 

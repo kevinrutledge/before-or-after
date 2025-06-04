@@ -40,9 +40,7 @@ jest.mock("../src/context/AuthContext", () => {
 import useIsMobile from "../src/hooks/useIsMobile";
 
 describe("Layout component", () => {
-  // This test is simplified to avoid conditional logic testing
   test("Layout renders children correctly", () => {
-    // Set a default mock return value for useIsMobile
     useIsMobile.mockReturnValue(false);
 
     render(
@@ -55,13 +53,39 @@ describe("Layout component", () => {
       </MemoryRouter>
     );
 
+    // Test that the layout wrapper exists with correct testid
+    expect(screen.getByTestId("layout")).toBeInTheDocument();
+
     // Test that the children are rendered correctly
     expect(screen.getByTestId("test-content")).toBeInTheDocument();
 
     // Test that the content is wrapped in a page container
     expect(screen.getByTestId("page-container")).toBeInTheDocument();
 
-    // Test that either Header or BottomNav is rendered (in this case, Header since useIsMobile returns false)
+    // Test that Header is rendered when not mobile
     expect(screen.getByTestId("header")).toBeInTheDocument();
+  });
+
+  test("Layout renders mobile navigation when on mobile", () => {
+    useIsMobile.mockReturnValue(true);
+
+    render(
+      <MemoryRouter>
+        <MockAuthProvider>
+          <Layout>
+            <div data-testid="test-content">Test content</div>
+          </Layout>
+        </MockAuthProvider>
+      </MemoryRouter>
+    );
+
+    // Test that the layout wrapper exists
+    expect(screen.getByTestId("layout")).toBeInTheDocument();
+
+    // Test that BottomNav is rendered when mobile
+    expect(screen.getByTestId("bottom-nav")).toBeInTheDocument();
+
+    // Test that Header is not rendered when mobile
+    expect(screen.queryByTestId("header")).not.toBeInTheDocument();
   });
 });

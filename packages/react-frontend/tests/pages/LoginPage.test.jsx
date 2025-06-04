@@ -403,14 +403,6 @@ describe("LoginPage", () => {
     resolvePromise({ token: "test-token" });
   });
 
-  test("renders with correct component structure", () => {
-    renderPage();
-
-    expect(screen.getByTestId("layout")).toBeInTheDocument();
-    expect(screen.getByTestId("background")).toBeInTheDocument();
-    expect(screen.getByTestId("page-container")).toBeInTheDocument();
-  });
-
   test("applies correct CSS classes", () => {
     const { container } = renderPage();
 

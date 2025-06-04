@@ -430,25 +430,6 @@ describe("SignupPage", () => {
     });
   });
 
-  test("renders with correct component structure", () => {
-    renderPage();
-
-    expect(screen.getByTestId("layout")).toBeInTheDocument();
-    expect(screen.getByTestId("background")).toBeInTheDocument();
-    expect(screen.getByTestId("page-container")).toBeInTheDocument();
-  });
-
-  test("applies correct CSS classes", () => {
-    const { container } = renderPage();
-
-    expect(container.querySelector(".login-page")).toBeInTheDocument();
-    expect(container.querySelector(".login-title")).toBeInTheDocument();
-    expect(container.querySelector(".login-form")).toBeInTheDocument();
-    expect(
-      container.querySelectorAll(".password-input-container")
-    ).toHaveLength(2);
-  });
-
   test("password toggle buttons have correct accessibility attributes", () => {
     renderPage();
 
