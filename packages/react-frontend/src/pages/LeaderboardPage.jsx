@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { apiRequest } from "../utils/apiClient";
-import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import Background from "../components/Background";
 
@@ -32,7 +31,7 @@ function LeaderboardPage() {
   // Show loading state while fetching data
   if (isLoading) {
     return (
-      <Layout>
+      <div>
         <Background />
         <PageContainer>
           <div className="leaderboard-page">
@@ -40,14 +39,14 @@ function LeaderboardPage() {
             <div className="loading">Loading leaderboard...</div>
           </div>
         </PageContainer>
-      </Layout>
+      </div>
     );
   }
 
   // Show error state when API request fails
   if (error) {
     return (
-      <Layout>
+      <div>
         <Background />
         <PageContainer>
           <div className="leaderboard-page">
@@ -57,12 +56,12 @@ function LeaderboardPage() {
             </div>
           </div>
         </PageContainer>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
+    <div>
       <Background />
       <PageContainer>
         <div className="leaderboard-page">
@@ -87,7 +86,7 @@ function LeaderboardPage() {
           )}
         </div>
       </PageContainer>
-    </Layout>
+    </div>
   );
 }
 

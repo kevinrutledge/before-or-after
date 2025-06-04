@@ -1,7 +1,11 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import rateLimit from "express-rate-limit";
-import { createUser, validateUser } from "../../models/User.js";
+import {
+  createUser,
+  validateUser,
+  validateUsername
+} from "../../models/User.js";
 
 const router = express.Router();
 
@@ -20,16 +24,18 @@ const authLimiter = rateLimit({
  * Generate JWT auth token from user credentials.
  */
 router.post("/login", authLimiter, async (req, res) => {
-  const { email, password } = req.body;
+  const { emailOrUsername, password } = req.body;
 
   // Validate required credentials
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password required" });
+  if (!emailOrUsername || !password) {
+    return res
+      .status(400)
+      .json({ message: "Email/username and password required" });
   }
 
   try {
     // Validate user
-    const result = await validateUser(email, password);
+    const result = await validateUser(emailOrUsername, password);
 
     if (!result.success) {
       return res.status(401).json({ message: result.message });
@@ -39,13 +45,12 @@ router.post("/login", authLimiter, async (req, res) => {
     const token = jwt.sign(
       {
         email: result.user.email,
+        username: result.user.username,
         role: result.user.role,
         id: result.user._id.toString()
       },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "24h"
-      }
+      { expiresIn: "24h" }
     );
 
     // Send token response
@@ -53,6 +58,7 @@ router.post("/login", authLimiter, async (req, res) => {
       token,
       user: {
         email: result.user.email,
+        username: result.user.username,
         role: result.user.role
       }
     });
@@ -63,31 +69,16 @@ router.post("/login", authLimiter, async (req, res) => {
 });
 
 /**
- * Register a new user.
+ * Register new user with email, username, and password.
  */
 router.post("/signup", authLimiter, async (req, res) => {
-  const { email, password } = req.body;
+  const { email, username, password } = req.body;
 
-  // Validate required fields
-  if (!email || !password) {
-    return res.status(400).json({ message: "Email and password required" });
-  }
-
-  // Basic email validation
-  if (!email.includes("@") || email.length > 254) {
-    return res.status(400).json({ message: "Invalid email format" });
-  }
-
-  // Check if email is already registered
-  const emailParts = email.split("@");
-  if (
-    emailParts.length !== 2 ||
-    !emailParts[0] ||
-    !emailParts[1] ||
-    !emailParts[1].includes(".") ||
-    emailParts[1].endsWith(".")
-  ) {
-    return res.status(400).json({ message: "Invalid email format" });
+  // Validate required fields first
+  if (!email?.trim() || !username?.trim() || !password?.trim()) {
+    return res
+      .status(400)
+      .json({ message: "Email, username, and password required" });
   }
 
   // Password strength validation
@@ -97,9 +88,34 @@ router.post("/signup", authLimiter, async (req, res) => {
       .json({ message: "Password must be at least 6 characters" });
   }
 
+  // Basic email validation
+  if (!email.includes("@") || email.length > 254) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+
+  // Validate email structure and reject injection attempts
+  const emailParts = email.split("@");
+  const invalidChars = /[<>'"${}`;\\]/;
+  if (
+    emailParts.length !== 2 ||
+    !emailParts[0] ||
+    !emailParts[1] ||
+    !emailParts[1].includes(".") ||
+    emailParts[1].endsWith(".") ||
+    invalidChars.test(email)
+  ) {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+
+  // Validate username format
+  const usernameValidation = validateUsername(username);
+  if (!usernameValidation.valid) {
+    return res.status(400).json({ message: usernameValidation.message });
+  }
+
   try {
-    // Create the user
-    const result = await createUser(email, password);
+    // Create user with email, username, and password
+    const result = await createUser(email, username, password);
 
     if (!result.success) {
       return res.status(400).json({ message: result.message });

@@ -10,7 +10,7 @@ function Layout({ children }) {
   const isMobile = useIsMobile();
 
   return (
-    <div className="layout">
+    <div className="layout" data-testid="layout">
       {isMobile ? <BottomNav /> : <Header />}
 
       <main className="main-content">

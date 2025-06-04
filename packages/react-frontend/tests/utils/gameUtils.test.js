@@ -1,142 +1,347 @@
-import { shuffleDeck, drawCard } from "../../src/utils/deckUtils";
+import { jest } from "@jest/globals";
 import { describe, test, expect, beforeEach } from "@jest/globals";
+import { compareCards } from "../../src/utils/gameUtils";
 
-describe("deckUtils", () => {
-  let testCards;
-
+describe("gameUtils utilities", () => {
   beforeEach(() => {
-    // Create fresh test data for each test
-    testCards = [
-      { id: 1, title: "Card A", year: 2000 },
-      { id: 2, title: "Card B", year: 2001 },
-      { id: 3, title: "Card C", year: 2002 },
-      { id: 4, title: "Card D", year: 2003 },
-      { id: 5, title: "Card E", year: 2004 }
-    ];
+    jest.clearAllMocks();
   });
 
-  describe("shuffleDeck", () => {
-    test("returns array with same length as input", () => {
-      const shuffled = shuffleDeck(testCards);
+  describe("compareCards", () => {
+    describe("Year-based comparisons", () => {
+      test("returns true when new card year is before old card year and guess is before", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 12 };
 
-      expect(shuffled).toHaveLength(testCards.length);
-    });
+        const result = compareCards(oldCard, newCard, "before");
 
-    test("preserves original array without mutation", () => {
-      const originalLength = testCards.length;
-      const firstCard = testCards[0];
+        expect(result).toBe(true);
+      });
 
-      shuffleDeck(testCards);
+      test("returns false when new card year is before old card year and guess is after", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 12 };
 
-      expect(testCards).toHaveLength(originalLength);
-      expect(testCards[0]).toBe(firstCard);
-    });
+        const result = compareCards(oldCard, newCard, "after");
 
-    test("contains all original cards", () => {
-      const shuffled = shuffleDeck(testCards);
+        expect(result).toBe(false);
+      });
 
-      testCards.forEach((card) => {
-        expect(shuffled).toContainEqual(card);
+      test("returns true when new card year is after old card year and guess is after", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2001, month: 1 };
+
+        const result = compareCards(oldCard, newCard, "after");
+
+        expect(result).toBe(true);
+      });
+
+      test("returns false when new card year is after old card year and guess is before", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2001, month: 1 };
+
+        const result = compareCards(oldCard, newCard, "before");
+
+        expect(result).toBe(false);
+      });
+
+      test("handles large year differences correctly", () => {
+        const oldCard = { year: 2000, month: 1 };
+        const newCard = { year: 1950, month: 12 };
+
+        const result = compareCards(oldCard, newCard, "before");
+
+        expect(result).toBe(true);
       });
     });
 
-    test("produces different order on multiple calls", () => {
-      // Run multiple shuffles to detect randomization
-      const shuffleResults = [];
-      for (let i = 0; i < 10; i++) {
-        shuffleResults.push(shuffleDeck(testCards));
-      }
+    describe("Month-based comparisons with same year", () => {
+      test("returns true when new card month is before old card month and guess is before", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2000, month: 4 };
 
-      // Check that at least one shuffle differs from original order
-      const hasRandomization = shuffleResults.some((shuffled) => {
-        return shuffled.some((card, index) => card.id !== testCards[index].id);
+        const result = compareCards(oldCard, newCard, "before");
+
+        expect(result).toBe(true);
       });
 
-      expect(hasRandomization).toBe(true);
-    });
+      test("returns false when new card month is before old card month and guess is after", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2000, month: 4 };
 
-    test("handles empty array", () => {
-      const shuffled = shuffleDeck([]);
+        const result = compareCards(oldCard, newCard, "after");
 
-      expect(shuffled).toHaveLength(0);
-      expect(Array.isArray(shuffled)).toBe(true);
-    });
+        expect(result).toBe(false);
+      });
 
-    test("handles single card array", () => {
-      const singleCard = [testCards[0]];
-      const shuffled = shuffleDeck(singleCard);
+      test("returns true when new card month is after old card month and guess is after", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2000, month: 6 };
 
-      expect(shuffled).toHaveLength(1);
-      expect(shuffled[0]).toEqual(testCards[0]);
-    });
-  });
+        const result = compareCards(oldCard, newCard, "after");
 
-  describe("drawCard", () => {
-    test("returns last card from deck", () => {
-      const deck = [...testCards];
-      const expectedCard = deck[deck.length - 1];
+        expect(result).toBe(true);
+      });
 
-      const drawnCard = drawCard(deck);
+      test("returns false when new card month is after old card month and guess is before", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2000, month: 6 };
 
-      expect(drawnCard).toEqual(expectedCard);
-    });
+        const result = compareCards(oldCard, newCard, "before");
 
-    test("removes card from deck", () => {
-      const deck = [...testCards];
-      const originalLength = deck.length;
+        expect(result).toBe(false);
+      });
 
-      drawCard(deck);
+      test("handles edge months correctly", () => {
+        const oldCard = { year: 2000, month: 1 };
+        const newCard = { year: 2000, month: 12 };
 
-      expect(deck).toHaveLength(originalLength - 1);
-    });
+        const result = compareCards(oldCard, newCard, "after");
 
-    test("modifies original deck array", () => {
-      const deck = [...testCards];
-      const lastCard = deck[deck.length - 1];
+        expect(result).toBe(true);
+      });
 
-      drawCard(deck);
+      test("handles January to December comparison", () => {
+        const oldCard = { year: 2000, month: 12 };
+        const newCard = { year: 2000, month: 1 };
 
-      expect(deck).not.toContain(lastCard);
-    });
+        const result = compareCards(oldCard, newCard, "before");
 
-    test("returns null when deck is empty", () => {
-      const emptyDeck = [];
-
-      const drawnCard = drawCard(emptyDeck);
-
-      expect(drawnCard).toBeNull();
-    });
-
-    test("handles sequential draws correctly", () => {
-      const deck = [...testCards];
-      const originalCards = [...testCards];
-      const drawnCards = [];
-
-      // Draw all cards
-      while (deck.length > 0) {
-        drawnCards.push(drawCard(deck));
-      }
-
-      expect(drawnCards).toHaveLength(originalCards.length);
-      expect(deck).toHaveLength(0);
-
-      // Verify cards drawn in reverse order
-      drawnCards.forEach((card, index) => {
-        const expectedIndex = originalCards.length - 1 - index;
-        expect(card).toEqual(originalCards[expectedIndex]);
+        expect(result).toBe(true);
       });
     });
 
-    test("returns null after deck exhausted", () => {
-      const deck = [testCards[0]];
+    describe("Exact match scenarios", () => {
+      test("returns false when cards have same year and month with before guess", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2000, month: 5 };
 
-      // Draw the only card
-      const firstDraw = drawCard(deck);
-      expect(firstDraw).toEqual(testCards[0]);
+        const result = compareCards(oldCard, newCard, "before");
 
-      // Attempt second draw on empty deck
-      const secondDraw = drawCard(deck);
-      expect(secondDraw).toBeNull();
+        expect(result).toBe(false);
+      });
+
+      test("returns false when cards have same year and month with after guess", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2000, month: 5 };
+
+        const result = compareCards(oldCard, newCard, "after");
+
+        expect(result).toBe(false);
+      });
+
+      test("handles exact match with different month values", () => {
+        const oldCard = { year: 1995, month: 3 };
+        const newCard = { year: 1995, month: 3 };
+
+        const beforeResult = compareCards(oldCard, newCard, "before");
+        const afterResult = compareCards(oldCard, newCard, "after");
+
+        expect(beforeResult).toBe(false);
+        expect(afterResult).toBe(false);
+      });
+    });
+
+    describe("Input validation", () => {
+      test("returns false when oldCard is null", () => {
+        const newCard = { year: 2000, month: 5 };
+
+        const result = compareCards(null, newCard, "before");
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false when newCard is null", () => {
+        const oldCard = { year: 2000, month: 5 };
+
+        const result = compareCards(oldCard, null, "before");
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false when guess is null", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, null);
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false when oldCard is undefined", () => {
+        const newCard = { year: 2000, month: 5 };
+
+        const result = compareCards(undefined, newCard, "before");
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false when newCard is undefined", () => {
+        const oldCard = { year: 2000, month: 5 };
+
+        const result = compareCards(oldCard, undefined, "after");
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false when guess is undefined", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, undefined);
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false when guess is empty string", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, "");
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false when all parameters are null", () => {
+        const result = compareCards(null, null, null);
+
+        expect(result).toBe(false);
+      });
+    });
+
+    describe("Invalid guess values", () => {
+      test("returns false with invalid guess string", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, "invalid");
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false with numeric guess", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, 1);
+
+        expect(result).toBe(false);
+      });
+
+      test("returns false with boolean guess", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, true);
+
+        expect(result).toBe(false);
+      });
+    });
+
+    describe("Card property validation", () => {
+      test("handles cards with missing year property", () => {
+        const oldCard = { month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, "before");
+
+        // Function should handle gracefully - exact behavior depends on implementation
+        expect(typeof result).toBe("boolean");
+      });
+
+      test("handles cards with missing month property", () => {
+        const oldCard = { year: 2000 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, "before");
+
+        expect(typeof result).toBe("boolean");
+      });
+
+      test("handles cards with string year values", () => {
+        const oldCard = { year: "2000", month: 5 };
+        const newCard = { year: "1999", month: 5 };
+
+        const result = compareCards(oldCard, newCard, "before");
+
+        expect(typeof result).toBe("boolean");
+      });
+
+      test("handles cards with string month values", () => {
+        const oldCard = { year: 2000, month: "5" };
+        const newCard = { year: 1999, month: "4" };
+
+        const result = compareCards(oldCard, newCard, "before");
+
+        expect(typeof result).toBe("boolean");
+      });
+    });
+
+    describe("Edge cases and boundary conditions", () => {
+      test("handles minimum year values", () => {
+        const oldCard = { year: 1, month: 1 };
+        const newCard = { year: 0, month: 1 };
+
+        const result = compareCards(oldCard, newCard, "before");
+
+        expect(result).toBe(true);
+      });
+
+      test("handles maximum reasonable year values", () => {
+        const oldCard = { year: 2030, month: 12 };
+        const newCard = { year: 2031, month: 1 };
+
+        const result = compareCards(oldCard, newCard, "after");
+
+        expect(result).toBe(true);
+      });
+
+      test("handles month boundary conditions", () => {
+        const oldCard = { year: 2000, month: 1 };
+        const newCard = { year: 2000, month: 2 };
+
+        const result = compareCards(oldCard, newCard, "after");
+
+        expect(result).toBe(true);
+      });
+
+      test("handles December to January year transition", () => {
+        const oldCard = { year: 1999, month: 12 };
+        const newCard = { year: 2000, month: 1 };
+
+        const result = compareCards(oldCard, newCard, "after");
+
+        expect(result).toBe(true);
+      });
+    });
+
+    describe("Case sensitivity for guess parameter", () => {
+      test("handles uppercase BEFORE guess", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, "BEFORE");
+
+        expect(result).toBe(false);
+      });
+
+      test("handles uppercase AFTER guess", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 2001, month: 5 };
+
+        const result = compareCards(oldCard, newCard, "AFTER");
+
+        expect(result).toBe(false);
+      });
+
+      test("handles mixed case Before guess", () => {
+        const oldCard = { year: 2000, month: 5 };
+        const newCard = { year: 1999, month: 5 };
+
+        const result = compareCards(oldCard, newCard, "Before");
+
+        expect(result).toBe(false);
+      });
     });
   });
 });

@@ -2,15 +2,15 @@ import { MongoClient } from "mongodb";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
 import path from "path";
-import { fileURLToPath } from "url";
 
 let dirName;
 try {
-  dirName = path.dirname(fileURLToPath(import.meta.url));
+  dirName = __dirname || process.cwd();
 } catch {
   dirName = process.cwd();
 }
-dotenv.config({ path: path.join(dirName, "../.env") });
+
+dotenv.config({ path: path.join(dirName, ".env") });
 
 /**
  * User schema for authentication with username and score tracking.
@@ -173,8 +173,17 @@ export async function updateUserScores(userId, currentScore, highScore) {
     client = dbClient;
 
     const { ObjectId } = await import("mongodb");
+
+    // Validate ObjectId format
+    let objectId;
+    try {
+      objectId = new ObjectId(userId);
+    } catch {
+      return { success: false };
+    }
+
     const result = await collection.updateOne(
-      { _id: new ObjectId(userId) },
+      { _id: objectId },
       {
         $set: {
           currentScore: parseInt(currentScore),
@@ -183,10 +192,10 @@ export async function updateUserScores(userId, currentScore, highScore) {
       }
     );
 
-    return { success: result.modifiedCount > 0 };
+    return { success: result.matchedCount > 0 };
   } catch (error) {
     console.error("Score update error:", error);
-    throw error;
+    return { success: false };
   } finally {
     if (client) await client.close();
   }

@@ -1,7 +1,7 @@
-// Mock implementation of Card.js for testing
 const cardSchema = {
   title: { type: String, required: true },
   year: { type: Number, required: true },
+  month: { type: Number, required: true, min: 1, max: 12 },
   imageUrl: { type: String, required: true },
   sourceUrl: { type: String, required: true },
   category: { type: String, required: true },
@@ -19,7 +19,7 @@ async function getCardsCollection() {
       limit: jest.fn().mockReturnThis(),
       toArray: jest
         .fn()
-        .mockResolvedValue([{ title: "Test Card", year: 2000 }]),
+        .mockResolvedValue([{ title: "Test Card", year: 2000, month: 5 }]),
       explain: jest.fn().mockResolvedValue({
         executionStats: {
           executionTimeMillis: 5,
@@ -32,10 +32,10 @@ async function getCardsCollection() {
       .mockResolvedValue([
         { name: "year_index" },
         { name: "category_index" },
-        { name: "year_category_index" }
+        { name: "year_category_index" },
+        { name: "month_category_index" }
       ])
   };
-
   return { client: mockClient, collection: mockCollection };
 }
 

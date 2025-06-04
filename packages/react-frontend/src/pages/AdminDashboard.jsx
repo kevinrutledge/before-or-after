@@ -7,7 +7,6 @@ import {
 import { useInView } from "react-intersection-observer";
 import { authRequest } from "../utils/apiClient";
 import { useLossGifs } from "../hooks/useLossGifs";
-import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import Modal from "../components/Modal";
 import AdminCardForm from "../components/AdminCardForm";
@@ -159,19 +158,17 @@ function AdminDashboard() {
   // Error state
   if (error && allCards.length === 0) {
     return (
-      <Layout>
-        <PageContainer>
-          <div className="admin-error">
-            <p>Failed to load cards: {error.message}</p>
-            <button onClick={() => window.location.reload()}>Retry</button>
-          </div>
-        </PageContainer>
-      </Layout>
+      <PageContainer>
+        <div className="admin-error">
+          <p>Failed to load cards: {error.message}</p>
+          <button onClick={() => window.location.reload()}>Retry</button>
+        </div>
+      </PageContainer>
     );
   }
 
   return (
-    <Layout>
+    <div>
       <Background />
       <PageContainer>
         <div className="admin-dashboard">
@@ -376,7 +373,7 @@ function AdminDashboard() {
           )}
         </div>
       </PageContainer>
-    </Layout>
+    </div>
   );
 }
 
