@@ -1,4 +1,3 @@
-import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +9,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <div>
       <Background />
       <PageContainer>
         <div className="home-page">
@@ -27,7 +26,7 @@ function HomePage() {
           </div>
         </div>
       </PageContainer>
-    </Layout>
+    </div>
   );
 }
 

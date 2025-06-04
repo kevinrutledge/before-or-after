@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { apiRequest } from "../utils/apiClient";
-import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import Background from "../components/Background";
 
@@ -53,7 +52,7 @@ function LoginPage() {
   };
 
   return (
-    <Layout>
+    <div>
       <Background />
       <PageContainer>
         <div className="login-page">
@@ -129,7 +128,7 @@ function LoginPage() {
           </form>
         </div>
       </PageContainer>
-    </Layout>
+    </div>
   );
 }
 

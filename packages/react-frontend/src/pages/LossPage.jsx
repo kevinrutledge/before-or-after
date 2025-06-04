@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import { useNavigate } from "react-router-dom";
 import { useGame } from "../hooks/useGame";
@@ -64,7 +63,7 @@ function LossPage() {
   }
 
   return (
-    <Layout>
+    <div>
       <Background />
       <PageContainer>
         <div className="loss-outer">
@@ -90,7 +89,7 @@ function LossPage() {
           </div>
         </div>
       </PageContainer>
-    </Layout>
+    </div>
   );
 }
 
