@@ -38,7 +38,6 @@ export async function getTestDbConnection() {
       "Memory server not started. Call startMemoryServer() first."
     );
   }
-
   const client = new MongoClient(mongoUri);
   await client.connect();
   return { client, db: client.db() };
@@ -47,10 +46,8 @@ export async function getTestDbConnection() {
 // Clear all collections between tests
 export async function clearDatabase() {
   const { client, db } = await getTestDbConnection();
-
   try {
     const collections = await db.collections();
-
     for (const collection of collections) {
       await collection.deleteMany({});
     }
@@ -72,7 +69,10 @@ export const createTestToken = (payload = {}) => {
     id: "507f1f77bcf86cd799439011"
   };
 
-  return jwt.sign({ ...defaultPayload, ...payload }, process.env.JWT_SECRET, {
+  // Use test secret if JWT_SECRET
+  const secret = process.env.JWT_SECRET || "test-jwt-secret-key";
+
+  return jwt.sign({ ...defaultPayload, ...payload }, secret, {
     expiresIn: "1h"
   });
 };
