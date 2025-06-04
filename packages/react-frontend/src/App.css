@@ -438,7 +438,7 @@ footer {
 
 .cards-container.side-by-side {
   flex-direction: row;
-  justify-content: center; /* <-- Change from space-between to center */
+  justify-content: center;
   align-items: center;
 }
 
@@ -468,7 +468,7 @@ footer {
   flex: 1 1 0;
   min-width: 250px;
   max-width: 500px;
-  height: 100%; /* Fill the container vertically */
+  height: 100%;
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: var(--card-shadow);
@@ -520,11 +520,11 @@ footer {
 }
 
 .card-source.left {
-  left: 0.5rem; /* Align to the bottom left */
+  left: 0.5rem;
 }
 
 .card-source.right {
-  right: 0.5rem; /* Align to the bottom right */
+  right: 0.5rem;
   text-align: right;
 }
 
@@ -651,7 +651,7 @@ footer {
 @media (min-width: 769px) {
   .cards-container.side-by-side {
     flex-direction: row;
-    justify-content: center; /* <-- Change from space-between to center */
+    justify-content: center;
     align-items: center;
   }
 }
@@ -981,7 +981,6 @@ footer {
   background-color: #e5e7eb;
 }
 
-/* Adjust login button to work with the new layout */
 .login-button {
   padding: 1rem;
   background-color: var(--primary-color);
@@ -1003,7 +1002,7 @@ footer {
   padding: 1rem;
   background-color: #f3f4f6;
   color: #4b5563;
-  border: 1px solid #d1d5db; /* Add a border for better visibility */
+  border: 1px solid #d1d5db;
   border-radius: 4px;
   font-size: 1.1rem;
   font-weight: bold;
