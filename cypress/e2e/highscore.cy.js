@@ -1,7 +1,7 @@
 // function userSignUp() {
 //   cy.visit('http://localhost:5173/signup');
-//   cy.get('#email').type('testuser2@example.com'); 
-//   cy.get('#username').type('testuser2'); 
+//   cy.get('#email').type('testuser2@example.com');
+//   cy.get('#username').type('testuser2');
 //   cy.get('#password').type('password123');
 //   cy.get('#confirmPassword').type('password123');
 //   cy.contains('button', 'Sign Up').click();
@@ -12,7 +12,7 @@
 
 // function login() {
 //   cy.visit('http://localhost:5173/login');
-//   cy.get('#emailOrUsername').type('testuser@example.com'); 
+//   cy.get('#emailOrUsername').type('testuser@example.com');
 //   cy.get('input[type="password"]').type('password123');
 //   cy.contains('button', 'Sign In').click();
 //   cy.contains('A daily game').should('be.visible');
