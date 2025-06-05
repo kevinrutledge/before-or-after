@@ -10,3 +10,9 @@ root.render(
     <App />
   </StrictMode>
 );
+
+if (window.Cypress) {
+  import("./utils/gameUtils").then((mod) => {
+    window.compareCards = mod.compareCards;
+  });
+}

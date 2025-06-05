@@ -156,5 +156,44 @@ export default [
         }
       ]
     }
+  },
+  {
+  // Cypress E2E tests in root-level cypress folder
+  files: ["cypress/**/*.js"],
+  languageOptions: {
+    ecmaVersion: 2022,
+    sourceType: "module",
+    globals: {
+      ...globals.browser,
+      Cypress: true,
+      cy: true,
+      expect: true,
+      before: true,
+      beforeEach: true,
+      after: true,
+      afterEach: true,
+      describe: true,
+      it: true
+    }
+  },
+  plugins: {
+    prettier: prettierPlugin
+  },
+  rules: {
+    "no-unused-vars": "warn",
+    "no-undef": "off", // Cypress globals
+    "prettier/prettier": [
+      "error",
+      {
+        trailingComma: "none",
+        semi: true,
+        singleQuote: false,
+        bracketSameLine: true,
+        htmlWhitespaceSensitivity: "ignore",
+        proseWrap: "always",
+        printWidth: 80
+      }
+    ]
   }
+},
 ];

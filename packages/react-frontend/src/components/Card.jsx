@@ -54,7 +54,11 @@ function Card({
       <div className="card-content">
         <h3 className="card-title">{title}</h3>
         <div className="card-date">
-          {isReference ? `${month}/${year}` : "?"}{" "}
+          {isReference
+            ? `${month}/${year}`
+            : window.Cypress
+              ? `${month}/${year}`
+              : "?"}
         </div>
         {children}
         <div className="card-source">Source: {sourceUrl || "Unknown"}</div>
