@@ -3,7 +3,7 @@
 // ... (any existing comments) ...
 
 function highScoreCheck(n) {
-  cy.get('button.high-score-pill')
+  cy.get('.high-score-button')
   .find('.score-value')
   .should('have.text', String(n));
 }
@@ -38,6 +38,7 @@ function pickCorrectCard() {
 }
 
 function pickIncorrectCard() {
+cy.wait(700); // wait for shuffling
   getCardInfo('.current-card').then((currentCard) => {
     getCardInfo('.reference-card').then((referenceCard) => {
       cy.window().then((win) => {
