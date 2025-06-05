@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/apiClient";
 import { useGame } from "../hooks/useGame";
-import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import useIsMobile from "../hooks/useIsMobile";
 import ResultOverlay from "../components/ResultOverlay";
@@ -65,11 +64,11 @@ function GamePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty dependency array - only run once on mount
 
-  // Add body class for overflow control
-  useEffect(() => {
-    document.body.classList.add("game-page");
-    return () => document.body.classList.remove("game-page");
-  }, []);
+  // REMOVED: Body class manipulation that was constraining layout
+  // useEffect(() => {
+  //   document.body.classList.add("game-page");
+  //   return () => document.body.classList.remove("game-page");
+  // }, []);
 
   // Handle guess with deck-based card serving
   const handleGuess = async (guess) => {
@@ -153,27 +152,25 @@ function GamePage() {
   // Show loading during deck initialization
   if (isInitializing) {
     return (
-      <Layout>
-        <PageContainer>
-          <div className="loading">Loading game...</div>
-        </PageContainer>
-      </Layout>
+      <PageContainer>
+        <div className="loading">Loading game...</div>
+      </PageContainer>
     );
   }
 
   if (error) {
     return (
-      <Layout>
+      <div>
         <Background />
         <PageContainer>
           <div className="error-message">{error}</div>
         </PageContainer>
-      </Layout>
+      </div>
     );
   }
 
   return (
-    <Layout>
+    <div>
       <Background />
       <PageContainer>
         <div className="game-page">
@@ -188,6 +185,7 @@ function GamePage() {
               className="current-card"
               title={currentCard?.title}
               imageUrl={currentCard?.imageUrl}
+              sourceUrl={currentCard?.sourceUrl}
               year={currentCard?.year}
               month={currentCard?.month}
               isReference={false}>
@@ -218,6 +216,7 @@ function GamePage() {
               className="reference-card"
               title={referenceCard?.title}
               imageUrl={referenceCard?.imageUrl}
+              sourceUrl={referenceCard?.sourceUrl}
               year={referenceCard?.year}
               month={referenceCard?.month}
               isReference={true}
@@ -234,7 +233,7 @@ function GamePage() {
           onAnimationComplete={handleOverlayComplete}
         />
       </PageContainer>
-    </Layout>
+    </div>
   );
 }
 

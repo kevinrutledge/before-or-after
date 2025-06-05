@@ -211,6 +211,11 @@ footer {
   color: var(--secondary-color);
 }
 
+.page-container {
+  width: 100%;
+  max-width: none;
+}
+
 /* Loss Page Styles */
 
 .loss-outer {
@@ -251,7 +256,6 @@ footer {
   display: block;
   margin: 0 auto 1.5rem auto;
   border-radius: 1rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
   object-fit: contain;
   background: none;
 }
@@ -285,8 +289,8 @@ footer {
 }
 
 .play-again-button {
-  flex: 1 1 0;
-  padding: 0.9rem 0;
+  flex: 2 1 0;
+  padding: 0.75rem 0;
   font-size: 1.1rem;
   border: none;
   border-radius: 0.5rem;
@@ -308,13 +312,24 @@ footer {
   transform: translateY(-2px) scale(1.03);
 }
 
-.back-home-button {
-  background: var(--accent-color);
-  color: #fff;
+.loss-buttons-row .back-home-button {
+  flex: 1 1 0 !important;
+  min-width: 120px !important;
+  padding: 0.9rem 0 !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+  background: #f3f4f6 !important;
+  color: var(--text-color) !important;
+  border: 1px solid #d1d5db !important;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 .back-home-button:hover {
-  background: #d97706;
+  background-color: #e5e7eb;
   transform: translateY(-2px) scale(1.03);
 }
 
@@ -333,6 +348,8 @@ footer {
     max-width: 95vw;
     height: 160px;
     font-size: 1rem;
+    box-shadow: none;
+    border-radius: 1rem;
   }
   .score-value {
     font-size: 2rem;
@@ -414,14 +431,15 @@ footer {
   box-sizing: border-box;
 }
 
-body.game-page {
+.layout:has(.game-page) {
   overflow: hidden;
+  height: 100vh;
 }
 
 .cards-container {
   display: flex;
   justify-content: center;
-  align-items: stretch; /* Ensures children fill container vertically */
+  align-items: stretch;
   gap: 1rem;
   height: calc(100vh - 1in);
   width: calc(100vw - 1in);
@@ -432,12 +450,14 @@ body.game-page {
 
 .cards-container.side-by-side {
   flex-direction: row;
-  justify-content: center; /* <-- Change from space-between to center */
+  justify-content: center;
   align-items: center;
 }
 
 .cards-container.stacked {
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .cards-container.side-by-side .reference-card {
@@ -460,7 +480,7 @@ body.game-page {
   flex: 1 1 0;
   min-width: 250px;
   max-width: 500px;
-  height: 100%; /* Fill the container vertically */
+  height: 100%;
   background-color: white;
   border-radius: 0.5rem;
   box-shadow: var(--card-shadow);
@@ -512,11 +532,11 @@ body.game-page {
 }
 
 .card-source.left {
-  left: 0.5rem; /* Align to the bottom left */
+  left: 0.5rem;
 }
 
 .card-source.right {
-  right: 0.5rem; /* Align to the bottom right */
+  right: 0.5rem;
   text-align: right;
 }
 
@@ -606,21 +626,24 @@ body.game-page {
 }
 
 .back-home-button {
-  font-weight: 100;
-  font-size: 0.9rem;
-  background-color: var(--accent-color);
-  color: black !important;
-  border: none;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  width: auto;
-  max-width: 120px;
-  max-height: 50px;
-  height: auto;
+  flex: 0 0 auto;
+  min-width: 120px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f3f4f6;
+  color: var(--text-color);
+  border: 1px solid #d1d5db;
+  box-sizing: border-box;
+  margin: 0;
 }
 
 .back-home-button:hover {
-  background-color: #d97706;
-  transform: scale(1.05);
+  background: #e5e7eb;
+  transform: translateY(-2px) scale(1.03);
 }
 
 .back-home-button:active {
@@ -643,7 +666,7 @@ body.game-page {
 @media (min-width: 769px) {
   .cards-container.side-by-side {
     flex-direction: row;
-    justify-content: center; /* <-- Change from space-between to center */
+    justify-content: center;
     align-items: center;
   }
 }
@@ -729,28 +752,6 @@ body.game-page {
   height: 100%;
 }
 
-.login-button {
-  padding: 1rem;
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  margin-top: 0.5rem;
-}
-
-.login-button:hover {
-  background-color: #000000;
-}
-
-.login-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
 .login-links {
   display: flex;
   justify-content: center;
@@ -789,9 +790,9 @@ body.game-page {
 
 @media (max-width: 480px) {
   .login-page {
-    max-width: 100vw;
+    max-width: 100%;
     margin: 0;
-    padding: 0.5rem 0.5rem 160px 0.5rem;
+    padding: 1.5rem;
     border-radius: 0;
     box-shadow: none;
     min-height: auto;
@@ -818,6 +819,8 @@ body.game-page {
   }
 
   .form-group label {
+    font-weight: bold;
+    color: var(--text-color);
     font-size: 0.95rem;
   }
 
@@ -832,14 +835,6 @@ body.game-page {
     gap: 0.5rem;
     width: 100%;
     margin-top: 0.5rem;
-  }
-
-  .login-button,
-  .cancel-button {
-    width: 100%;
-    min-height: 44px;
-    font-size: 1rem;
-    padding: 0.7rem;
   }
 
   .password-toggle {
@@ -1001,7 +996,6 @@ body.game-page {
   background-color: #e5e7eb;
 }
 
-/* Adjust login button to work with the new layout */
 .login-button {
   padding: 1rem;
   background-color: var(--primary-color);
@@ -1023,7 +1017,7 @@ body.game-page {
   padding: 1rem;
   background-color: #f3f4f6;
   color: #4b5563;
-  border: 1px solid #d1d5db; /* Add a border for better visibility */
+  border: 1px solid #d1d5db;
   border-radius: 4px;
   font-size: 1.1rem;
   font-weight: bold;
@@ -2094,7 +2088,7 @@ body.game-page {
 
 /* Header Styles */
 .header-nav {
-  width: 100vw;
+  width: 100%;
   background-color: var(--nav-background);
   border-bottom: 1px solid var(--nav-border);
 }
@@ -2105,9 +2099,8 @@ body.game-page {
   align-items: center;
   height: 64px;
   width: 100%;
-  max-width: 1400px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 3rem;
 }
 
 /* Logo Button */
@@ -2288,17 +2281,17 @@ body.game-page {
   }
 
   .mobile-only.bottom-nav {
-    height: 36px !important;
-    min-height: 36px !important;
+    height: 64px !important;
+    min-height: 64px !important;
     padding: 0 !important;
   }
   .mobile-only.bottom-nav .nav-items {
-    height: 36px !important;
+    height: 64px !important;
     padding: 0 !important;
   }
   .mobile-only.bottom-nav .logo-button,
   .mobile-only.bottom-nav .account-button {
-    padding: 2px !important;
+    padding: 8px !important;
   }
 }
 
@@ -2460,13 +2453,12 @@ body.game-page {
     height: 44px;
     padding: 8px 20px;
   }
-
-  .mobile-score-pill .score-label {
-    font-size: 0.7rem;
+  ore-val .mobile-score-pill .score-label {
+    font-size: 1.2rem;
   }
 
   .mobile-score-pill .score-value {
-    font-size: 0.9rem;
+    font-size: 1.5rem;
   }
 }
 
@@ -2498,7 +2490,6 @@ body.game-page {
   align-items: center;
   height: 64px;
   width: 100%;
-  max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
 }
@@ -2586,10 +2577,10 @@ body.game-page {
   }
 
   .score-label {
-    font-size: 0.7rem;
+    font-size: 1.2rem;
   }
 
   .score-value {
-    font-size: 0.9rem;
+    font-size: 2.5rem;
   }
 }

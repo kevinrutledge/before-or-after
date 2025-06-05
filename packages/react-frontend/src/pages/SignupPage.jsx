@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../utils/apiClient";
-import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import Background from "../components/Background";
 
@@ -74,7 +73,7 @@ function SignupPage() {
   };
 
   return (
-    <Layout>
+    <div>
       <Background />
       <PageContainer>
         <div className="login-page">
@@ -185,11 +184,10 @@ function SignupPage() {
                 Sign In
               </Link>
             </div>
-            <div style={{ height: "64px" }} aria-hidden="true"></div>
           </form>
         </div>
       </PageContainer>
-    </Layout>
+    </div>
   );
 }
 

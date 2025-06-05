@@ -19,6 +19,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Miscellaneous
+/examples/
 .DS_Store
 *.pem
 **/*.txt

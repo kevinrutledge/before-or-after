@@ -3,6 +3,7 @@
  * @param {Object} props
  * @param {String} props.title - Card title
  * @param {String} props.imageUrl - Image URL
+ * @param {String} props.sourceUrl - Original source URL from MongoDB
  * @param {Number} props.year - Release year
  * @param {Number} props.month - Release month (1-12)
  * @param {Boolean} props.isReference - Whether this is a reference card
@@ -27,19 +28,16 @@
   const monthName = monthNames[month - 1] || "";
   return `${monthName} ${year}`;
 }*/
-function Card({ title, imageUrl, year, month, isReference, children }) {
-  // Extract the domain name from the imageUrl
-  const getSourceFromUrl = (url) => {
-    try {
-      const { hostname } = new URL(url);
-      return hostname.replace("www.", ""); // Remove "www." for cleaner display
-    } catch {
-      return "Unknown Source"; // Fallback if the URL is invalid
-    }
-  };
 
-  const source = getSourceFromUrl(imageUrl);
-
+function Card({
+  title,
+  imageUrl,
+  sourceUrl,
+  year,
+  month,
+  isReference,
+  children
+}) {
   return (
     <div
       className={`card ${isReference ? "reference-card" : "current-card"}`}
@@ -60,9 +58,7 @@ function Card({ title, imageUrl, year, month, isReference, children }) {
           : (window.Cypress ? `${month}/${year}` : "?")}
         </div>
         {children}
-        <div className={`card-source ${isReference ? "left" : "right"}`}>
-          Source: {source}
-        </div>
+        <div className="card-source">Source: {sourceUrl || "Unknown"}</div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { render, screen, act, waitFor } from "@testing-library/react";
 import { jest } from "@jest/globals";
 import { describe, test, expect, beforeEach, afterEach } from "@jest/globals";
-import { GameProvider } from "../../src/context/GameContext";
+import { GameProvider } from "../../src/context/GameProvider";
 import { useGame } from "../../src/hooks/useGame";
 import { MockAuthProvider } from "../mocks/AuthContext";
 

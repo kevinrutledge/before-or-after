@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../utils/apiClient";
-import Layout from "../components/Layout";
 import PageContainer from "../components/PageContainer";
 import Background from "../components/Background";
 
@@ -255,7 +254,7 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <Layout>
+    <div>
       <Background />
       <PageContainer>
         <div className="login-page">
@@ -264,7 +263,7 @@ function ForgotPasswordPage() {
           {renderStageContent()}
         </div>
       </PageContainer>
-    </Layout>
+    </div>
   );
 }
 

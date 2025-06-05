@@ -42,7 +42,9 @@ export default async function handler(req, res) {
       user: {
         email: result.user.email,
         username: result.user.username,
-        role: result.user.role
+        role: result.user.role,
+        currentScore: result.user.currentScore,
+        highScore: result.user.highScore
       }
     });
   } catch (error) {

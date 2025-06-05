@@ -9,11 +9,9 @@ const router = express.Router();
 router.get("/cards/next", async (req, res) => {
   try {
     const card = await getRandomCard();
-
     if (!card) {
       return res.status(404).json({ message: "No cards found in database" });
     }
-
     res.json(card);
   } catch (error) {
     console.error("Error retrieving card:", error);
@@ -26,10 +24,17 @@ router.get("/cards/next", async (req, res) => {
  */
 router.post("/cards/guess", async (req, res) => {
   try {
-    const { previousYear, currentYear, guess } = req.body;
+    const { previousYear, previousMonth, currentYear, currentMonth, guess } =
+      req.body;
 
     // Validate required fields
-    if (previousYear === undefined || currentYear === undefined || !guess) {
+    if (
+      previousYear === undefined ||
+      previousMonth === undefined ||
+      currentYear === undefined ||
+      currentMonth === undefined ||
+      !guess
+    ) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -40,8 +45,14 @@ router.post("/cards/guess", async (req, res) => {
         .json({ message: "Guess must be 'before' or 'after'" });
     }
 
-    // Process the guess
-    const result = await processGuess(previousYear, currentYear, guess);
+    // Process guess with year and month
+    const result = await processGuess(
+      previousYear,
+      previousMonth,
+      currentYear,
+      currentMonth,
+      guess
+    );
 
     res.json(result);
   } catch (error) {

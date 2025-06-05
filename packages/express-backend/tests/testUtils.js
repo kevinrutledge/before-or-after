@@ -1,7 +1,6 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { MongoClient } from "mongodb";
 import jwt from "jsonwebtoken";
-import rateLimit from "express-rate-limit";
 
 // Singleton MongoDB instance for tests
 let mongoServer;
@@ -9,22 +8,36 @@ let mongoUri;
 
 // Start in-memory MongoDB server
 export async function startMemoryServer() {
-  mongoServer = await MongoMemoryServer.create();
-  mongoUri = mongoServer.getUri();
-  process.env.MONGO_URI = mongoUri;
+  if (!mongoServer) {
+    mongoServer = await MongoMemoryServer.create();
+    mongoUri = mongoServer.getUri();
+    process.env.MONGO_URI = mongoUri;
+  }
   return mongoUri;
 }
 
 // Stop MongoDB server
 export async function stopMemoryServer() {
   if (mongoServer) {
-    await mongoServer.stop();
+    await mongoServer.stop({ force: true });
     mongoServer = null;
+    mongoUri = null;
+    delete process.env.MONGO_URI;
   }
+}
+
+// Get current memory server URI
+export function getMemoryServerUri() {
+  return mongoUri;
 }
 
 // Get clean test database connection
 export async function getTestDbConnection() {
+  if (!mongoUri) {
+    throw new Error(
+      "Memory server not started. Call startMemoryServer() first."
+    );
+  }
   const client = new MongoClient(mongoUri);
   await client.connect();
   return { client, db: client.db() };
@@ -33,10 +46,8 @@ export async function getTestDbConnection() {
 // Clear all collections between tests
 export async function clearDatabase() {
   const { client, db } = await getTestDbConnection();
-
   try {
     const collections = await db.collections();
-
     for (const collection of collections) {
       await collection.deleteMany({});
     }
@@ -45,12 +56,10 @@ export async function clearDatabase() {
   }
 }
 
-// Create express-rate-limit middleware for test endpoints
-export const testRateLimit = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: { message: "Too many requests" }
-});
+// Mock rate limiter for tests
+export const testRateLimit = (req, res, next) => {
+  next();
+};
 
 // Create valid JWT token with default test payload
 export const createTestToken = (payload = {}) => {
@@ -60,7 +69,10 @@ export const createTestToken = (payload = {}) => {
     id: "507f1f77bcf86cd799439011"
   };
 
-  return jwt.sign({ ...defaultPayload, ...payload }, process.env.JWT_SECRET, {
+  // Use test secret if JWT_SECRET
+  const secret = process.env.JWT_SECRET || "test-jwt-secret-key";
+
+  return jwt.sign({ ...defaultPayload, ...payload }, secret, {
     expiresIn: "1h"
   });
 };

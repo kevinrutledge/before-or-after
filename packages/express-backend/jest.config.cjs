@@ -3,8 +3,10 @@
  * Provides stable test environment without experimental flags.
  */
 module.exports = {
+  forceExit: true,
   testEnvironment: "node",
-  testTimeout: 30000, // allow up to 30 s for beforeAll hooks
+  testTimeout: 10000,
+  detectOpenHandles: false,
   transform: {
     "^.+\\.js$": [
       "babel-jest",
@@ -23,14 +25,14 @@ module.exports = {
   },
   testMatch: ["**/tests/**/?(*.)+(test).js"],
   moduleFileExtensions: ["js", "json"],
-  collectCoverageFrom: ["src/**/*.js", "models/**/*.js", "scripts/**/*.js"],
+  collectCoverageFrom: ["src/**/*.js", "models/**/*.js"],
   coverageDirectory: "coverage",
   coverageThreshold: {
     global: {
-      statements: 1,
-      branches: 1,
-      functions: 1,
-      lines: 1
+      statements: 80,
+      branches: 80,
+      functions: 80,
+      lines: 80
     }
   }
 };

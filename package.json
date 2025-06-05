@@ -23,8 +23,13 @@
     "prod": "npm run start",
     "lint": "eslint \"packages/**/*.{js,jsx}\"",
     "lint:fix": "eslint \"packages/**/*.{js,jsx}\" --fix",
-    "test": "npm test --workspaces",
-    "test:coverage": "npm run test:coverage --workspaces"
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "npm --prefix packages/express-backend test",
+    "test:frontend": "npm --prefix packages/react-frontend test",
+    "test:coverage": "npm run test:coverage:backend && npm run test:coverage:frontend",
+    "test:coverage:backend": "npm --prefix packages/express-backend run test:coverage",
+    "test:coverage:frontend": "npm --prefix packages/react-frontend run test:coverage",
+    "test:file": "npm --prefix packages/express-backend run test:file"
   },
   "devDependencies": {
     "@babel/core": "^7.27.1",
