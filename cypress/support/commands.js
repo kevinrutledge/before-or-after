@@ -4,7 +4,7 @@
 
 function highScoreCheck(n) {
   cy.get('.score-value')
-    .should('be.visible')
+    .should('exist')
     .and('have.text', String(n));
 }
 

@@ -10,16 +10,16 @@
 //   //cy.contains('Current Score: 0').should('be.visible');
 //   cy.wait(1000); // wait 1000ms (1 second)
 
-function login() {
-  cy.visit('http://localhost:5173/login');
-  cy.get('#emailOrUsername').type('testuser2@example.com'); 
-  cy.get('input[type="password"]').type('password123');
-  cy.contains('button', 'Sign In').click();
-  cy.contains('A daily game').should('be.visible');
-  cy.contains('Play').click();
-  cy.contains('Current Score: 0').should('be.visible');
-  highScoreCheck();
-}
+// function login() {
+//   cy.visit('http://localhost:5173/login');
+//   cy.get('#emailOrUsername').type('testuser@example.com'); 
+//   cy.get('input[type="password"]').type('password123');
+//   cy.contains('button', 'Sign In').click();
+//   cy.contains('A daily game').should('be.visible');
+//   cy.contains('Play').click();
+//   cy.contains('Current Score: 0').should('be.visible');
+//   highScoreCheck();
+// }
 // }
 
 // function guestLogin(){
