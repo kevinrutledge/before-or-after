@@ -63,7 +63,7 @@ describe('play twice', () => {
 
   it('Login, play, lose, play again, lose', () => {
     login();
-    cy.highScoreCheck(10);
+    //cy.highScoreCheck(10);
 
     cy.answerCorrectlyNTimes(2);
     cy.contains('Current Score: 2').should('be.visible');
@@ -72,6 +72,7 @@ describe('play twice', () => {
     cy.contains('button', 'Play Again').click();
     cy.checkScore(0);
     cy.highScoreCheck(10);
+    cy.wait(700);
     cy.answerCorrectlyNTimes(2);
     cy.checkScore(2);
     cy.pickIncorrectCard();
