@@ -4,8 +4,8 @@ jest.mock("../../src/hooks/useAuth", () => ({
   useAuth: () => ({
     isAuthenticated: true,
     user: mockUser,
-    logout: jest.fn(),
-  }),
+    logout: jest.fn()
+  })
 }));
 import { render, screen, act, waitFor } from "@testing-library/react";
 import { GameProvider } from "../../src/context/GameContext";

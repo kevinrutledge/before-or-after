@@ -4,10 +4,9 @@ import assert from "assert";
 
 //import app from "../../server.js"; // Adjust path if your Express app is exported elsewhere
 import server from "../../../express-backend/server.js"; // Ensure server is imported correctly
+
 // Use the same secret as your backend .env for test tokens
-const JWT_SECRET =
-  process.env.JWT_SECRET ||
-  "test-secret"; // Fallback for testing
+const JWT_SECRET = process.env.JWT_SECRET || "test-secret"; // Fallback for testing
 
 // Helper to create a valid admin JWT
 function getAdminToken() {
@@ -37,9 +36,13 @@ describe("Admin Card API Error Handling", () => {
   });
 
   it("returns 401 if no token is provided", async () => {
-    const res = await request(app)
-      .post("/api/admin/cards")
-      .send({ title: "Test", year: 2020, month: 1, category: "movie", sourceUrl: "https://example.com" });
+    const res = await request(app).post("/api/admin/cards").send({
+      title: "Test",
+      year: 2020,
+      month: 1,
+      category: "movie",
+      sourceUrl: "https://example.com"
+    });
     expect(res.status).toBe(401);
     expect(res.body.message || res.body.error).toMatch(/unauthorized|token/i);
   });
@@ -53,7 +56,13 @@ describe("Admin Card API Error Handling", () => {
     const res = await request(app)
       .post("/api/admin/cards")
       .set("Authorization", `Bearer ${userToken}`)
-      .send({ title: "Test", year: 2020, month: 1, category: "movie", sourceUrl: "https://example.com" });
+      .send({
+        title: "Test",
+        year: 2020,
+        month: 1,
+        category: "movie",
+        sourceUrl: "https://example.com"
+      });
     expect(res.status).toBe(403);
     expect(res.body.message || res.body.error).toMatch(/admin/i);
   });
@@ -71,7 +80,13 @@ describe("Admin Card API Error Handling", () => {
     const res = await request(app)
       .put("/api/admin/cards/nonexistentid123")
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ title: "Updated Title", year: 2021, month: 2, category: "movie", sourceUrl: "https://example.com" });
+      .send({
+        title: "Updated Title",
+        year: 2021,
+        month: 2,
+        category: "movie",
+        sourceUrl: "https://example.com"
+      });
     expect([404, 400]).toContain(res.status); // Some APIs use 400 for bad id
     expect(res.body.message || res.body.error).toMatch(/not found|no card/i);
   });
@@ -88,7 +103,13 @@ describe("Admin Card API Error Handling", () => {
     const res = await request(app)
       .post("/api/admin/cards")
       .set("Authorization", `Bearer ${adminToken}`)
-      .send({ title: "Bad Date", year: "notayear", month: 99, category: "movie", sourceUrl: "https://example.com" });
+      .send({
+        title: "Bad Date",
+        year: "notayear",
+        month: 99,
+        category: "movie",
+        sourceUrl: "https://example.com"
+      });
     expect(res.status).toBe(400);
     expect(res.body.message || res.body.error).toMatch(/year|month|invalid/i);
   });

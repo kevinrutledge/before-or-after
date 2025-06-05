@@ -12,7 +12,7 @@ root.render(
 );
 
 if (window.Cypress) {
-  import('./utils/gameUtils').then(mod => {
+  import("./utils/gameUtils").then((mod) => {
     window.compareCards = mod.compareCards;
   });
 }

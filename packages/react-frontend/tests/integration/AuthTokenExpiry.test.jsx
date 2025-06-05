@@ -38,34 +38,33 @@ describe("JWT Token Utility", () => {
     }).toThrow(/jwt expired/);
 
     expect(() => {
-      jwt.verify(token, "wrong-secret");}).toThrow("invalid signature"); 
+      jwt.verify(token, "wrong-secret");
+    }).toThrow("invalid signature");
   });
 
-
-    it("should throw for a malformed token", () => {
+  it("should throw for a malformed token", () => {
     expect(() => {
-        jwt.verify("not.a.valid.token", JWT_SECRET);
+      jwt.verify("not.a.valid.token", JWT_SECRET);
     }).toThrow();
-    });
+  });
 
-    it("should throw if no token is provided", () => {
+  it("should throw if no token is provided", () => {
     expect(() => {
-        jwt.verify(undefined, JWT_SECRET);
+      jwt.verify(undefined, JWT_SECRET);
     }).toThrow();
-    });
+  });
 
-    it("should verify a token with no expiry", () => {
+  it("should verify a token with no expiry", () => {
     const payload = { email: "test@example.com" };
     const token = jwt.sign(payload, JWT_SECRET); // no expiresIn
     const decoded = jwt.verify(token, JWT_SECRET);
     expect(decoded.email).toBe(payload.email);
-    });
+  });
 
-    it("should include custom claims in the token", () => {
+  it("should include custom claims in the token", () => {
     const payload = { email: "test@example.com", role: "admin" };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1h" });
     const decoded = jwt.verify(token, JWT_SECRET);
     expect(decoded.role).toBe("admin");
-    });
-
+  });
 });

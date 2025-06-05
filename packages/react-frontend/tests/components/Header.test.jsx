@@ -14,13 +14,12 @@ jest.mock("../../src/context/AuthContext", () => {
   };
 });
 
-
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, test, expect, beforeEach } from "@jest/globals";
 import Header from "../../src/components/Header";
 import { MemoryRouter } from "react-router-dom";
 import { GameProvider } from "../../src/context/GameContext";
-import { MockAuthProvider } from "../mocks/AuthContext"; 
+import { MockAuthProvider } from "../mocks/AuthContext";
 
 describe("Header Component", () => {
   beforeEach(() => {
@@ -162,7 +161,9 @@ describe("Header Component", () => {
         </MockAuthProvider>
       </MemoryRouter>
     );
-    fireEvent.click(screen.getByRole("button", { name: /before or after logo/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /before or after logo/i })
+    );
     expect(mockNavigate).toHaveBeenCalledWith("/");
   });
 });
