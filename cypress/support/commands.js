@@ -3,9 +3,9 @@
 // ... (any existing comments) ...
 
 function highScoreCheck(n) {
-  cy.get('.score-value')
-    .should('exist')
-    .and('have.text', String(n));
+  cy.get('button.high-score-pill')
+  .find('.score-value')
+  .should('have.text', String(n));
 }
 
 function getCardInfo(cardSelector) {
