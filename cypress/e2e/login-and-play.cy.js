@@ -12,15 +12,25 @@ function login() {
 
 
 // 1) Immediate loss on first guess → high‐score stays 0
-describe('Immediate loss - high score remains 0', () => {
-  it('logs in, picks incorrectly immediately, and high score stays 0', () => {
+describe('Immediate loss - high score remains unchanged', () => {
+  it('logs in, reloads to clear any state, grabs the high score, then loses immediately and re-checks', () => {
     login();
-    cy.reload(); // Ensure we start fresh
-    cy.pickIncorrectCard();
-    cy.checkLoss();
-    cy.highScoreCheck(0);
+    cy.reload(); // force a fresh start
+
+    // 1) Grab the initial high score (whatever it is right after reload)
+    cy.getHighScore().then(initialHighScore => {
+      // Now `initialHighScore` is a JS number.
+
+      // 2) Make the incorrect guess and check for loss
+      cy.pickIncorrectCard();
+      cy.checkLoss();
+
+      // 3) Assert that the new high score is still the same as before
+      cy.highScoreCheck(initialHighScore);
+    });
   });
 });
+
 
 
 // 2) High score should not decrease if current run < previous high score
