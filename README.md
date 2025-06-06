@@ -39,15 +39,23 @@ gameplay with knowledge gain.
 
 ## UI Prototype
 
-**Interactive Prototype**: [View on Figma](https://www.figma.com/proto/v4K4uROCk5V6D3lIy1unw6/Before-or-After?node-id=3-2&starting-point-node-id=3%3A2)
+**Interactive Prototype**:
+[View on Figma](https://www.figma.com/proto/v4K4uROCk5V6D3lIy1unw6/Before-or-After?node-id=3-2&starting-point-node-id=3%3A2)
 
-**Design Files**: [Edit on Figma](https://www.figma.com/design/v4K4uROCk5V6D3lIy1unw6/Before-or-After?node-id=0-1&p=f&t=VboCxAU2Dn4LSKNw-0)
+**Design Files**:
+[Edit on Figma](https://www.figma.com/design/v4K4uROCk5V6D3lIy1unw6/Before-or-After?node-id=0-1&p=f&t=VboCxAU2Dn4LSKNw-0)
 
-Last updated: May 2025
+Last updated: December 2024
 
-Review the interactive prototype to understand core game flow and interface design. The prototype demonstrates landing page functionality, card comparison mechanics, score tracking displays, leaderboard views, and admin dashboard layouts. Use the design files that contain detailed mockups and responsive design patterns.
+Review the interactive prototype to understand core game flow and interface
+design. The prototype demonstrates landing page functionality, card comparison
+mechanics, score tracking displays, leaderboard views, and admin dashboard
+layouts. Use the design files that contain detailed mockups and responsive
+design patterns.
 
-The prototype guided development of key interface elements. It established visual hierarchy for game cards, defined navigation patterns that work across mobile and desktop experiences, and outlined user authentication flows.
+The prototype guided development of key interface elements. It established
+visual hierarchy for game cards, defined navigation patterns that work across
+mobile and desktop experiences, and outlined user authentication flows.
 
 ## Team
 
@@ -73,6 +81,8 @@ weeks, we worked as a team to deploy this web application.
   environment and install dependencies
 - [Developer Guide](docs/developer-guide.md) - Explore technical architecture,
   API endpoints, and implementation patterns
+- [Test Coverage](docs/test-coverage.md) - Review comprehensive test coverage
+  metrics and quality analysis
 - [Data Model](docs/data-model.puml) - Review database schema and entity
   relationships
 - [Contributing Guidelines](docs/CONTRIBUTING.md) - Learn how to contribute code
