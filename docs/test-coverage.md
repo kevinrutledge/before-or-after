@@ -3,7 +3,7 @@
 Review test coverage metrics across frontend and backend systems. Examine
 testing methodology and coverage percentages to assess code quality.
 
-Last updated: December 2024
+Last updated: June 2025
 
 ## Overview
 

@@ -45,7 +45,7 @@ gameplay with knowledge gain.
 **Design Files**:
 [Edit on Figma](https://www.figma.com/design/v4K4uROCk5V6D3lIy1unw6/Before-or-After?node-id=0-1&p=f&t=VboCxAU2Dn4LSKNw-0)
 
-Last updated: December 2024
+Last updated: May 2025
 
 Review the interactive prototype to understand core game flow and interface
 design. The prototype demonstrates landing page functionality, card comparison
