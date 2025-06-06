@@ -70,12 +70,12 @@ jobs:
         run: npm --prefix packages/react-frontend test -- --coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5
         if: matrix.node-version == '18.x'
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./packages/express-backend/coverage/lcov.info,./packages/react-frontend/coverage/lcov.info
           fail_ci_if_error: false
-          verbose: true
 
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
