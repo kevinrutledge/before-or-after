@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { authRequest } from "../utils/apiClient";
 
 export function GameProvider({ children }) {
+  
   const { isAuthenticated, user } = useAuth();
   const [score, setScore] = useState(0);
   const [highscore, setHighscore] = useState(0);
@@ -11,6 +12,7 @@ export function GameProvider({ children }) {
 
   // Track previous auth state for sign-out detection
   const previousAuthRef = useRef(isAuthenticated);
+
 
   // Load scores based on authentication state
   useEffect(() => {
@@ -20,6 +22,7 @@ export function GameProvider({ children }) {
     if (isNowAuthenticated && user && !wasAuthenticated) {
       // Sign-in flow: merge local and remote scores
       const localHighScore = parseInt(localStorage.getItem("highScore")) || 0;
+      console.log("userhighscore", user.highScore);
       const remoteHighScore = user.highScore || 0;
 
       // Use maximum high score between local and remote
@@ -45,9 +48,22 @@ export function GameProvider({ children }) {
       localStorage.removeItem("highScore");
     } else if (isNowAuthenticated && user && wasAuthenticated) {
       // Authenticated user already loaded, loading scores from user data
+      console.log("userhighscore", user.highScore);
       setScore(user.currentScore || 0);
-      setHighscore(user.highScore || 0);
+
+      (async () => {
+        try {
+          const remoteHS = await getHighScoreAPI();
+          // Always compare against the latest state value:
+          setHighscore(prev => Math.max(remoteHS, prev));
+        } catch (err) {
+          console.error("Failed inside getHighScoreAPI:", err);
+          setHighscore(0);
+        }
+      })();
+      
     } else if (wasAuthenticated && !isNowAuthenticated) {
+      console.log("User signed out, preserving high score");
       // Sign-out flow: preserve high score in localStorage
       setScore(() => {
         setHighscore((currentHighScore) => {
@@ -68,7 +84,7 @@ export function GameProvider({ children }) {
 
     // Update previous auth state for next comparison
     previousAuthRef.current = isNowAuthenticated;
-  }, [isAuthenticated, user]);
+  }, [user, isAuthenticated]);
 
   // Persist scores to appropriate storage
   const persistScores = async (newScore, newHighscore) => {
@@ -85,6 +101,17 @@ export function GameProvider({ children }) {
     }
   };
 
+  async function getHighScoreAPI() {
+  try {
+    const res = await authRequest("/api/scores/get");
+    // If your endpoint returns { currentScore: X, highScore: Y }, grab Y:
+    return res.highScore != null ? res.highScore : 0;
+  } catch (err) {
+    console.error("getHighScoreAPI failed:", err);
+    return 0;
+  }
+}
+
   // Update scores via API call
   const updateScoresAPI = async (currentScore, highScore) => {
     try {
@@ -100,6 +127,7 @@ export function GameProvider({ children }) {
       throw error;
     }
   };
+
 
   const incrementScore = () => {
     const newScore = score + 1;

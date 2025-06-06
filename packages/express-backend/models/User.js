@@ -225,3 +225,41 @@ export async function getLeaderboard(limit = 10) {
     if (client) await client.close();
   }
 }
+
+/**
+ * Fetch a user's currentScore and highScore by userId.
+ */
+export async function getUserScores(userId) {
+  let client;
+  try {
+    const { client: dbClient, collection } = await getUsersCollection();
+    client = dbClient;
+
+    const { ObjectId } = await import("mongodb");
+
+    // Validate ObjectId format
+    let objectId;
+    try {
+      objectId = new ObjectId(userId);
+    } catch {
+      return null;
+    }
+
+    const user = await collection.findOne(
+      { _id: objectId },
+      { projection: { currentScore: 1, highScore: 1 } }
+    );
+
+    if (!user) return null;
+
+    return {
+      currentScore: user.currentScore || 0,
+      highScore: user.highScore || 0
+    };
+  } catch (error) {
+    console.error("Fetch user scores error:", error);
+    throw error;
+  } finally {
+    if (client) await client.close();
+  }
+}
