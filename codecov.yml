@@ -1,0 +1,39 @@
+# Codecov configuration for Before or After project
+
+coverage:
+  # Set precision for coverage reporting
+  precision: 2
+  
+  # Round coverage percentages
+  round: down
+  
+  # Coverage range for color coding
+  range: 70..100
+  
+  # Coverage status checks
+  status:
+    project:
+      default:
+        # Set target coverage threshold
+        target: 85%
+        # Allow coverage to drop by 1% without failing
+        threshold: 1%
+        # Only fail if coverage drops below target
+        if_ci_failed: error
+    
+    patch:
+      default:
+        # Require 80% coverage on new code
+        target: 80%
+        # Allow new code to have lower coverage
+        threshold: 5%
+
+# Comment configuration for pull requests
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: false
+
+# GitHub integration settings
+github_checks:
+  annotations: true
