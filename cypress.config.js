@@ -12,12 +12,12 @@ export default defineConfig({
     // Copy whatever vars you need into Cypress.env
     env: {
       ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-      ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+      ADMIN_PASSWORD: process.env.ADMIN_PASSWORD
       // …add more keys as needed
     },
 
     setupNodeEvents(on, config) {
       // any other node-event listeners you might have
-    },
-  },
+    }
+  }
 });

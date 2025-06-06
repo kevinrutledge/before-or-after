@@ -6,6 +6,12 @@
   <a href="https://github.com/kevinrutledge/before-or-after/actions/workflows/ci.yml">
     <img src="https://github.com/kevinrutledge/before-or-after/actions/workflows/ci.yml/badge.svg" alt="CI Status">
   </a>
+  <a href="https://codecov.io/gh/kevinrutledge/before-or-after">
+    <img src="https://codecov.io/gh/kevinrutledge/before-or-after/branch/main/graph/badge.svg" alt="Coverage">
+  </a>
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black" alt="React">
+  <img src="https://img.shields.io/badge/Node.js-18+-339933?style=flat&logo=nodedotjs&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat&logo=mongodb&logoColor=white" alt="MongoDB">
   <br/><br/>
 </div>
 
@@ -17,7 +23,8 @@ of albums, artworks, images, movies, and more in short, self-paced rounds.
 - [Overview](#overview)
   - [Purpose](#purpose)
   - [Team](#team)
-- [Getting Started and Contributing](#getting-started-and-contributing)
+- [UI Prototype](#ui-prototype)
+- [Documentation](#documentation)
 
 ## Overview
 
@@ -29,6 +36,18 @@ themselves to guess the release year of various cultural artifacts—albums,
 artworks, images, movies, and more—using a simple before-or-after mechanic. This
 trivia format keeps the experience fresh and educational, blending addictive
 gameplay with knowledge gain.
+
+## UI Prototype
+
+**Interactive Prototype**: [View on Figma](https://www.figma.com/proto/v4K4uROCk5V6D3lIy1unw6/Before-or-After?node-id=3-2&starting-point-node-id=3%3A2)
+
+**Design Files**: [Edit on Figma](https://www.figma.com/design/v4K4uROCk5V6D3lIy1unw6/Before-or-After?node-id=0-1&p=f&t=VboCxAU2Dn4LSKNw-0)
+
+Last updated: May 2025
+
+Review the interactive prototype to understand core game flow and interface design. The prototype demonstrates landing page functionality, card comparison mechanics, score tracking displays, leaderboard views, and admin dashboard layouts. Use the design files that contain detailed mockups and responsive design patterns.
+
+The prototype guided development of key interface elements. It established visual hierarchy for game cards, defined navigation patterns that work across mobile and desktop experiences, and outlined user authentication flows.
 
 ## Team
 
