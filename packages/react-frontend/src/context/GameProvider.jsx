@@ -46,7 +46,17 @@ export function GameProvider({ children }) {
     } else if (isNowAuthenticated && user && wasAuthenticated) {
       // Authenticated user already loaded, loading scores from user data
       setScore(user.currentScore || 0);
-      setHighscore(user.highScore || 0);
+
+      (async () => {
+        try {
+          const remoteHS = await getHighScoreAPI();
+          // Always compare against the latest state value:
+          setHighscore((prev) => Math.max(remoteHS, prev));
+        } catch (err) {
+          console.error("Failed inside getHighScoreAPI:", err);
+          setHighscore(0);
+        }
+      })();
     } else if (wasAuthenticated && !isNowAuthenticated) {
       // Sign-out flow: preserve high score in localStorage
       setScore(() => {
@@ -68,7 +78,7 @@ export function GameProvider({ children }) {
 
     // Update previous auth state for next comparison
     previousAuthRef.current = isNowAuthenticated;
-  }, [isAuthenticated, user]);
+  }, [user, isAuthenticated]);
 
   // Persist scores to appropriate storage
   const persistScores = async (newScore, newHighscore) => {
@@ -84,6 +94,17 @@ export function GameProvider({ children }) {
       localStorage.setItem("highScore", newHighscore.toString());
     }
   };
+
+  async function getHighScoreAPI() {
+    try {
+      const res = await authRequest("/api/scores/get");
+      // If your endpoint returns { currentScore: X, highScore: Y }, grab Y:
+      return res.highScore != null ? res.highScore : 0;
+    } catch (err) {
+      console.error("getHighScoreAPI failed:", err);
+      return 0;
+    }
+  }
 
   // Update scores via API call
   const updateScoresAPI = async (currentScore, highScore) => {

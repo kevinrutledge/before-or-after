@@ -19,6 +19,7 @@ import leaderboardHandler from "./api/leaderboard.js";
 import { processImage, validateImageFile } from "./services/imageProcessor.js";
 import { uploadImagePair, deleteS3Image } from "./services/s3Service.js";
 import jwt from "jsonwebtoken";
+import getScoresHandler from "./api/scores/get.js";
 
 /**
  * Create mock request object with Express-like properties.
@@ -539,6 +540,8 @@ const server = http.createServer(async (req, res) => {
         await authResetPasswordHandler(mockReq, mockRes);
       } else if (path === "/api/scores/update") {
         await scoresUpdateHandler(mockReq, mockRes);
+      } else if (path === "/api/scores/get" && req.method === "GET") {
+        await getScoresHandler(mockReq, mockRes);
       } else if (path === "/api/leaderboard") {
         await leaderboardHandler(mockReq, mockRes);
       } else if (path.startsWith("/api/admin/cards/") && req.method === "PUT") {
