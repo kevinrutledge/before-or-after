@@ -1,8 +1,6 @@
 comment:
   behavior: default
   layout: reach, diff, flags, files
-  require_changes:
-  - 0
 coverage:
   precision: 2
   range:
