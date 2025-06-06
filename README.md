@@ -47,15 +47,17 @@ gameplay with knowledge gain.
 
 Last updated: May 2025
 
-Review the interactive prototype to understand core game flow and interface
-design. The prototype demonstrates landing page functionality, card comparison
-mechanics, score tracking displays, leaderboard views, and admin dashboard
-layouts. Use the design files that contain detailed mockups and responsive
-design patterns.
+Review the interactive prototype that demonstrates basic game flow concepts from
+early development phases. The prototype covers essential navigation between
+landing page, game interface, and loss screen that formed the initial user
+journey. Use the design files that contain early mockups for core gameplay
+mechanics.
 
-The prototype guided development of key interface elements. It established
-visual hierarchy for game cards, defined navigation patterns that work across
-mobile and desktop experiences, and outlined user authentication flows.
+The prototype established foundational interface decisions that guided initial
+development. It defined basic visual hierarchy for game cards and outlined
+simple navigation patterns that supported the core user experience. Note that
+the prototype represents early-stage planning and does not include the full
+feature set that was developed during implementation.
 
 ## Team
 
