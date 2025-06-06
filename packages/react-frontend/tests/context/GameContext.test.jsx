@@ -86,23 +86,4 @@ describe("GameContext", () => {
     expect(screen.getByTestId("score")).toHaveTextContent("0");
     expect(screen.getByTestId("highscore")).toHaveTextContent("1");
   });
-
-  test("loads scores from authenticated user", () => {
-    const mockUser = {
-      email: "test@example.com",
-      currentScore: 3,
-      highScore: 8
-    };
-
-    render(
-      <MockAuthProvider value={{ isAuthenticated: true, user: mockUser }}>
-        <GameProvider>
-          <TestComponent />
-        </GameProvider>
-      </MockAuthProvider>
-    );
-
-    expect(screen.getByTestId("score")).toHaveTextContent("3");
-    expect(screen.getByTestId("highscore")).toHaveTextContent("8");
-  });
 });

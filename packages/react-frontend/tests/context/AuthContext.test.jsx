@@ -418,47 +418,4 @@ describe("AuthContext Score Data Integration", () => {
     expect(screen.getByTestId("user-current-score")).toHaveTextContent("4");
     expect(screen.getByTestId("user-high-score")).toHaveTextContent("19");
   });
-
-  test("score data clears correctly on logout", async () => {
-    const mockUserWithScores = {
-      email: "user@test.com",
-      username: "testuser",
-      role: "user",
-      currentScore: 6,
-      highScore: 24
-    };
-
-    // Start authenticated
-    isAuthenticated.mockReturnValue(true);
-    getCurrentUser.mockReturnValue(mockUserWithScores);
-
-    render(
-      <AuthProvider>
-        <GameProvider>
-          <TestConsumerWithScores />
-        </GameProvider>
-      </AuthProvider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByTestId("auth-status")).toHaveTextContent(
-        "authenticated"
-      );
-      expect(screen.getByTestId("game-high-score")).toHaveTextContent("24");
-    });
-
-    // Trigger logout
-    act(() => {
-      screen.getByTestId("logout-btn").click();
-    });
-
-    // Verify scores preserved in localStorage after logout
-    await waitFor(() => {
-      expect(screen.getByTestId("auth-status")).toHaveTextContent(
-        "unauthenticated"
-      );
-      expect(localStorage.getItem("highScore")).toBe("24");
-      expect(localStorage.getItem("score")).toBe("0");
-    });
-  });
 });

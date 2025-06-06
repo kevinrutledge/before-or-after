@@ -40,8 +40,6 @@ function LoginPage() {
         body: JSON.stringify({ emailOrUsername, password })
       });
 
-      console.log("Login API response:", data);
-
       login(data.token, data.user);
       navigate("/");
     } catch {

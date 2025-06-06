@@ -53,32 +53,36 @@ export default async function handler(req, res) {
   }
 
   try {
-  // Fetch current high score from DB
-  const dbScores = await getUserScores(req.user.id);
-  if (!dbScores) {
-    return res.status(404).json({ message: "User not found" });
-  }
+    // Fetch current high score from DB
+    const dbScores = await getUserScores(req.user.id);
+    if (!dbScores) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  // Only update if new highScore is greater than DB highScore
-  let result = { success: true };
-  if (highScore > dbScores.highScore) {
-    result = await updateUserScores(req.user.id, currentScore, highScore);
-  } else {
-    // Optionally, you may want to update currentScore even if highScore doesn't change
-    result = await updateUserScores(req.user.id, currentScore, dbScores.highScore);
-  }
+    // Only update if new highScore is greater than DB highScore
+    let result = { success: true };
+    if (highScore > dbScores.highScore) {
+      result = await updateUserScores(req.user.id, currentScore, highScore);
+    } else {
+      // Optionally, you may want to update currentScore even if highScore doesn't change
+      result = await updateUserScores(
+        req.user.id,
+        currentScore,
+        dbScores.highScore
+      );
+    }
 
-  if (!result.success) {
-    return res.status(400).json({ message: "Failed to update scores" });
-  }
+    if (!result.success) {
+      return res.status(400).json({ message: "Failed to update scores" });
+    }
 
-  res.status(200).json({
-    message: "Scores updated successfully",
-    currentScore: currentScore,
-    highScore: Math.max(highScore, dbScores.highScore)
-  });
-} catch (error) {
-  console.error("Score update error:", error);
-  res.status(500).json({ message: "Internal server error" });
-}
+    res.status(200).json({
+      message: "Scores updated successfully",
+      currentScore: currentScore,
+      highScore: Math.max(highScore, dbScores.highScore)
+    });
+  } catch (error) {
+    console.error("Score update error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 }

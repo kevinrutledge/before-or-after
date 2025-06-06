@@ -540,7 +540,7 @@ const server = http.createServer(async (req, res) => {
         await authResetPasswordHandler(mockReq, mockRes);
       } else if (path === "/api/scores/update") {
         await scoresUpdateHandler(mockReq, mockRes);
-      } else if (path === "/api/scores/get" && req.method === "GET"){
+      } else if (path === "/api/scores/get" && req.method === "GET") {
         await getScoresHandler(mockReq, mockRes);
       } else if (path === "/api/leaderboard") {
         await leaderboardHandler(mockReq, mockRes);

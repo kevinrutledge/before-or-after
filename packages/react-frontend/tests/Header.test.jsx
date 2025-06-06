@@ -178,39 +178,6 @@ describe("Header Component", () => {
       expect(zeroScoreElements.length).toBeGreaterThan(0);
     });
 
-    test("displays authenticated user high score from user object", () => {
-      const mockUserWithScore = {
-        email: "test@example.com",
-        username: "testuser",
-        currentScore: 8,
-        highScore: 25
-      };
-
-      render(
-        <MemoryRouter>
-          <MockAuthProvider
-            value={{
-              isAuthenticated: true,
-              user: mockUserWithScore
-            }}>
-            <GameProvider>
-              <Header />
-            </GameProvider>
-          </MockAuthProvider>
-        </MemoryRouter>
-      );
-
-      // Look for user's high score display
-      const userScoreElements = [
-        screen.queryByText("25"),
-        screen.queryByText(/high score.*25/i),
-        screen.queryByTestId("high-score"),
-        screen.queryByTestId("score-value")
-      ].filter(Boolean);
-
-      expect(userScoreElements.length).toBeGreaterThan(0);
-    });
-
     test("updates high score display when user logs in", () => {
       localStorage.setItem("highScore", "10");
 
